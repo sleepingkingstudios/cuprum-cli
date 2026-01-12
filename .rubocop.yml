@@ -1,0 +1,25 @@
+plugins:
+  - rubocop-rspec
+
+inherit_gem:
+  rspec-sleeping_king_studios: config/rubocop-rspec.yml
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  Exclude:
+    - tmp/**/*
+    - vendor/**/*
+
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/HashAlignment:
+  EnforcedColonStyle:      table
+  EnforcedHashRocketStyle: table
+
+Style/AccessorGrouping:
+  EnforcedStyle: separated
+
+Style/ClassAndModuleChildren:
+  Enabled: false

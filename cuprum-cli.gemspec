@@ -3,7 +3,7 @@
 require_relative 'lib/cuprum/cli/version'
 
 Gem::Specification.new do |gem|
-  gem.name =       'cuprum-cli'
+  gem.name        = 'cuprum-cli'
   gem.version     = Cuprum::Cli::VERSION
   gem.authors     = ['Rob "Merlin" Smith']
   gem.email       = ['sleepingkingstudios@gmail.com']
@@ -24,13 +24,13 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = ['>= 3.2', '< 5']
 
   gem.require_paths = ['lib']
+  gem.bindir        = 'bin'
   gem.files         = Dir[
     'bin/cuprum-cli',
     'lib/**/*.rb',
     'LICENSE',
     '*.md'
   ]
-  gem.bindir        = 'bin'
 
   gem.add_dependency 'cuprum', '~> 1.3', '>= 1.3.1'
 end
