@@ -31,6 +31,7 @@ Gem::Specification.new do |gem|
     'LICENSE',
     '*.md'
   ]
+  gem.executables = gem.files.grep(%r{\Abin/}) { |f| File.basename(f) }
 
   gem.add_dependency 'cuprum', '~> 1.3', '>= 1.3.1'
 end
