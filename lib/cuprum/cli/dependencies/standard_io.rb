@@ -5,6 +5,8 @@ require 'cuprum/cli/dependencies'
 module Cuprum::Cli::Dependencies
   # Utility wrapping standard input, output, and error IO streams.
   class StandardIo
+    autoload :Mock, 'cuprum/cli/dependencies/standard_io/mock'
+
     # String input values that will be mapped to a boolean false.
     FALSY_VALUES = Set.new(%w[f false n no]).freeze
 
@@ -51,7 +53,7 @@ module Cuprum::Cli::Dependencies
       validate_prompt(prompt)
       display_prompt(caret:, newline:, prompt:)
 
-      value = input_stream.gets&.then { |str| strip ? str.strip : str }
+      value = read_input&.then { |str| strip ? str.strip : str }
 
       return if value.nil? || value.empty?
       return value if format.nil?
@@ -79,7 +81,7 @@ module Cuprum::Cli::Dependencies
     def say(message, newline: true, **)
       validate_message(message)
 
-      newline ? output_stream.puts(message) : output_stream.print(message)
+      write_output(message, newline:)
     end
 
     # @overload warn(message, **options)
@@ -95,7 +97,7 @@ module Cuprum::Cli::Dependencies
     def warn(message, newline: true, **)
       validate_message(message)
 
-      newline ? error_stream.puts(message) : error_stream.print(message)
+      write_error(message, newline:)
     end
 
     private
@@ -107,11 +109,9 @@ module Cuprum::Cli::Dependencies
     attr_reader :output_stream
 
     def display_prompt(caret:, newline:, prompt:)
-      if prompt
-        newline ? output_stream.puts(prompt) : output_stream.print(prompt)
-      end
+      write_output(prompt, newline:) if prompt
 
-      output_stream.print '> ' if caret.nil? ? newline : caret
+      write_output('> ', newline: false) if caret.nil? ? newline : caret
     end
 
     def format_boolean(value)
@@ -131,7 +131,19 @@ module Cuprum::Cli::Dependencies
 
     def format_string(value) = value
 
+    def read_input
+      input_stream.gets
+    end
+
     def tools = SleepingKingStudios::Tools::Toolbelt.instance
+
+    def write_error(message, newline:)
+      newline ? error_stream.puts(message) : error_stream.print(message)
+    end
+
+    def write_output(message, newline:)
+      newline ? output_stream.puts(message) : output_stream.print(message)
+    end
 
     def validate_message(message)
       tools.assertions.validate_instance_of(
