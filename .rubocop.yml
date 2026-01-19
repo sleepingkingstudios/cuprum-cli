@@ -18,6 +18,24 @@ Layout/HashAlignment:
   EnforcedColonStyle:      table
   EnforcedHashRocketStyle: table
 
+RSpec/BeNil:
+  Enabled: false
+
+RSpec/Eq:
+  Enabled: false
+
+RSpec/ExampleWording:
+  Enabled: false
+
+RSpec/HookArgument:
+  Enabled: false
+
+RSpec/IncludeExamples:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
+
 Style/AccessorGrouping:
   EnforcedStyle: separated
 

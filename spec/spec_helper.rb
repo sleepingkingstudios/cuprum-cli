@@ -11,9 +11,13 @@ require 'rspec/sleeping_king_studios/all'
 # Isolated namespace for defining spec-only or transient objects.
 module Spec; end
 
+SleepingKingStudios::Tools.initialize
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
-  config.extend RSpec::SleepingKingStudios::Concerns::ExampleConstants
+  config.extend  RSpec::SleepingKingStudios::Concerns::ExampleConstants
+  config.include RSpec::SleepingKingStudios::Examples::PropertyExamples
+  config.include RSpec::SleepingKingStudios::Concerns::Toolbelt
 
   config.disable_monkey_patching!
 
