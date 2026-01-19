@@ -16,6 +16,9 @@ module Cuprum::Cli::Dependencies
     # String input values that will be mapped to a boolean true.
     TRUTHY_VALUES = Set.new(%w[t true y yes]).freeze
 
+    # Enumerates the default methods to delegate as a dependency.
+    def self.delegated_methods = %w[#ask #say #warn]
+
     # @param error_stream [IO] the error stream. Defaults to $stderr.
     # @param input_stream [IO] the input stream. Defaults to $stdin.
     # @param output_stream [IO] the output stream. Defaulst to $stdout.
