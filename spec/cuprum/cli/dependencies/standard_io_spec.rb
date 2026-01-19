@@ -14,7 +14,7 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
       expect(described_class)
         .to be_constructible
         .with(0).arguments
-        .and_keywords(:input, :error, :output)
+        .and_keywords(:input_stream, :error_stream, :output_stream)
     end
   end
 
@@ -248,9 +248,9 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
       it { expect(standard_io.ask(strip: false)).to be == raw_input }
     end
 
-    context 'when initialized with input: value' do
+    context 'when initialized with input_stream: value' do
       let(:input_stream)        { StringIO.new(raw_input) }
-      let(:constructor_options) { super().merge(input: input_stream) }
+      let(:constructor_options) { super().merge(input_stream:) }
 
       before(:example) do
         allow($stdin).to receive(:gets).and_call_original
@@ -269,9 +269,9 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
       end
     end
 
-    context 'when initialized with output: value' do
+    context 'when initialized with output_stream: value' do
       let(:output_stream)       { StringIO.new }
-      let(:constructor_options) { super().merge(output: output_stream) }
+      let(:constructor_options) { super().merge(output_stream:) }
 
       it { expect { standard_io.ask }.not_to output.to_stdout }
 
@@ -296,36 +296,42 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
     end
   end
 
-  describe '#error' do
-    include_examples 'should define private reader', :error, -> { $stderr }
+  describe '#error_stream' do
+    include_examples 'should define private reader',
+      :error_stream,
+      -> { $stderr }
 
-    context 'when initialized with error: value' do
+    context 'when initialized with error_stream: value' do
       let(:error_stream)        { StringIO.new }
-      let(:constructor_options) { super().merge(error: error_stream) }
+      let(:constructor_options) { super().merge(error_stream:) }
 
-      it { expect(standard_io.send(:error)).to be error_stream }
+      it { expect(standard_io.send(:error_stream)).to be error_stream }
     end
   end
 
-  describe '#input' do
-    include_examples 'should define private reader', :input, -> { $stdin }
+  describe '#input_stream' do
+    include_examples 'should define private reader',
+      :input_stream,
+      -> { $stdin }
 
-    context 'when initialized with input: value' do
+    context 'when initialized with input_stream: value' do
       let(:input_stream)        { StringIO.new }
-      let(:constructor_options) { super().merge(input: input_stream) }
+      let(:constructor_options) { super().merge(input_stream:) }
 
-      it { expect(standard_io.send(:input)).to be input_stream }
+      it { expect(standard_io.send(:input_stream)).to be input_stream }
     end
   end
 
-  describe '#output' do
-    include_examples 'should define private reader', :output, -> { $stdout }
+  describe '#output_stream' do
+    include_examples 'should define private reader',
+      :output_stream,
+      -> { $stdout }
 
-    context 'when initialized with output: value' do
+    context 'when initialized with output_stream: value' do
       let(:output_stream)       { StringIO.new }
-      let(:constructor_options) { super().merge(output: output_stream) }
+      let(:constructor_options) { super().merge(output_stream:) }
 
-      it { expect(standard_io.send(:output)).to be output_stream }
+      it { expect(standard_io.send(:output_stream)).to be output_stream }
     end
   end
 
@@ -450,9 +456,9 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
       end
     end
 
-    context 'when initialized with output: value' do
+    context 'when initialized with output_stream: value' do
       let(:output_stream)       { StringIO.new }
-      let(:constructor_options) { super().merge(output: output_stream) }
+      let(:constructor_options) { super().merge(output_stream:) }
 
       describe 'with an empty String' do
         let(:expected) { "\n" }
@@ -591,9 +597,9 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
       end
     end
 
-    context 'when initialized with error: value' do
+    context 'when initialized with error_stream: value' do
       let(:error_stream)        { StringIO.new }
-      let(:constructor_options) { super().merge(error: error_stream) }
+      let(:constructor_options) { super().merge(error_stream:) }
 
       describe 'with an empty String' do
         let(:expected) { "\n" }

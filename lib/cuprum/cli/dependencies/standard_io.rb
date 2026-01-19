@@ -14,13 +14,17 @@ module Cuprum::Cli::Dependencies
     # String input values that will be mapped to a boolean true.
     TRUTHY_VALUES = Set.new(%w[t true y yes]).freeze
 
-    # @param error [IO] the error stream. Defaults to $stderr.
-    # @param input [IO] the input stream. Defaults to $stdin.
-    # @param output [IO] the output stream. Defaulst to $stdout.
-    def initialize(error: $stderr, input: $stdin, output: $stdout)
-      @error  = error
-      @input  = input
-      @output = output
+    # @param error_stream [IO] the error stream. Defaults to $stderr.
+    # @param input_stream [IO] the input stream. Defaults to $stdin.
+    # @param output_stream [IO] the output stream. Defaulst to $stdout.
+    def initialize(
+      error_stream:  $stderr,
+      input_stream:  $stdin,
+      output_stream: $stdout
+    )
+      @error_stream  = error_stream
+      @input_stream  = input_stream
+      @output_stream = output_stream
     end
 
     # @overload ask(prompt = nil, caret: true, format: nil, strip: true, **options)
@@ -47,7 +51,7 @@ module Cuprum::Cli::Dependencies
       validate_prompt(prompt)
       display_prompt(caret:, newline:, prompt:)
 
-      value = input.gets&.then { |str| strip ? str.strip : str }
+      value = input_stream.gets&.then { |str| strip ? str.strip : str }
 
       return if value.nil? || value.empty?
       return value if format.nil?
@@ -75,7 +79,7 @@ module Cuprum::Cli::Dependencies
     def say(message, newline: true, **)
       validate_message(message)
 
-      newline ? output.puts(message) : output.print(message)
+      newline ? output_stream.puts(message) : output_stream.print(message)
     end
 
     # @overload warn(message, **options)
@@ -91,23 +95,23 @@ module Cuprum::Cli::Dependencies
     def warn(message, newline: true, **)
       validate_message(message)
 
-      newline ? error.puts(message) : error.print(message)
+      newline ? error_stream.puts(message) : error_stream.print(message)
     end
 
     private
 
-    attr_reader :error
+    attr_reader :error_stream
 
-    attr_reader :input
+    attr_reader :input_stream
 
-    attr_reader :output
+    attr_reader :output_stream
 
     def display_prompt(caret:, newline:, prompt:)
       if prompt
-        newline ? output.puts(prompt) : output.print(prompt)
+        newline ? output_stream.puts(prompt) : output_stream.print(prompt)
       end
 
-      output.print '> ' if caret.nil? ? newline : caret
+      output_stream.print '> ' if caret.nil? ? newline : caret
     end
 
     def format_boolean(value)
