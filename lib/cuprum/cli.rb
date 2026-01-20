@@ -6,5 +6,7 @@ require_relative 'cli/version'
 
 module Cuprum
   # Command-line utility powered by Cuprum.
-  module Cli; end
+  module Cli
+    autoload :Dependencies, 'cuprum/cli/dependencies'
+  end
 end
