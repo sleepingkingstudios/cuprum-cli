@@ -18,6 +18,10 @@ Layout/HashAlignment:
   EnforcedColonStyle:      table
   EnforcedHashRocketStyle: table
 
+Metrics/BlockLength:
+  Exclude:
+    - '**/*_examples.rb'
+
 RSpec/BeNil:
   Enabled: false
 
