@@ -4,7 +4,7 @@ require 'cuprum/cli/option'
 require 'cuprum/cli/options'
 
 module Cuprum::Cli::Options
-  # Methods used to extend command functionality for defining options.
+  # Methods used to extend command class functionality for defining options.
   module ClassMethods
     # @overload option(name, aliases: [], default: nil, description: nil, required: false, type: :string)
     #   Defines an option for the command class.
@@ -42,10 +42,53 @@ module Cuprum::Cli::Options
       end
     end
 
+    # Validates the given option values against the defined class options.
+    #
+    # Also applies any default values from the defined options.
+    #
+    # @param values [Hash] the option values to resolve.
+    #
+    # @return [Hash] the option values with applied defaults.
+    #
+    # @raise [Cuprum::Cli::Errors::UnknownOptionError] if any value does not
+    #   have a corresponding defined option.
+    # @raise [Cuprum::Cli::Errors::InvalidOptionError] if any value does not
+    #   match the expected option type, or any required value is missing.
+    def resolve_options(**values)
+      defined_options = options
+      unknown_options = values.keys - defined_options.keys
+
+      unless unknown_options.empty?
+        raise Cuprum::Cli::Errors::UnknownOptionError,
+          unknown_options_message(defined_options:, unknown_options:)
+      end
+
+      defined_options.to_h do |key, option|
+        [key, option.resolve(values[key])]
+      end
+    end
+
     protected
 
     def defined_options
       @defined_options ||= {}
+    end
+
+    def tools
+      SleepingKingStudios::Tools::Toolbelt.instance
+    end
+
+    def unknown_options_message(defined_options:, unknown_options:)
+      counted =
+        tools.integer_tools.pluralize(unknown_options.size, 'option')
+      unknown = unknown_options.map(&:inspect).join(', ')
+      message = "unrecognized #{counted} #{unknown} for #{name}"
+
+      return message if defined_options.empty?
+
+      valid_options = defined_options.keys.sort.map(&:inspect).join(', ')
+
+      "#{message} - valid options are #{valid_options}"
     end
   end
 end

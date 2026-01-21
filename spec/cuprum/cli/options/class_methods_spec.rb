@@ -11,15 +11,15 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
 
   deferred_context 'when the command has many options' do
     before(:example) do
-      described_class.option :color, type: :integer
+      described_class.option :color, type:     :integer
       described_class.option :shape, required: true
     end
   end
 
   deferred_context 'when the parent command has many options' do
     before(:example) do
-      Spec::Command.option :size
-      Spec::Command.option :transparent, type: :boolean
+      Spec::Command.option :size,        default: 'medium'
+      Spec::Command.option :transparent, type:    :boolean
     end
   end
 
@@ -138,6 +138,103 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
 
         it 'should define the expected options' do
           expect(described_class.options.keys).to match_array(expected_keys)
+        end
+      end
+    end
+  end
+
+  describe '.resolve_options' do
+    let(:values) { {} }
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:resolve_options)
+        .with(0).arguments
+        .and_any_keywords
+    end
+
+    describe 'with no values' do
+      it { expect(described_class.resolve_options).to be == {} }
+    end
+
+    describe 'with one unknown option value' do
+      let(:values) { super().merge(unknown: 'value') }
+      let(:error_message) do
+        "unrecognized option :unknown for #{described_class.name}"
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.resolve_options(**values) }
+          .to raise_error Cuprum::Cli::Errors::UnknownOptionError, error_message
+      end
+    end
+
+    describe 'with many unknown option values' do
+      let(:values) { super().merge(unknown: 'value', mystery: 'value') }
+      let(:error_message) do
+        "unrecognized options :unknown, :mystery for #{described_class.name}"
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.resolve_options(**values) }
+          .to raise_error Cuprum::Cli::Errors::UnknownOptionError, error_message
+      end
+    end
+
+    context 'when the command and parent command have many options' do
+      include_deferred 'when the command has a parent command'
+      include_deferred 'when the command has many options'
+      include_deferred 'when the parent command has many options'
+
+      describe 'with no values' do
+        let(:error_message) do
+          'invalid value for option :shape - expected an instance of String, ' \
+            'received nil'
+        end
+
+        it 'should raise an exception' do
+          expect { described_class.resolve_options }
+            .to raise_error Cuprum::Cli::Errors::InvalidOptionError, error_message
+        end
+      end
+
+      describe 'with missing values' do
+        let(:values) { { transparent: true } }
+        let(:error_message) do
+          'invalid value for option :shape - expected an instance of String, ' \
+            'received nil'
+        end
+
+        it 'should raise an exception' do
+          expect { described_class.resolve_options }
+            .to raise_error Cuprum::Cli::Errors::InvalidOptionError, error_message
+        end
+      end
+
+      describe 'with valid values' do
+        let(:values)   { { shape: 'triangle', transparent: true } }
+        let(:expected) { values.merge(color: nil, size: 'medium') }
+
+        it 'should apply the option defaults' do
+          expect(described_class.resolve_options(**values)).to be == expected
+        end
+      end
+
+      describe 'with extra values' do
+        let(:values) do
+          { shape: 'triangle', transparent: true, unknown: 'value' }
+        end
+        let(:error_message) do
+          "unrecognized option :unknown for #{described_class.name} - valid " \
+            'options are :color, :shape, :size, :transparent'
+        end
+
+        it 'should raise an exception' do
+          expect { described_class.resolve_options(**values) }
+            .to raise_error(
+              Cuprum::Cli::Errors::UnknownOptionError,
+              error_message
+            )
         end
       end
     end
