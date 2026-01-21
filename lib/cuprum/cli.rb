@@ -8,5 +8,6 @@ module Cuprum
   # Command-line utility powered by Cuprum.
   module Cli
     autoload :Dependencies, 'cuprum/cli/dependencies'
+    autoload :Errors,       'cuprum/cli/errors'
   end
 end
