@@ -16,6 +16,7 @@ SleepingKingStudios::Tools.initializer.call
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.extend  RSpec::SleepingKingStudios::Concerns::ExampleConstants
+  config.include RSpec::SleepingKingStudios::Deferred::Consumer
   config.include RSpec::SleepingKingStudios::Examples::PropertyExamples
   config.include RSpec::SleepingKingStudios::Concerns::Toolbelt
 
