@@ -9,5 +9,6 @@ module Cuprum
   module Cli
     autoload :Dependencies, 'cuprum/cli/dependencies'
     autoload :Errors,       'cuprum/cli/errors'
+    autoload :Option,       'cuprum/cli/option'
   end
 end
