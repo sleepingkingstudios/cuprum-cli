@@ -6,7 +6,7 @@ require 'cuprum/cli/options'
 module Cuprum::Cli::Options
   # Methods used to extend command class functionality for defining options.
   module ClassMethods
-    # @overload option(name, aliases: [], default: nil, description: nil, required: false, type: :string)
+    # @overload option(name, aliases: [], default: nil, description: nil, required: false, type: :string, **options)
     #   Defines an option for the command class.
     #
     #   @param name [String, Symbol] the name of the option.
@@ -22,10 +22,25 @@ module Cuprum::Cli::Options
     #   @param type [Class, String, Symbol] the expected type of the option
     #     value as a Class or class name. If given, raises an exception if the
     #     option value is not an instance of the type. Defaults to :string.
-    def option(name, **)
-      option = Cuprum::Cli::Option.new(name:, **)
+    #   @param options [Hash] additional options for defining the option.
+    #
+    #   @option options define_method [true, false] if true, defines a reader
+    #     method for the option. Defaults to false for boolean options and true
+    #     for all other options.
+    #   @option options define_predicate [true, false] if true, defines a
+    #     predicate method for the option, which returns true if the option is
+    #     not nil and not empty. Defaults to true for boolean options and false
+    #     for all other options.
+    def option(name, define_method: nil, define_predicate: nil, **options)
+      option = Cuprum::Cli::Option.new(name:, **options)
 
       defined_options[option.name] = option
+
+      define_method    = (options[:type] != :boolean) if define_method.nil?
+      define_predicate = (options[:type] == :boolean) if define_predicate.nil?
+
+      define_method_for(option)    if define_method
+      define_predicate_for(option) if define_predicate
 
       option.name
     end
@@ -69,6 +84,18 @@ module Cuprum::Cli::Options
     end
 
     protected
+
+    def define_method_for(option)
+      define_method(option.name) { @options[option.name] }
+    end
+
+    def define_predicate_for(option)
+      define_method(:"#{option.name}?") do
+        value = @options[option.name]
+
+        !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
+      end
+    end
 
     def defined_options
       @defined_options ||= {}

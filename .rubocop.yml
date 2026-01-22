@@ -37,6 +37,9 @@ RSpec/HookArgument:
 RSpec/IncludeExamples:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
+
 RSpec/NestedGroups:
   Max: 5
 

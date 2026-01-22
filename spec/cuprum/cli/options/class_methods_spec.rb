@@ -6,6 +6,8 @@ require 'cuprum/cli/rspec/deferred/options_examples'
 RSpec.describe Cuprum::Cli::Options::ClassMethods do
   include Cuprum::Cli::RSpec::Deferred::OptionsExamples
 
+  subject(:command) { Spec::Command.new(constructor_options) }
+
   deferred_context 'when the command has a parent command' do
     let(:described_class) { Spec::SubclassCommand }
 
@@ -26,10 +28,13 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
     end
   end
 
-  let(:described_class) { Spec::Command }
+  let(:described_class)     { Spec::Command }
+  let(:constructor_options) { {} }
 
   example_class 'Spec::Command' do |klass|
     klass.extend Cuprum::Cli::Options::ClassMethods # rubocop:disable RSpec/DescribedClass
+
+    klass.define_method(:initialize) { |options| @options = options }
   end
 
   describe '.option' do
@@ -38,6 +43,15 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
         before(:example) { described_class.option(name, **options) }
 
         include_deferred 'should define option', :format
+
+        describe '#:option_name' do
+          context 'when the option has a value' do
+            let(:value)               { "#{name} value" }
+            let(:constructor_options) { super().merge(name.to_sym => value) }
+
+            it { expect(command.public_send(name)).to be == value }
+          end
+        end
       end
 
       describe 'with aliases: value' do
@@ -57,6 +71,48 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
           before(:example) { described_class.option(name, **options) }
 
           include_deferred 'should define option', :format, default: :json
+        end
+      end
+
+      describe 'with define_method: false' do
+        let(:options) { super().merge(define_method: false) }
+
+        context 'when the option is defined' do
+          before(:example) { described_class.option(name, **options) }
+
+          include_deferred 'should define option',
+            :format,
+            define_method: false
+        end
+      end
+
+      describe 'with define_predicate: true' do
+        let(:options) { super().merge(define_predicate: true) }
+
+        context 'when the option is defined' do
+          before(:example) { described_class.option(name, **options) }
+
+          include_deferred 'should define option',
+            :format,
+            define_predicate: true
+
+          describe '#:option_name?' do
+            # rubocop:disable RSpec/NestedGroups
+            context 'when the option has an empty value' do
+              let(:value)               { "#{name} value" }
+              let(:constructor_options) { super().merge(name.to_sym => value) }
+
+              it { expect(command.public_send("#{name}?")).to be true }
+            end
+
+            context 'when the option has a non-empty value' do
+              let(:value)               { '' }
+              let(:constructor_options) { super().merge(name.to_sym => value) }
+
+              it { expect(command.public_send("#{name}?")).to be false }
+            end
+            # rubocop:enable RSpec/NestedGroups
+          end
         end
       end
 
@@ -86,12 +142,48 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
       end
 
       describe 'with type: value' do
+        let(:options) { super().merge(type: :integer) }
+
+        context 'when the option is defined' do
+          before(:example) { described_class.option(name, **options) }
+
+          include_deferred 'should define option', :format, type: :integer
+        end
+      end
+
+      describe 'with type: :boolean' do
         let(:options) { super().merge(type: :boolean) }
 
         context 'when the option is defined' do
           before(:example) { described_class.option(name, **options) }
 
           include_deferred 'should define option', :format, type: :boolean
+        end
+
+        describe 'with define_method: false' do
+          let(:options) { super().merge(define_method: true) }
+
+          context 'when the option is defined' do
+            before(:example) { described_class.option(name, **options) }
+
+            include_deferred 'should define option',
+              :format,
+              type:          :boolean,
+              define_method: true
+          end
+        end
+
+        describe 'with define_predicate: false' do
+          let(:options) { super().merge(define_predicate: false) }
+
+          context 'when the option is defined' do
+            before(:example) { described_class.option(name, **options) }
+
+            include_deferred 'should define option',
+              :format,
+              type:             :boolean,
+              define_predicate: false
+          end
         end
       end
     end
