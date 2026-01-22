@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'cuprum/cli'
-require 'cuprum/cli/errors/invalid_option_error'
+require 'cuprum/cli/options'
 
 module Cuprum::Cli
   # Data object representing a command option.
@@ -53,8 +53,8 @@ module Cuprum::Cli
     #
     #   @return [Object] the validated option value.
     #
-    #   @raise [Cuprum::Cli::Errors::InvalidOptionError] if the value is missing
-    #     (for a required option) or invalid.
+    #   @raise [Cuprum::Cli::Options::InvalidOptionError] if the value is
+    #     missing (for a required option) or invalid.
     def resolve(original_value)
       value = original_value
       value = default_value if blank?(value)
@@ -64,7 +64,7 @@ module Cuprum::Cli
 
       return value if valid_option?(value)
 
-      raise Cuprum::Cli::Errors::InvalidOptionError,
+      raise Cuprum::Cli::Options::InvalidOptionError,
         invalid_option_message(original_value)
     end
 
