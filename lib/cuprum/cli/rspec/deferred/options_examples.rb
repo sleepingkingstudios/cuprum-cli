@@ -10,6 +10,13 @@ module Cuprum::Cli::RSpec::Deferred
     include RSpec::SleepingKingStudios::Deferred::Provider
 
     deferred_examples 'should define option' do |option_name, **option_options|
+      expect_method =
+        option_options
+        .fetch(:define_method, option_options[:type] != :boolean)
+      expect_predicate =
+        option_options
+        .fetch(:define_predicate, option_options[:type] == :boolean)
+
       let(:configured_aliases) do
         value = option_options.fetch(:aliases, [])
         value = value.instance_exec(&value) if value.is_a?(Proc)
@@ -38,9 +45,46 @@ module Cuprum::Cli::RSpec::Deferred
 
         value.is_a?(Proc) ? instance_exec(&value) : value
       end
+      let(:configured_options) do
+        value = option_options.fetch(:options) do
+          defined?(options) ? options : {}
+        end
+
+        value.is_a?(Proc) ? instance_exec(&value) : value
+      end
       let(:defined_option) { described_class.options[option_name.to_sym] }
 
       it { expect(described_class.options).to have_key(option_name.to_sym) }
+
+      describe '#:option_name' do
+        if expect_method
+          let(:reader_name) { option_name }
+          let(:expected)    { configured_options[option_name] }
+
+          it { expect(subject).to respond_to(reader_name).with(0).arguments }
+
+          it { expect(subject.public_send(reader_name)).to be == expected }
+        else
+          it { expect(subject).not_to respond_to(option_name) }
+        end
+      end
+
+      describe '#:option_name?' do
+        if expect_predicate
+          let(:predicate_name) { "#{option_name}?" }
+          let(:expected) do
+            value = configured_options[option_name]
+
+            !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
+          end
+
+          it { expect(subject).to respond_to(predicate_name).with(0).arguments }
+
+          it { expect(subject.public_send(predicate_name)).to be == expected }
+        else
+          it { expect(subject).not_to respond_to(:"#{option_name}?") }
+        end
+      end
 
       describe '#aliases' do
         it { expect(defined_option.aliases).to be == configured_aliases }
