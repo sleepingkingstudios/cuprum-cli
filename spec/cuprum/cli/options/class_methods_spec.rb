@@ -327,7 +327,10 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
 
         it 'should raise an exception' do
           expect { described_class.resolve_options }
-            .to raise_error Cuprum::Cli::Errors::InvalidOptionError, error_message
+            .to raise_error(
+              Cuprum::Cli::Errors::InvalidOptionError,
+              error_message
+            )
         end
       end
 
@@ -340,7 +343,10 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
 
         it 'should raise an exception' do
           expect { described_class.resolve_options }
-            .to raise_error Cuprum::Cli::Errors::InvalidOptionError, error_message
+            .to raise_error(
+              Cuprum::Cli::Errors::InvalidOptionError,
+              error_message
+            )
         end
       end
 

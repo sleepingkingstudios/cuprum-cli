@@ -52,7 +52,14 @@ module Cuprum::Cli::Dependencies
     #
     #   @return [String, Integer, true, false, nil] the received and formatted
     #     input value, or nil if the input value was empty.
-    def ask(prompt = nil, caret: nil, format: nil, newline: true, strip: true, **) # rubocop:disable Metrics/ParameterLists
+    def ask( # rubocop:disable Metrics/ParameterLists
+      prompt = nil,
+      caret:   nil,
+      format:  nil,
+      newline: true,
+      strip:   true,
+      **
+    )
       validate_prompt(prompt)
       display_prompt(caret:, newline:, prompt:)
 

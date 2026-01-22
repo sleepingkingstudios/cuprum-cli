@@ -18,6 +18,11 @@ Layout/HashAlignment:
   EnforcedColonStyle:      table
   EnforcedHashRocketStyle: table
 
+Layout/LineLength:
+  AllowedPatterns:
+    - '\A\s*#'
+  Max: 80
+
 Metrics/BlockLength:
   Exclude:
     - '**/*_examples.rb'
