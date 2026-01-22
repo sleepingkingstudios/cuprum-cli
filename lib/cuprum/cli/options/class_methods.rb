@@ -65,16 +65,16 @@ module Cuprum::Cli::Options
     #
     # @return [Hash] the option values with applied defaults.
     #
-    # @raise [Cuprum::Cli::Errors::UnknownOptionError] if any value does not
+    # @raise [Cuprum::Cli::Options::UnknownOptionError] if any value does not
     #   have a corresponding defined option.
-    # @raise [Cuprum::Cli::Errors::InvalidOptionError] if any value does not
+    # @raise [Cuprum::Cli::Options::InvalidOptionError] if any value does not
     #   match the expected option type, or any required value is missing.
     def resolve_options(**values)
       defined_options = options
       unknown_options = values.keys - defined_options.keys
 
       unless unknown_options.empty?
-        raise Cuprum::Cli::Errors::UnknownOptionError,
+        raise Cuprum::Cli::Options::UnknownOptionError,
           unknown_options_message(defined_options:, unknown_options:)
       end
 

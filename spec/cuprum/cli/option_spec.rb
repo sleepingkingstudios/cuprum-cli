@@ -157,7 +157,7 @@ RSpec.describe Cuprum::Cli::Option do
         it 'should raise an exception' do
           expect { option.resolve(nil) }
             .to raise_error(
-              Cuprum::Cli::Errors::InvalidOptionError,
+              Cuprum::Cli::Options::InvalidOptionError,
               error_message
             )
         end
@@ -174,7 +174,7 @@ RSpec.describe Cuprum::Cli::Option do
       it 'should raise an exception' do
         expect { option.resolve(value) }
           .to raise_error(
-            Cuprum::Cli::Errors::InvalidOptionError,
+            Cuprum::Cli::Options::InvalidOptionError,
             error_message
           )
       end
@@ -207,7 +207,7 @@ RSpec.describe Cuprum::Cli::Option do
         it 'should raise an exception' do
           expect { option.resolve('') }
             .to raise_error(
-              Cuprum::Cli::Errors::InvalidOptionError,
+              Cuprum::Cli::Options::InvalidOptionError,
               error_message
             )
         end
@@ -241,7 +241,7 @@ RSpec.describe Cuprum::Cli::Option do
         it 'should raise an exception' do
           expect { option.resolve(:'') }
             .to raise_error(
-              Cuprum::Cli::Errors::InvalidOptionError,
+              Cuprum::Cli::Options::InvalidOptionError,
               error_message
             )
         end
@@ -330,7 +330,7 @@ RSpec.describe Cuprum::Cli::Option do
           it 'should raise an exception' do
             expect { option.resolve(nil) }
               .to raise_error(
-                Cuprum::Cli::Errors::InvalidOptionError,
+                Cuprum::Cli::Options::InvalidOptionError,
                 error_message
               )
           end
@@ -347,7 +347,7 @@ RSpec.describe Cuprum::Cli::Option do
         it 'should raise an exception' do
           expect { option.resolve(value) }
             .to raise_error(
-              Cuprum::Cli::Errors::InvalidOptionError,
+              Cuprum::Cli::Options::InvalidOptionError,
               error_message
             )
         end
@@ -420,7 +420,7 @@ RSpec.describe Cuprum::Cli::Option do
           it 'should raise an exception' do
             expect { option.resolve(nil) }
               .to raise_error(
-                Cuprum::Cli::Errors::InvalidOptionError,
+                Cuprum::Cli::Options::InvalidOptionError,
                 error_message
               )
           end
@@ -437,7 +437,7 @@ RSpec.describe Cuprum::Cli::Option do
         it 'should raise an exception' do
           expect { option.resolve(value) }
             .to raise_error(
-              Cuprum::Cli::Errors::InvalidOptionError,
+              Cuprum::Cli::Options::InvalidOptionError,
               error_message
             )
         end
