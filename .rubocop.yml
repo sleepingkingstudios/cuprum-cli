@@ -10,6 +10,7 @@ AllCops:
   Exclude:
     - tmp/**/*
     - vendor/**/*
+    - run.rb
 
 Layout/ArgumentAlignment:
   EnforcedStyle: with_fixed_indentation
