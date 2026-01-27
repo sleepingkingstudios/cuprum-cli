@@ -5,7 +5,7 @@ require 'rspec/sleeping_king_studios/deferred/provider'
 require 'cuprum/cli/rspec/deferred'
 
 module Cuprum::Cli::RSpec::Deferred
-  # Deferred examples for testing command options
+  # Deferred examples for testing command options/
   module OptionsExamples
     include RSpec::SleepingKingStudios::Deferred::Provider
 
