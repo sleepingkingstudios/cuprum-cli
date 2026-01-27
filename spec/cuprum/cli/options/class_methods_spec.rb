@@ -195,7 +195,6 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
         aliases
         default
         description
-        name
         required
         type
       ]
@@ -348,7 +347,23 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
         end
 
         it 'should raise an exception' do
-          expect { described_class.resolve_options }
+          expect { described_class.resolve_options(**values) }
+            .to raise_error(
+              Cuprum::Cli::Options::InvalidOptionError,
+              error_message
+            )
+        end
+      end
+
+      describe 'with invalid values' do
+        let(:values) { { shape: 123, transparent: true } }
+        let(:error_message) do
+          'invalid value for option :shape - expected an instance of String, ' \
+            'received 123'
+        end
+
+        it 'should raise an exception' do
+          expect { described_class.resolve_options(**values) }
             .to raise_error(
               Cuprum::Cli::Options::InvalidOptionError,
               error_message

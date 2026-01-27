@@ -13,6 +13,20 @@ module Cuprum::Cli # rubocop:disable Metrics/ModuleLength
     :type,
     :variadic
   ) do
+    # @param name [String, Symbol] the name of the argument.
+    # @param default [Object, Proc] the default value for the argument. If given
+    #   and the value of the argument is nil, sets the argument value to the
+    #   default value.
+    # @param description [String] a short, human-readable description of the
+    #   argument.
+    # @param required [true, false] if true, raises an exception if the argument
+    #   is not provided to the command.
+    # @param type [Class, String, Symbol] the expected type of the argument
+    #   value as a Class or class name. If given, raises an exception if the
+    #   argument value is not an instance of the type. Defaults to :string.
+    # @param variadic [true, false] if true, the argument is variadic and
+    #   represents an array of arguments provided to the command. Defaults to
+    #   false.
     def initialize( # rubocop:disable Metrics/ParameterLists
       name:,
       default:     nil,
