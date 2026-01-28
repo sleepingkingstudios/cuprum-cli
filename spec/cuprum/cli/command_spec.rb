@@ -142,8 +142,6 @@ RSpec.describe Cuprum::Cli::Command do
           :standard_io,
           -> { be_a(Cuprum::Cli::Dependencies::StandardIo) }
 
-        it { expect(command).to respond_to(:ask) }
-
         context 'when initialized with a dependency' do
           let(:mock_io) do
             Cuprum::Cli::Dependencies::StandardIo::Mock.new

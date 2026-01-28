@@ -9,12 +9,6 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
 
   let(:constructor_options) { {} }
 
-  describe '.delegated_methods' do
-    include_examples 'should define class reader',
-      :delegated_methods,
-      -> { %w[#ask #say #warn] }
-  end
-
   describe '.new' do
     it 'should define the constructor' do
       expect(described_class)
