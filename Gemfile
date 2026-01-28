@@ -12,6 +12,10 @@ gem 'sleeping_king_studios-tools',
   git: 'https://github.com/sleepingkingstudios/sleeping_king_studios-tools'
 
 group :development, :test do
+  gem 'byebug', '~> 12.0'
+  gem 'irb', '~> 1.16'
+  gem 'readline'
+
   gem 'rspec', '~> 3.13'
   gem 'rspec-sleeping_king_studios', '~> 2.8', '>= 2.8.3'
 
