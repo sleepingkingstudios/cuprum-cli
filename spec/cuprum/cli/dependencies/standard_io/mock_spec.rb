@@ -89,37 +89,6 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo::Mock do
     end
   end
 
-  describe '#ask' do
-    it { expect(mock_io.ask).to be nil }
-
-    it 'should append the prompt to the output stream' do
-      mock_io.ask
-
-      expect(mock_io.output_stream.string).to be == '> '
-    end
-
-    context 'when the input stream has unread data' do
-      let(:raw_input) { 'Greetings, programs!' }
-
-      before(:example) do
-        described_class.append_for_read(raw_input, io: mock_io.input_stream)
-      end
-
-      it { expect(mock_io.ask).to be == raw_input }
-    end
-
-    describe 'with prompt: a non-empty String' do
-      let(:prompt)   { 'Pull the lever?' }
-      let(:expected) { "#{prompt}\n> " }
-
-      it 'should append the prompt to the output stream' do
-        mock_io.ask(prompt)
-
-        expect(mock_io.output_stream.string).to be == expected
-      end
-    end
-  end
-
   describe '#combined_stream' do
     include_examples 'should define reader',
       :combined_stream,
@@ -130,7 +99,11 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo::Mock do
         "Enter Your Name:\n> "
       end
 
-      before(:example) { mock_io.ask('Enter Your Name:') }
+      before(:example) do
+        mock_io.write_output('Enter Your Name:')
+        mock_io.write_output('> ', newline: false)
+        mock_io.read_input
+      end
 
       it { expect(mock_io.combined_stream.string).to be == expected }
 
@@ -156,7 +129,7 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo::Mock do
       end
       let(:expected) { "#{message}\n" }
 
-      before(:example) { mock_io.say(message) }
+      before(:example) { mock_io.write_output(message) }
 
       it { expect(mock_io.combined_stream.string).to be == expected }
     end
@@ -167,7 +140,7 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo::Mock do
       end
       let(:expected) { "#{warning}\n" }
 
-      before(:example) { mock_io.warn(warning) }
+      before(:example) { mock_io.write_error(warning) }
 
       it { expect(mock_io.combined_stream.string).to be == expected }
     end
@@ -201,11 +174,15 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo::Mock do
       end
 
       before(:example) do
-        mock_io.ask('Enter Your Name:')
-        mock_io.say('')
-        mock_io.say(message)
-        mock_io.say('')
-        mock_io.warn(warning)
+        mock_io.write_output('Enter Your Name:')
+        mock_io.write_output('> ', newline: false)
+        mock_io.read_input
+
+        mock_io.write_output
+        mock_io.write_output(message)
+        mock_io.write_output
+
+        mock_io.write_error(warning)
       end
 
       it 'should combine the input and output streams' do
@@ -277,52 +254,6 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo::Mock do
         expect { mock_io.read_input }
           .to change(mock_io.combined_stream, :string)
           .to(satisfy { |str| str.end_with?(raw_input) })
-      end
-    end
-  end
-
-  describe '#say' do
-    describe 'with an empty String' do
-      let(:expected) { "\n" }
-
-      it 'should write to the output stream' do
-        mock_io.say('')
-
-        expect(mock_io.output_stream.string).to be == expected
-      end
-    end
-
-    describe 'with a non-empty String' do
-      let(:message)  { 'Greetings, programs!' }
-      let(:expected) { "#{message}\n" }
-
-      it 'should write to the output stream' do
-        mock_io.say(message)
-
-        expect(mock_io.output_stream.string).to be == expected
-      end
-    end
-  end
-
-  describe '#warn' do
-    describe 'with an empty String' do
-      let(:expected) { "\n" }
-
-      it 'should write to the error stream' do
-        mock_io.warn('')
-
-        expect(mock_io.error_stream.string).to be == expected
-      end
-    end
-
-    describe 'with a non-empty String' do
-      let(:message)  { 'Greetings, programs!' }
-      let(:expected) { "#{message}\n" }
-
-      it 'should write to the error stream' do
-        mock_io.warn(message)
-
-        expect(mock_io.error_stream.string).to be == expected
       end
     end
   end
