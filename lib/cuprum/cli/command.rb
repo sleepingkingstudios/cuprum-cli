@@ -11,7 +11,6 @@ module Cuprum::Cli
     include Plumbum::Consumer
     prepend Plumbum::Parameters
     extend  Cuprum::Cli::Arguments::ClassMethods
-    extend  Cuprum::Cli::Dependencies::ClassMethods
     extend  Cuprum::Cli::Options::ClassMethods
 
     # Exception raised when defining an argument or  option directly on Command.
