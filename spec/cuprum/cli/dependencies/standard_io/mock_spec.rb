@@ -254,6 +254,33 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo::Mock do
     end
   end
 
+  describe '#read_input' do
+    it { expect(mock_io).to respond_to(:read_input).with(0).arguments }
+
+    it { expect(mock_io.read_input).to be nil }
+
+    it 'should not update the combined stream' do
+      expect { mock_io.read_input }
+        .not_to change(mock_io.combined_stream, :string)
+    end
+
+    context 'when the input stream has unread data' do
+      let(:raw_input) { "Greetings, programs!\n" }
+
+      before(:example) do
+        described_class.append_for_read(raw_input, io: mock_io.input_stream)
+      end
+
+      it { expect(mock_io.read_input).to be == raw_input }
+
+      it 'should append the input to the combined stream' do
+        expect { mock_io.read_input }
+          .to change(mock_io.combined_stream, :string)
+          .to(satisfy { |str| str.end_with?(raw_input) })
+      end
+    end
+  end
+
   describe '#say' do
     describe 'with an empty String' do
       let(:expected) { "\n" }
@@ -296,6 +323,220 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo::Mock do
         mock_io.warn(message)
 
         expect(mock_io.error_stream.string).to be == expected
+      end
+    end
+  end
+
+  describe '#write_error' do
+    it 'should define the method' do
+      expect(mock_io)
+        .to respond_to(:write_error)
+        .with(0..1).arguments
+        .and_keywords(:newline)
+    end
+
+    describe 'with no parameters' do
+      it { expect { mock_io.write_error }.not_to output.to_stderr }
+
+      it 'should write a newline to the error stream' do
+        mock_io.write_error
+
+        expect(mock_io.error_stream.string).to be == "\n"
+      end
+    end
+
+    describe 'with no message and newline: false' do
+      it 'should not write to the error stream' do
+        mock_io.write_error(newline: false)
+
+        expect(mock_io.error_stream.string).to be == ''
+      end
+    end
+
+    describe 'with no message and newline: true' do
+      it 'should write a newline to the error stream' do
+        mock_io.write_error(newline: true)
+
+        expect(mock_io.error_stream.string).to be == "\n"
+      end
+    end
+
+    describe 'with an empty String' do
+      let(:message) { '' }
+
+      it { expect { mock_io.write_error }.not_to output.to_stderr }
+
+      it 'should write a newline to the error stream' do
+        mock_io.write_error('')
+
+        expect(mock_io.error_stream.string).to be == "\n"
+      end
+
+      describe 'with newline: false' do
+        it 'should not write to the error stream' do
+          mock_io.write_error('', newline: false)
+
+          expect(mock_io.error_stream.string).to be == ''
+        end
+      end
+
+      describe 'with newline: true' do
+        it 'should write a newline to the error stream' do
+          mock_io.write_error('', newline: true)
+
+          expect(mock_io.error_stream.string).to be == "\n"
+        end
+      end
+    end
+
+    describe 'with a non-empty String' do
+      let(:message) { 'Greetings, programs!' }
+
+      it 'should write the message to the error stream with a newline' do
+        mock_io.write_error(message)
+
+        expect(mock_io.error_stream.string).to be == "#{message}\n"
+      end
+
+      it 'should append the output to the combined stream' do
+        expect { mock_io.write_error(message) }
+          .to change(mock_io.combined_stream, :string)
+          .to(satisfy { |str| str.end_with?("#{message}\n") })
+      end
+
+      describe 'with newline: false' do
+        it 'should write the message to the error stream' do
+          mock_io.write_error(message, newline: false)
+
+          expect(mock_io.error_stream.string).to be == message
+        end
+
+        it 'should append the output to the combined stream' do
+          expect { mock_io.write_error(message, newline: false) }
+            .to change(mock_io.combined_stream, :string)
+            .to(satisfy { |str| str.end_with?(message) })
+        end
+      end
+
+      describe 'with newline: true' do
+        it 'should write the message to the error stream with a newline' do
+          mock_io.write_error(message)
+
+          expect(mock_io.error_stream.string).to be == "#{message}\n"
+        end
+
+        it 'should append the output to the combined stream' do
+          expect { mock_io.write_error(message, newline: true) }
+            .to change(mock_io.combined_stream, :string)
+            .to(satisfy { |str| str.end_with?("#{message}\n") })
+        end
+      end
+    end
+  end
+
+  describe '#write_output' do
+    it 'should define the method' do
+      expect(mock_io)
+        .to respond_to(:write_output)
+        .with(0..1).arguments
+        .and_keywords(:newline)
+    end
+
+    describe 'with no parameters' do
+      it { expect { mock_io.write_output }.not_to output.to_stdout }
+
+      it 'should write a newline to the error stream' do
+        mock_io.write_output
+
+        expect(mock_io.output_stream.string).to be == "\n"
+      end
+    end
+
+    describe 'with no message and newline: false' do
+      it 'should not write to the error stream' do
+        mock_io.write_output(newline: false)
+
+        expect(mock_io.output_stream.string).to be == ''
+      end
+    end
+
+    describe 'with no message and newline: true' do
+      it 'should write a newline to the error stream' do
+        mock_io.write_output(newline: true)
+
+        expect(mock_io.output_stream.string).to be == "\n"
+      end
+    end
+
+    describe 'with an empty String' do
+      let(:message) { '' }
+
+      it { expect { mock_io.write_output }.not_to output.to_stdout }
+
+      it 'should write a newline to the error stream' do
+        mock_io.write_output('')
+
+        expect(mock_io.output_stream.string).to be == "\n"
+      end
+
+      describe 'with newline: false' do
+        it 'should not write to the error stream' do
+          mock_io.write_output('', newline: false)
+
+          expect(mock_io.output_stream.string).to be == ''
+        end
+      end
+
+      describe 'with newline: true' do
+        it 'should write a newline to the error stream' do
+          mock_io.write_output('', newline: true)
+
+          expect(mock_io.output_stream.string).to be == "\n"
+        end
+      end
+    end
+
+    describe 'with a non-empty String' do
+      let(:message) { 'Greetings, programs!' }
+
+      it 'should write the message to the error stream with a newline' do
+        mock_io.write_output(message)
+
+        expect(mock_io.output_stream.string).to be == "#{message}\n"
+      end
+
+      it 'should append the output to the combined stream' do
+        expect { mock_io.write_output(message) }
+          .to change(mock_io.combined_stream, :string)
+          .to(satisfy { |str| str.end_with?("#{message}\n") })
+      end
+
+      describe 'with newline: false' do
+        it 'should write the message to the error stream' do
+          mock_io.write_output(message, newline: false)
+
+          expect(mock_io.output_stream.string).to be == message
+        end
+
+        it 'should append the output to the combined stream' do
+          expect { mock_io.write_output(message, newline: false) }
+            .to change(mock_io.combined_stream, :string)
+            .to(satisfy { |str| str.end_with?(message) })
+        end
+      end
+
+      describe 'with newline: true' do
+        it 'should write the message to the error stream with a newline' do
+          mock_io.write_output(message)
+
+          expect(mock_io.output_stream.string).to be == "#{message}\n"
+        end
+
+        it 'should append the output to the combined stream' do
+          expect { mock_io.write_output(message, newline: true) }
+            .to change(mock_io.combined_stream, :string)
+            .to(satisfy { |str| str.end_with?("#{message}\n") })
+        end
       end
     end
   end

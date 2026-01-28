@@ -59,8 +59,7 @@ module Cuprum::Cli::Dependencies
     # @return [IO] the output stream.
     attr_reader :output_stream
 
-    private
-
+    # (see Cuprum::Cli::Dependencies::StandardIo#read_input)
     def read_input
       message = super
 
@@ -69,13 +68,13 @@ module Cuprum::Cli::Dependencies
       message
     end
 
-    def write_output(message, newline:)
+    def write_output(message = nil, newline: true)
       super
 
       newline ? combined_stream.puts(message) : combined_stream.print(message)
     end
 
-    def write_error(message, newline:)
+    def write_error(message = nil, newline: true)
       super
 
       newline ? combined_stream.puts(message) : combined_stream.print(message)

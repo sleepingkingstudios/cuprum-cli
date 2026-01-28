@@ -71,6 +71,13 @@ module Cuprum::Cli::Dependencies
       send(:"format_#{format}", value)
     end
 
+    # Requests a newline-terminated string from the input stream.
+    #
+    # @return [String] the returned input string.
+    def read_input
+      input_stream.gets
+    end
+
     # @overload say(message, newline: true, quiet: false, verbose: false, **options)
     #   Prints a message to the output stream.
     #
@@ -110,6 +117,32 @@ module Cuprum::Cli::Dependencies
       write_error(message, newline:)
     end
 
+    # Writes the given message to the error stream.
+    #
+    # If no error message is given, prints a newline only.
+    #
+    # @param message [String, nil] the message to write.
+    # @param newline [true, false] if true, appends a newline to the message if
+    #   it does not have a newline. Defaults to true.
+    #
+    # @return [nil]
+    def write_error(message = nil, newline: true)
+      newline ? error_stream.puts(message) : error_stream.print(message)
+    end
+
+    # Writes the given message to the output stream.
+    #
+    # If no message is given, prints a newline only.
+    #
+    # @param message [String, nil] the message to write.
+    # @param newline [true, false] if true, appends a newline to the message if
+    #   it does not have a newline. Defaults to true.
+    #
+    # @return [nil]
+    def write_output(message = nil, newline: true)
+      newline ? output_stream.puts(message) : output_stream.print(message)
+    end
+
     private
 
     attr_reader :error_stream
@@ -141,19 +174,7 @@ module Cuprum::Cli::Dependencies
 
     def format_string(value) = value
 
-    def read_input
-      input_stream.gets
-    end
-
     def tools = SleepingKingStudios::Tools::Toolbelt.instance
-
-    def write_error(message, newline:)
-      newline ? error_stream.puts(message) : error_stream.print(message)
-    end
-
-    def write_output(message, newline:)
-      newline ? output_stream.puts(message) : output_stream.print(message)
-    end
 
     def validate_message(message)
       tools.assertions.validate_instance_of(
