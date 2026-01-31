@@ -13,7 +13,10 @@ module Cuprum::Cli
     # @return [Plumbum::Provider] the provider for the standard dependencies.
     def self.provider
       @provider ||= Plumbum::ManyProvider.new(
-        values: { standard_io: StandardIo.new }
+        values: {
+          standard_io:    StandardIo.new,
+          system_command: SystemCommand.new
+        }
       )
     end
   end

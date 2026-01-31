@@ -17,5 +17,10 @@ RSpec.describe Cuprum::Cli::Dependencies do
     it 'should provide a StandardIo dependency' do
       expect(provider.get(:standard_io)).to be_a described_class::StandardIo
     end
+
+    it 'should provide a SystemCommand dependency' do
+      expect(provider.get(:system_command))
+        .to be_a described_class::SystemCommand
+    end
   end
 end
