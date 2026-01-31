@@ -8,6 +8,8 @@ require 'cuprum/cli/errors/system_command_failure'
 module Cuprum::Cli::Dependencies
   # Utility wrapper for running system command and capturing output.
   class SystemCommand
+    autoload :Mock, 'cuprum/cli/dependencies/system_command/mock'
+
     # Data object representing the captured output and status of a process.
     CapturedOutput = Data.define(:error, :output, :status) do
       # @return [true, false] true if the process was successful, otherwise
@@ -31,8 +33,7 @@ module Cuprum::Cli::Dependencies
     #     will have a status of :success if the process was successful;
     #     otherwise, the Result will have a status of :failure
     def capture(command, **)
-      command = build_command(command, **)
-      value   = capture_command(command)
+      value = capture_command(command, **)
 
       return Cuprum::Result.new(value:) if value.success?
 
@@ -63,7 +64,9 @@ module Cuprum::Cli::Dependencies
         .join(' ')
     end
 
-    def capture_command(command)
+    def capture_command(command, **)
+      command = build_command(command, **)
+
       output, error, status = Open3.capture3(command)
 
       CapturedOutput.new(output:, error:, status:)
