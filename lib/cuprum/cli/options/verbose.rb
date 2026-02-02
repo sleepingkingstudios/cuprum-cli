@@ -3,9 +3,9 @@
 require 'cuprum/cli/options'
 
 module Cuprum::Cli::Options
-  # Defines --quiet option, which silences non-essential output.
-  module Quiet
-    DESCRIPTION = 'Silences non-essential console outputs.'
+  # Defines --verbose option, which enables optional console outputs.
+  module Verbose
+    DESCRIPTION = 'Enables optional console outputs.'
     private_constant :DESCRIPTION
 
     class << self
@@ -14,17 +14,17 @@ module Cuprum::Cli::Options
       def included(other)
         super
 
-        other.option   :quiet,
+        other.option   :verbose,
           type:        :boolean,
-          aliases:     :q,
+          aliases:     :v,
           default:     false,
           description: DESCRIPTION
       end
     end
 
     # (see Cuprum::Cli::Dependencies::StandardIo::Helpers#say)
-    def say(message, quiet: false, **)
-      return if options.fetch(:quiet, false) && !quiet
+    def say(message, verbose: false, **)
+      return if verbose && !options.fetch(:verbose, false)
 
       super
     end

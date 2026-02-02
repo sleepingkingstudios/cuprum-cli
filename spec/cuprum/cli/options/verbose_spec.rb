@@ -2,10 +2,10 @@
 
 require 'cuprum/cli/command'
 require 'cuprum/cli/dependencies/standard_io/mock'
-require 'cuprum/cli/options/quiet'
+require 'cuprum/cli/options/verbose'
 require 'cuprum/cli/rspec/deferred/options_examples'
 
-RSpec.describe Cuprum::Cli::Options::Quiet do
+RSpec.describe Cuprum::Cli::Options::Verbose do
   include Cuprum::Cli::RSpec::Deferred::OptionsExamples
 
   subject(:command) { described_class.new(standard_io: mock_io) }
@@ -15,18 +15,18 @@ RSpec.describe Cuprum::Cli::Options::Quiet do
 
   example_class 'Spec::ExampleCommand', Cuprum::Cli::Command do |klass|
     klass.include Cuprum::Cli::Dependencies::StandardIo::Helpers
-    klass.include Cuprum::Cli::Options::Quiet # rubocop:disable RSpec/DescribedClass
+    klass.include Cuprum::Cli::Options::Verbose # rubocop:disable RSpec/DescribedClass
 
     klass.dependency :standard_io
     klass.option     :opts, type: :hash
   end
 
   include_deferred 'should define option',
-    :quiet,
+    :verbose,
     type:        :boolean,
-    aliases:     %w[q],
+    aliases:     %w[v],
     default:     false,
-    description: 'Silences non-essential console outputs.'
+    description: 'Enables optional console outputs.'
 
   describe '#say' do
     let(:expected_message) { "Greetings, programs!\n" }
@@ -42,19 +42,19 @@ RSpec.describe Cuprum::Cli::Options::Quiet do
       expect(command)
         .to respond_to(:say)
         .with(1).argument
-        .and_keywords(:newline, :quiet)
+        .and_keywords(:newline, :verbose)
         .and_any_keywords
     end
 
-    context 'when called with quiet: nil' do
+    context 'when called with verbose: nil' do
       it 'should output the message to the output stream' do
         command.call
 
         expect(mock_io.output_stream.string).to be == expected_message
       end
 
-      describe 'with quiet: false' do
-        let(:opts) { { quiet: false } }
+      describe 'with verbose: false' do
+        let(:opts) { { verbose: false } }
 
         it 'should output the message to the output stream' do
           command.call(opts:)
@@ -63,67 +63,67 @@ RSpec.describe Cuprum::Cli::Options::Quiet do
         end
       end
 
-      describe 'with quiet: true' do
-        let(:opts) { { quiet: true } }
-
-        it 'should output the message to the output stream' do
-          command.call(opts:)
-
-          expect(mock_io.output_stream.string).to be == expected_message
-        end
-      end
-    end
-
-    context 'when called with quiet: false' do
-      it 'should output the message to the output stream' do
-        command.call(quiet: false)
-
-        expect(mock_io.output_stream.string).to be == expected_message
-      end
-
-      describe 'with quiet: false' do
-        let(:opts) { { quiet: false } }
-
-        it 'should output the message to the output stream' do
-          command.call(quiet: false, opts:)
-
-          expect(mock_io.output_stream.string).to be == expected_message
-        end
-      end
-
-      describe 'with quiet: true' do
-        let(:opts) { { quiet: true } }
-
-        it 'should output the message to the output stream' do
-          command.call(quiet: false, opts:)
-
-          expect(mock_io.output_stream.string).to be == expected_message
-        end
-      end
-    end
-
-    context 'when called with quiet: true' do
-      it 'should not output the message to the output stream' do
-        command.call(quiet: true)
-
-        expect(mock_io.output_stream.string).to be == ''
-      end
-
-      describe 'with quiet: false' do
-        let(:opts) { { quiet: false } }
+      describe 'with verbose: true' do
+        let(:opts) { { verbose: true } }
 
         it 'should not output the message to the output stream' do
-          command.call(quiet: true, opts:)
+          command.call(opts:)
 
           expect(mock_io.output_stream.string).to be == ''
         end
       end
+    end
 
-      describe 'with quiet: true' do
-        let(:opts) { { quiet: true } }
+    context 'when called with verbose: false' do
+      it 'should output the message to the output stream' do
+        command.call(verbose: false)
+
+        expect(mock_io.output_stream.string).to be == expected_message
+      end
+
+      describe 'with verbose: false' do
+        let(:opts) { { verbose: false } }
 
         it 'should output the message to the output stream' do
-          command.call(quiet: true, opts:)
+          command.call(verbose: false, opts:)
+
+          expect(mock_io.output_stream.string).to be == expected_message
+        end
+      end
+
+      describe 'with verbose: true' do
+        let(:opts) { { verbose: true } }
+
+        it 'should not output the message to the output stream' do
+          command.call(verbose: false, opts:)
+
+          expect(mock_io.output_stream.string).to be == ''
+        end
+      end
+    end
+
+    context 'when called with verbose: true' do
+      it 'should output the message to the output stream' do
+        command.call(verbose: true)
+
+        expect(mock_io.output_stream.string).to be == expected_message
+      end
+
+      describe 'with verbose: false' do
+        let(:opts) { { verbose: false } }
+
+        it 'should output the message to the output stream' do
+          command.call(verbose: true, opts:)
+
+          expect(mock_io.output_stream.string).to be == expected_message
+        end
+      end
+
+      describe 'with verbose: true' do
+        let(:opts) { { verbose: true } }
+
+        it 'should output the message to the output stream' do
+          command.call(verbose: true, opts:)
 
           expect(mock_io.output_stream.string).to be == expected_message
         end
