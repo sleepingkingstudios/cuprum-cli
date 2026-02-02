@@ -6,6 +6,7 @@ module Cuprum::Cli
   # Namespace for functionality that implements command options.
   module Options
     autoload :ClassMethods, 'cuprum/cli/options/class_methods'
+    autoload :Quiet,        'cuprum/cli/options/quiet'
 
     # Exception raised when a command receives an invalid value for an option.
     class InvalidOptionError < StandardError; end
