@@ -14,10 +14,11 @@ RSpec.describe Cuprum::Cli::Options::Quiet do
   let(:mock_io)         { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
 
   example_class 'Spec::ExampleCommand', Cuprum::Cli::Command do |klass|
-    klass.dependency :standard_io
-
     klass.include Cuprum::Cli::Dependencies::StandardIo::Helpers
     klass.include Cuprum::Cli::Options::Quiet # rubocop:disable RSpec/DescribedClass
+
+    klass.dependency :standard_io
+    klass.option     :opts, type: :hash
   end
 
   include_deferred 'should define option',
@@ -32,7 +33,8 @@ RSpec.describe Cuprum::Cli::Options::Quiet do
 
     before(:example) do
       described_class.class_eval do
-        define_method(:process) { say('Greetings, programs!') }
+        # @todo [RUBY_VERSION <= '3.3'] remove || {} fallbacks.
+        define_method(:process) { say('Greetings, programs!', **(opts || {})) }
       end
     end
 
@@ -50,6 +52,26 @@ RSpec.describe Cuprum::Cli::Options::Quiet do
 
         expect(mock_io.output_stream.string).to be == expected_message
       end
+
+      describe 'with quiet: false' do
+        let(:opts) { { quiet: false } }
+
+        it 'should output the message to the output stream' do
+          command.call(opts:)
+
+          expect(mock_io.output_stream.string).to be == expected_message
+        end
+      end
+
+      describe 'with quiet: true' do
+        let(:opts) { { quiet: true } }
+
+        it 'should output the message to the output stream' do
+          command.call(opts:)
+
+          expect(mock_io.output_stream.string).to be == expected_message
+        end
+      end
     end
 
     context 'when called with quiet: false' do
@@ -58,6 +80,26 @@ RSpec.describe Cuprum::Cli::Options::Quiet do
 
         expect(mock_io.output_stream.string).to be == expected_message
       end
+
+      describe 'with quiet: false' do
+        let(:opts) { { quiet: false } }
+
+        it 'should output the message to the output stream' do
+          command.call(quiet: false, opts:)
+
+          expect(mock_io.output_stream.string).to be == expected_message
+        end
+      end
+
+      describe 'with quiet: true' do
+        let(:opts) { { quiet: true } }
+
+        it 'should output the message to the output stream' do
+          command.call(quiet: false, opts:)
+
+          expect(mock_io.output_stream.string).to be == expected_message
+        end
+      end
     end
 
     context 'when called with quiet: true' do
@@ -65,6 +107,26 @@ RSpec.describe Cuprum::Cli::Options::Quiet do
         command.call(quiet: true)
 
         expect(mock_io.output_stream.string).to be == ''
+      end
+
+      describe 'with quiet: false' do
+        let(:opts) { { quiet: false } }
+
+        it 'should not output the message to the output stream' do
+          command.call(quiet: true, opts:)
+
+          expect(mock_io.output_stream.string).to be == ''
+        end
+      end
+
+      describe 'with quiet: true' do
+        let(:opts) { { quiet: true } }
+
+        it 'should output the message to the output stream' do
+          command.call(quiet: true, opts:)
+
+          expect(mock_io.output_stream.string).to be == expected_message
+        end
       end
     end
   end

@@ -26,8 +26,6 @@ module Cuprum::Cli::Options
     def say(message, quiet: false, **)
       return if options.fetch(:quiet, false) && !quiet
 
-      # byebug
-
       super
     end
   end
