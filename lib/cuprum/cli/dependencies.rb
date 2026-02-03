@@ -7,6 +7,7 @@ require 'cuprum/cli'
 module Cuprum::Cli
   # Dependencies provide standard functionality to commands.
   module Dependencies
+    autoload :FileSystem,    'cuprum/cli/dependencies/file_system'
     autoload :StandardIo,    'cuprum/cli/dependencies/standard_io'
     autoload :SystemCommand, 'cuprum/cli/dependencies/system_command'
 
