@@ -14,5 +14,18 @@ module Cuprum
     autoload :Errors,       'cuprum/cli/errors'
     autoload :Option,       'cuprum/cli/option'
     autoload :Options,      'cuprum/cli/options'
+
+    # @return [String] the absolute path to the gem directory.
+    def self.gem_path
+      sep     = File::SEPARATOR
+      pattern = /#{sep}lib#{sep}cuprum#{sep}?\z/
+
+      __dir__.sub(pattern, '')
+    end
+
+    # @return [String] the current version of the gem.
+    def self.version
+      Cuprum::Cli::VERSION
+    end
   end
 end
