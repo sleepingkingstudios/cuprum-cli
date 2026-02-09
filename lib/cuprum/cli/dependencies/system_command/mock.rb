@@ -4,7 +4,7 @@ require 'cuprum/cli/dependencies/system_command'
 
 module Cuprum::Cli::Dependencies
   # Mock implementation of SystemCommand for testing purposes.
-  class SystemCommand::Mock < SystemCommand
+  class SystemCommand::Mock < Cuprum::Cli::Dependencies::SystemCommand
     # Data class providing a mock implementation of Process::Status.
     MockStatus = Data.define(:exitstatus) do
       # @return [true, false] true if the exit status is zero, otherwise false.

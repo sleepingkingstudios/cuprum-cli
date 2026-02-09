@@ -8,8 +8,10 @@ require 'cuprum/cli/dependencies'
 module Cuprum::Cli::Dependencies
   # Utility wrapping filesystem operations.
   class FileSystem
+    autoload :Mock, 'cuprum/cli/dependencies/file_system/mock'
+
     # @param root_path [String] the path to the root directory. Defaults to the
-    #   value of __dir__.
+    #   value of `Dir.pwd`.
     def initialize(root_path: Dir.pwd)
       @root_path = root_path
     end
@@ -44,7 +46,7 @@ module Cuprum::Cli::Dependencies
     #
     #   @param pattern [String] the file pattern to match.
     #
-    #   @return [Array<String>] the matching file names.
+    #   @return [nil]
     #
     #   @yieldparam [String] the matching file name.
     def each_file(pattern, &)
@@ -53,6 +55,8 @@ module Cuprum::Cli::Dependencies
       path = resolve_path(pattern)
 
       Dir[path].each(&)
+
+      nil
     end
 
     # Checks if the requested file exists.

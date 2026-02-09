@@ -126,13 +126,13 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
     end
 
     describe 'with a relative path to a directory' do
-      let(:path) { 'spec/cuprum/cli' }
+      let(:path) { File.join('spec', 'cuprum', 'cli') }
 
       it { expect(file_system.directory?(path)).to be true }
     end
 
     describe 'with a relative path to a file' do
-      let(:path) { 'spec/spec_helper.rb' }
+      let(:path) { File.join('spec', 'spec_helper.rb') }
 
       it { expect(file_system.directory?(path)).to be false }
     end
@@ -217,7 +217,7 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
     end
 
     describe 'with a block' do
-      it { expect(file_system.each_file(pattern) { nil }).to be == matching }
+      it { expect(file_system.each_file(pattern) { nil }).to be nil }
 
       it 'should not yield any file names' do
         expect { |block| file_system.each_file(pattern, &block) }
@@ -233,7 +233,7 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
           ]
         end
 
-        it { expect(file_system.each_file(pattern) { nil }).to be == matching }
+        it { expect(file_system.each_file(pattern) { nil }).to be nil }
 
         it 'should yield each matching file name' do
           expect { |block| file_system.each_file(pattern, &block) }
