@@ -15,6 +15,7 @@ module Cuprum::Cli
     def self.provider
       @provider ||= Plumbum::ManyProvider.new(
         values: {
+          file_system:    FileSystem.new,
           standard_io:    StandardIo.new,
           system_command: SystemCommand.new
         }
