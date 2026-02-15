@@ -11,9 +11,9 @@ RSpec.describe Cuprum::Cli::Command do
   subject(:command) { described_class.new(**constructor_options) }
 
   deferred_context 'with a command subclass' do
-    let(:described_class) { Spec::Command }
+    let(:described_class) { Spec::CustomCommand }
 
-    example_class 'Spec::Command', 'Cuprum::Cli::Command'
+    example_class 'Spec::CustomCommand', 'Cuprum::Cli::Command'
   end
 
   let(:constructor_options) { {} }
@@ -154,6 +154,258 @@ RSpec.describe Cuprum::Cli::Command do
     end
   end
 
+  describe '.description' do
+    include_deferred 'with a command subclass'
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:description)
+        .with(0..1).arguments
+    end
+
+    describe 'with no arguments' do
+      it { expect(described_class.description).to be nil }
+    end
+
+    describe 'with nil' do
+      let(:error_message) do
+        tools.assertions.error_message_for('presence', as: 'description')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.description(nil) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an Object' do
+      let(:error_message) do
+        tools.assertions.error_message_for('name', as: 'description')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.description(Object.new.freeze) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an empty String' do
+      let(:error_message) do
+        tools.assertions.error_message_for('presence', as: 'description')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.description('') }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with a non-empty String' do
+      let(:value) do
+        'No one is quite sure what this does.'
+      end
+
+      it { expect(described_class.description(value)).to be == value }
+
+      it 'should set the description' do
+        expect { described_class.description(value) }
+          .to change(described_class, :description)
+          .to be == value
+      end
+    end
+  end
+
+  describe '.full_description' do
+    include_deferred 'with a command subclass'
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:full_description)
+        .with(0..1).arguments
+    end
+
+    describe 'with no arguments' do
+      it { expect(described_class.full_description).to be nil }
+    end
+
+    describe 'with nil' do
+      let(:error_message) do
+        tools.assertions.error_message_for('presence', as: 'full_description')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.full_description(nil) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an Object' do
+      let(:error_message) do
+        tools.assertions.error_message_for('name', as: 'full_description')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.full_description(Object.new.freeze) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an empty String' do
+      let(:error_message) do
+        tools.assertions.error_message_for('presence', as: 'full_description')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.full_description('') }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with a non-empty String' do
+      let(:value) do
+        <<~DESC
+          No one is quite sure what this does.
+
+          ...but it sure looks cool!
+        DESC
+      end
+
+      it { expect(described_class.full_description(value)).to be == value }
+
+      it 'should set the full description' do
+        expect { described_class.full_description(value) }
+          .to change(described_class, :full_description)
+          .to be == value
+      end
+    end
+
+    context 'when the command has a description' do
+      let(:description) do
+        'No one is quite sure what this does.'
+      end
+
+      before(:example) do
+        described_class.description(description)
+      end
+
+      it { expect(described_class.full_description).to be == description }
+
+      describe 'with a non-empty String' do
+        let(:value) do
+          <<~DESC
+            No one is quite sure what this does.
+
+            ...but it sure looks cool!
+          DESC
+        end
+
+        it { expect(described_class.full_description(value)).to be == value }
+
+        it 'should set the full description' do
+          expect { described_class.full_description(value) }
+            .to change(described_class, :full_description)
+            .to be == value
+        end
+      end
+    end
+  end
+
+  describe '.full_name' do
+    let(:expected) { 'spec:custom' }
+
+    include_deferred 'with a command subclass'
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:full_name)
+        .with(0..1).arguments
+    end
+
+    describe 'with no arguments' do
+      it { expect(described_class.full_name).to be == expected }
+
+      context 'when the namespace includes ::Commands' do
+        let(:expected) { 'scope:do_something' }
+        let(:described_class) do
+          Spec::Namespace::Commands::Scope::DoSomething
+        end
+
+        example_class 'Spec::Namespace::Commands::Scope::DoSomething',
+          'Spec::CustomCommand'
+
+        it { expect(described_class.full_name).to be == expected }
+      end
+    end
+
+    describe 'with nil' do
+      let(:error_message) do
+        tools.assertions.error_message_for('presence', as: 'full_name')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.full_name(nil) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an Object' do
+      let(:error_message) do
+        tools.assertions.error_message_for('name', as: 'full_name')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.full_name(Object.new.freeze) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an empty String' do
+      let(:error_message) do
+        tools.assertions.error_message_for('presence', as: 'full_name')
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.full_name('') }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an invalid String' do
+      let(:error_message) do
+        'full_name does not match format category:sub_category:do_something'
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.full_name(described_class.name) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with an valid String' do
+      let(:value) { 'do_something' }
+
+      it { expect(described_class.full_name(value)).to be == value }
+
+      it 'should set the full name' do
+        expect { described_class.full_name(value) }
+          .to change(described_class, :full_name)
+          .to be == value
+      end
+    end
+
+    describe 'with an valid scoped String' do
+      let(:value) { 'category:sub_category:do_something' }
+
+      it { expect(described_class.full_name(value)).to be == value }
+
+      it 'should set the full name' do
+        expect { described_class.full_name(value) }
+          .to change(described_class, :full_name)
+          .to be == value
+      end
+    end
+  end
+
   describe '.option' do
     let(:name)    { :format }
     let(:options) { {} }
@@ -200,6 +452,24 @@ RSpec.describe Cuprum::Cli::Command do
     end
   end
 
+  describe '.short_name' do
+    let(:expected) { 'custom' }
+
+    include_deferred 'with a command subclass'
+
+    include_examples 'should define class reader', :short_name, -> { expected }
+
+    context 'when the command has a custom name' do
+      let(:expected) { 'do_something' }
+
+      before(:example) do
+        described_class.full_name 'category:sub_category:do_something'
+      end
+
+      it { expect(described_class.short_name).to be == expected }
+    end
+  end
+
   describe '#arguments' do
     include_examples 'should define private reader', :arguments, {}
   end
@@ -234,7 +504,7 @@ RSpec.describe Cuprum::Cli::Command do
       end
 
       before(:example) do
-        Spec::Command.class_eval do
+        Spec::CustomCommand.class_eval do
           argument :color, type:    :integer
           argument :shape, default: :circle
 

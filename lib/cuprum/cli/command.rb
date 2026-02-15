@@ -10,6 +10,7 @@ module Cuprum::Cli
   class Command < Cuprum::Command
     include Plumbum::Consumer
     prepend Plumbum::Parameters
+    include Cuprum::Cli::Metadata
     extend  Cuprum::Cli::Arguments::ClassMethods
     extend  Cuprum::Cli::Options::ClassMethods
 

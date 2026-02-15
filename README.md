@@ -1,4 +1,4 @@
-# Bronze::Files
+# Cuprum::Cli
 
 A command-line utility powered by Cuprum.
 
