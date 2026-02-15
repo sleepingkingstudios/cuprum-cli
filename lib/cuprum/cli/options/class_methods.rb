@@ -1,11 +1,60 @@
 # frozen_string_literal: true
 
+require 'weakref'
+
 require 'cuprum/cli/option'
 require 'cuprum/cli/options'
 
 module Cuprum::Cli::Options
   # Methods used to extend command class functionality for defining options.
   module ClassMethods
+    # Helper class for defining command options.
+    class Builder
+      # @param command_class [Class] the command class.
+      # @param defined_options [Hash{Symbol => Cuprum::Cli::Option}] the options
+      #   defined for the command.
+      def initialize(command_class:, defined_options:)
+        @command_class   = command_class
+        @defined_options = defined_options
+      end
+
+      # @return [Class] the command class.
+      attr_reader :command_class
+
+      # @return [Hash{Symbol => Cuprum::Cli::Option}] the options
+      #   defined for the command.
+      attr_reader :defined_options
+
+      # (see Cuprum::Cli::Options::ClassMethods#option)
+      def call(name, define_method: nil, define_predicate: nil, **options)
+        option = Cuprum::Cli::Option.new(name:, **options)
+
+        defined_options[option.name] = option
+
+        define_method    = (options[:type] != :boolean) if define_method.nil?
+        define_predicate = (options[:type] == :boolean) if define_predicate.nil?
+
+        define_method_for(option)    if define_method
+        define_predicate_for(option) if define_predicate
+
+        option.name
+      end
+
+      private
+
+      def define_method_for(option)
+        command_class.define_method(option.name) { @options[option.name] }
+      end
+
+      def define_predicate_for(option)
+        command_class.define_method(:"#{option.name}?") do
+          value = @options[option.name]
+
+          !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
+        end
+      end
+    end
+
     # @overload option(name, aliases: [], default: nil, description: nil, required: false, type: :string, **options)
     #   Defines an option for the command class.
     #
@@ -31,18 +80,9 @@ module Cuprum::Cli::Options
     #     predicate method for the option, which returns true if the option is
     #     not nil and not empty. Defaults to true for boolean options and false
     #     for all other options.
-    def option(name, define_method: nil, define_predicate: nil, **options)
-      option = Cuprum::Cli::Option.new(name:, **options)
-
-      defined_options[option.name] = option
-
-      define_method    = (options[:type] != :boolean) if define_method.nil?
-      define_predicate = (options[:type] == :boolean) if define_predicate.nil?
-
-      define_method_for(option)    if define_method
-      define_predicate_for(option) if define_predicate
-
-      option.name
+    def option(name, define_method: nil, define_predicate: nil, **)
+      options_builder
+        .call(name, define_method:, define_predicate:, **)
     end
 
     # The defined options, including options defined on ancestor classes.
@@ -85,20 +125,22 @@ module Cuprum::Cli::Options
 
     protected
 
-    def define_method_for(option)
-      define_method(option.name) { @options[option.name] }
-    end
-
-    def define_predicate_for(option)
-      define_method(:"#{option.name}?") do
-        value = @options[option.name]
-
-        !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
-      end
-    end
-
     def defined_options
       @defined_options ||= {}
+    end
+
+    def options_builder
+      (
+        @options_builder ||= WeakRef.new(
+          Builder.new(command_class: self, defined_options:)
+        )
+      ).__getobj__
+    rescue RefError
+      # :nocov:
+      @options_builder = WeakRef.new(
+        Builder.new(command_class: self, defined_options:)
+      )
+      # :nocov:
     end
 
     def tools
