@@ -1,10 +1,59 @@
 # frozen_string_literal: true
 
+require 'weakref'
+
 require 'cuprum/cli/arguments'
 
 module Cuprum::Cli::Arguments
   # Methods used to extend command class functionality for defining arguments.
   module ClassMethods
+    # Helper class for defining command arguments.
+    class Builder
+      # @param command_class [Class] the command class.
+      # @param defined_arguments [Array<Cuprum::Cli::Argument>] the arguments
+      #   defined for the command.
+      def initialize(command_class:, defined_arguments:)
+        @command_class     = command_class
+        @defined_arguments = defined_arguments
+      end
+
+      # @return [Class] the command class.
+      attr_reader :command_class
+
+      # @return [Array<Cuprum::Cli::Argument>] the arguments defined for the
+      #   command.
+      attr_reader :defined_arguments
+
+      # (see Cuprum::Cli::Arguments::ClassMethods#argument)
+      def call(name, define_method: nil, define_predicate: nil, **options)
+        argument = Cuprum::Cli::Argument.new(name:, **options)
+
+        defined_arguments << argument
+
+        define_method    = (options[:type] != :boolean) if define_method.nil?
+        define_predicate = (options[:type] == :boolean) if define_predicate.nil?
+
+        define_method_for(argument)    if define_method
+        define_predicate_for(argument) if define_predicate
+
+        argument.name
+      end
+
+      private
+
+      def define_method_for(argument)
+        command_class.define_method(argument.name) { @arguments[argument.name] }
+      end
+
+      def define_predicate_for(argument)
+        command_class.define_method(:"#{argument.name}?") do
+          value = @arguments[argument.name]
+
+          !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
+        end
+      end
+    end
+
     # @private
     class VariadicArgumentsResolver
       def initialize(defined_arguments)
@@ -92,20 +141,10 @@ module Cuprum::Cli::Arguments
     #
     #   @raise [ArgumentError] if variadic is true and the command already
     #     defines a variadic argument.
-    def argument(name, define_method: nil, define_predicate: nil, **options)
-      argument = Cuprum::Cli::Argument.new(name:, **options)
+    def argument(name, define_method: nil, define_predicate: nil, **)
+      handle_multiple_variadic_arguments(**)
 
-      handle_multiple_variadic_arguments(**options)
-
-      defined_arguments << argument
-
-      define_method    = (options[:type] != :boolean) if define_method.nil?
-      define_predicate = (options[:type] == :boolean) if define_predicate.nil?
-
-      define_method_for(argument)    if define_method
-      define_predicate_for(argument) if define_predicate
-
-      argument.name
+      arguments_builder.call(name, define_method:, define_predicate:, **)
     end
 
     # @overload arguments()
@@ -173,20 +212,22 @@ module Cuprum::Cli::Arguments
 
     private
 
+    def arguments_builder
+      (
+        @arguments_builder ||= WeakRef.new(
+          Builder.new(command_class: self, defined_arguments:)
+        )
+      ).__getobj__
+    rescue RefError
+      # :nocov:
+      @arguments_builder = WeakRef.new(
+        Builder.new(command_class: self, defined_arguments:)
+      )
+      # :nocov:
+    end
+
     def defined_arguments
       @defined_arguments ||= []
-    end
-
-    def define_method_for(argument)
-      define_method(argument.name) { @arguments[argument.name] }
-    end
-
-    def define_predicate_for(argument)
-      define_method(:"#{argument.name}?") do
-        value = @arguments[argument.name]
-
-        !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
-      end
     end
 
     def extra_arguments_message(count)
