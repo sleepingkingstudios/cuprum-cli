@@ -112,9 +112,7 @@ module Cuprum::Cli::Dependencies
 
       mock = resolve_mock(path)
 
-      if mock.nil? || io_stream?(mock)
-        return write_mock_file(file_or_path, data)
-      end
+      return write_mock_file(path, data) if mock.nil? || io_stream?(mock)
 
       message = "unable to write file #{path} - path is a mock directory"
 
