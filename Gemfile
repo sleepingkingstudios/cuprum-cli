@@ -11,6 +11,8 @@ gem 'plumbum',
 gem 'sleeping_king_studios-tools',
   git: 'https://github.com/sleepingkingstudios/sleeping_king_studios-tools'
 
+gem 'thor'
+
 group :development, :test do
   gem 'byebug', '~> 12.0'
   gem 'irb', '~> 1.16'
