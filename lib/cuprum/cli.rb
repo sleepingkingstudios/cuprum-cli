@@ -10,6 +10,7 @@ module Cuprum
     autoload :Argument,     'cuprum/cli/argument'
     autoload :Arguments,    'cuprum/cli/arguments'
     autoload :Command,      'cuprum/cli/command'
+    autoload :Commands,     'cuprum/cli/commands'
     autoload :Dependencies, 'cuprum/cli/dependencies'
     autoload :Errors,       'cuprum/cli/errors'
     autoload :Metadata,     'cuprum/cli/metadata'
