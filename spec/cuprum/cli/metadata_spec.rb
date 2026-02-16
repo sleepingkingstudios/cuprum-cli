@@ -105,6 +105,26 @@ RSpec.describe Cuprum::Cli::Metadata do
     end
   end
 
+  describe '#description?' do
+    it 'should define the class predicate' do
+      expect(described_class)
+        .to define_predicate(:description?)
+        .with_value(false)
+    end
+
+    context 'when the command has a description' do
+      let(:description) do
+        'No one is quite sure what this does.'
+      end
+
+      before(:example) do
+        described_class.description(description)
+      end
+
+      it { expect(described_class.description?).to be true }
+    end
+  end
+
   describe '#full_description' do
     it 'should define the class method' do
       expect(described_class)
@@ -195,6 +215,42 @@ RSpec.describe Cuprum::Cli::Metadata do
             .to be == value
         end
       end
+    end
+  end
+
+  describe '#full_description?' do
+    it 'should define the class predicate' do
+      expect(described_class)
+        .to define_predicate(:full_description?)
+        .with_value(false)
+    end
+
+    context 'when the command has a description' do
+      let(:description) do
+        'No one is quite sure what this does.'
+      end
+
+      before(:example) do
+        described_class.description(description)
+      end
+
+      it { expect(described_class.full_description?).to be false }
+    end
+
+    context 'when the command has a full description' do
+      let(:full_description) do
+        <<~DESC
+          No one is quite sure what this does.
+
+          ...but it sure looks cool!
+        DESC
+      end
+
+      before(:example) do
+        described_class.full_description(full_description)
+      end
+
+      it { expect(described_class.full_description?).to be true }
     end
   end
 
@@ -299,6 +355,74 @@ RSpec.describe Cuprum::Cli::Metadata do
           .to change(described_class, :full_name)
           .to be == value
       end
+    end
+  end
+
+  describe '#namespace' do
+    include_examples 'should define class reader', :namespace, 'spec'
+
+    context 'when the command is an anonymous class' do
+      let(:described_class) do
+        Class.new do
+          include Cuprum::Cli::Metadata
+        end
+      end
+
+      it { expect(described_class.namespace).to be nil }
+    end
+
+    context 'when the command has an unscoped name' do
+      before(:example) do
+        described_class.full_name 'do_something'
+      end
+
+      it { expect(described_class.namespace).to be nil }
+    end
+
+    context 'when the command has a scoped name' do
+      let(:expected) { 'category:sub_category' }
+
+      before(:example) do
+        described_class.full_name 'category:sub_category:do_something'
+      end
+
+      it { expect(described_class.namespace).to be == expected }
+    end
+  end
+
+  describe '#namespace?' do
+    it 'should define the class predicate' do
+      expect(described_class)
+        .to define_predicate(:namespace?)
+        .with_value(true)
+    end
+
+    context 'when the command is an anonymous class' do
+      let(:described_class) do
+        Class.new do
+          include Cuprum::Cli::Metadata
+        end
+      end
+
+      it { expect(described_class.namespace?).to be false }
+    end
+
+    context 'when the command has an unscoped name' do
+      before(:example) do
+        described_class.full_name 'do_something'
+      end
+
+      it { expect(described_class.namespace?).to be false }
+    end
+
+    context 'when the command has a scoped name' do
+      let(:expected) { 'category:sub_category' }
+
+      before(:example) do
+        described_class.full_name 'category:sub_category:do_something'
+      end
+
+      it { expect(described_class.namespace?).to be true }
     end
   end
 

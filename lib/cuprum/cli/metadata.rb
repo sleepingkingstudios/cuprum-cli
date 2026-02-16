@@ -32,6 +32,10 @@ module Cuprum::Cli
         @description = value
       end
 
+      # @return [true, false] true if the command defines a description;
+      #   otherwise false.
+      def description? = !@description.nil?
+
       # @overload full_description
       #   @return [String] the full description for the command.
       #
@@ -48,6 +52,10 @@ module Cuprum::Cli
 
         @full_description = value
       end
+
+      # @return [true, false] true if the command defines a full description;
+      #   otherwise false.
+      def full_description? = !@full_description.nil?
 
       # @overload full_name
       #   Returns the name of the command, used when calling from a CLI.
@@ -83,6 +91,38 @@ module Cuprum::Cli
         @full_name = value
       end
 
+      # The namespace for the command.
+      #
+      # A command's namespace is defined as the part of the full name prior to
+      # the last segment.
+      #
+      # - For a command with full name "custom", the namespace will be nil.
+      # - For a command with full name "category:sub_category:do_something", the
+      #   namespace will be "category:sub_category".
+      #
+      # @return [String, nil] the namespace for the command, or nil if the
+      #   command's full name is unscoped.
+      #
+      # @see #short_name.
+      def namespace
+        return if full_name.nil? || !full_name.include?(':')
+
+        full_name&.sub(/:[\w_]+\z/, '')
+      end
+
+      # @return [true, false] true if the command defines a namespace; otherwise
+      #   false.
+      def namespace? = !namespace.nil?
+
+      # The short name for the command.
+      #
+      # A command's short_name is the last segment of the full name.
+      #
+      # - For a command with full name "custom", the short_name will be
+      #   "custom".
+      # - For a command with full name "category:sub_category:do_something", the
+      #   short_name will be "do_something".
+      #
       # @return [String] the short name for the command.
       def short_name = full_name&.split(':')&.last
 
