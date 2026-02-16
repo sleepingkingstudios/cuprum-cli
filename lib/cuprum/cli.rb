@@ -16,6 +16,7 @@ module Cuprum
     autoload :Metadata,     'cuprum/cli/metadata'
     autoload :Option,       'cuprum/cli/option'
     autoload :Options,      'cuprum/cli/options'
+    autoload :Registry,     'cuprum/cli/registry'
 
     # @return [String] the absolute path to the gem directory.
     def self.gem_path

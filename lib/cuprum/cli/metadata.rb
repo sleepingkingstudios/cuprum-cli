@@ -7,8 +7,8 @@ module Cuprum::Cli
   module Metadata
     extend SleepingKingStudios::Tools::Toolbox::Mixin
 
+    # Format used to validate command names.
     FULL_NAME_FORMAT = /\A[a-z_]+(:[a-z_]+)*\z/
-    private_constant :FULL_NAME_FORMAT
 
     UNDEFINED = SleepingKingStudios::Tools::UNDEFINED
     private_constant :UNDEFINED
@@ -84,11 +84,13 @@ module Cuprum::Cli
       end
 
       # @return [String] the short name for the command.
-      def short_name = full_name.split(':').last
+      def short_name = full_name&.split(':')&.last
 
       private
 
       def default_name
+        return if name.nil?
+
         name
           .split('Commands::')
           .last
