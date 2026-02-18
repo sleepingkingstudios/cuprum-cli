@@ -9,6 +9,7 @@ module Cuprum::Cli # rubocop:disable Metrics/ModuleLength
     :default,
     :description,
     :name,
+    :parameter_name,
     :required,
     :type,
     :variadic
@@ -19,6 +20,8 @@ module Cuprum::Cli # rubocop:disable Metrics/ModuleLength
     #   default value.
     # @param description [String] a short, human-readable description of the
     #   argument.
+    # @param parameter_name [String] a representation of the possible values for
+    #   the argument.
     # @param required [true, false] if true, raises an exception if the argument
     #   is not provided to the command.
     # @param type [Class, String, Symbol] the expected type of the argument
@@ -27,20 +30,29 @@ module Cuprum::Cli # rubocop:disable Metrics/ModuleLength
     # @param variadic [true, false] if true, the argument is variadic and
     #   represents an array of arguments provided to the command. Defaults to
     #   false.
-    def initialize( # rubocop:disable Metrics/ParameterLists
+    def initialize( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
       name:,
-      default:     nil,
-      description: nil,
-      required:    false,
-      type:        :string,
-      variadic:    false
+      default:        nil,
+      description:    nil,
+      parameter_name: nil,
+      required:       false,
+      type:           :string,
+      variadic:       false
     )
       name     = name.to_sym
       required = required ? true : false
       type     = type.to_sym if type.is_a?(String)
       variadic = variadic ? true : false
 
-      super(default:, description:, name:, required:, type:, variadic:)
+      super(
+        default:,
+        description:,
+        name:,
+        parameter_name:,
+        required:,
+        type:,
+        variadic:
+      )
     end
 
     alias_method :required?, :required
