@@ -59,7 +59,35 @@ module Cuprum::Cli
       @options   = {}
     end
 
-    # @todo
+    # @overload call(*arguments, **options)
+    #   Resolves the parameters and calls the command.
+    #
+    #   @param arguments [Array] arguments passed to the command.
+    #   @param options [Hash] options passed to the command.
+    #
+    #   @return [Cuprum::Result] the command result.
+    #
+    #   @raise [Cuprum::Cli::Arguments::ExtraArgumentsError] when given too many
+    #     positional arguments.
+    #   @raise [Cuprum::Cli::Arguments::InvalidArgumentError] when given an
+    #     invalid value for an argument.
+    #   @raise [Cuprum::Cli::Options::InvalidOptionError] when given an invalid
+    #     value for an option.
+    #   @raise [Cuprum::Cli::Options::UnknownOptionError] when given a value for
+    #     an undefined option.
+    #
+    # @overload call(resolved_arguments:, resolved_options:)
+    #   Calls the command with the given arguments and options.
+    #
+    #   This variant assumes that the arguments and options have already been
+    #   parsed and validated against the command's expected parameters.
+    #
+    #   @param resolved_arguments [Hash] the arguments passed to the command,
+    #     formatted as an Hash with the matching argument name as key and the
+    #     argument value as the corresponding value.
+    #   @param resolved_options [Hash] the options passed to the command.
+    #
+    #   @return [Cuprum::Result] the command result.
     def call(*, resolved_arguments: nil, resolved_options: nil, **)
       @arguments =
         resolved_arguments || self.class.resolve_arguments(*)
