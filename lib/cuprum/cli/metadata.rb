@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sleeping_king_studios/tools/toolbox/mixin'
+
 require 'cuprum/cli'
 
 module Cuprum::Cli
