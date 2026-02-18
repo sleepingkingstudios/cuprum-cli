@@ -14,6 +14,7 @@ RSpec.describe Cuprum::Cli::Argument do
         default
         description
         name
+        parameter_name
         required
         type
         variadic
@@ -61,6 +62,17 @@ RSpec.describe Cuprum::Cli::Argument do
 
   describe '#name' do
     include_examples 'should define reader', :name, -> { name }
+  end
+
+  describe '#parameter_name' do
+    include_examples 'should define reader', :parameter_name, nil
+
+    context 'when initialized with parameter_name: value' do
+      let(:parameter_name)      { '<text,json,xml>' }
+      let(:constructor_options) { super().merge(parameter_name:) }
+
+      it { expect(argument.parameter_name).to be == parameter_name }
+    end
   end
 
   describe '#required' do

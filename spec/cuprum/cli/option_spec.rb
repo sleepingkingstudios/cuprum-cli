@@ -15,6 +15,7 @@ RSpec.describe Cuprum::Cli::Option do
         default
         description
         name
+        parameter_name
         required
         type
       ]
@@ -95,6 +96,17 @@ RSpec.describe Cuprum::Cli::Option do
 
   describe '#name' do
     include_examples 'should define reader', :name, -> { name }
+  end
+
+  describe '#parameter_name' do
+    include_examples 'should define reader', :parameter_name, nil
+
+    context 'when initialized with parameter_name: value' do
+      let(:parameter_name)      { '<text,json,xml>' }
+      let(:constructor_options) { super().merge(parameter_name:) }
+
+      it { expect(option.parameter_name).to be == parameter_name }
+    end
   end
 
   describe '#required' do

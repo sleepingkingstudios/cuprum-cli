@@ -35,6 +35,11 @@ module Cuprum::Cli::RSpec::Deferred
 
         value.is_a?(Proc) ? instance_exec(&value) : value
       end
+      let(:configured_parameter_name) do
+        value = option_options[:parameter_name]
+
+        value.is_a?(Proc) ? instance_exec(&value) : value
+      end
       let(:configured_required) do
         value = option_options[:required] ? true : false
 
@@ -97,6 +102,13 @@ module Cuprum::Cli::RSpec::Deferred
       describe '#description' do
         it 'should return the option description' do
           expect(defined_option.description).to be == configured_description
+        end
+      end
+
+      describe '#parameter_name' do
+        it 'should return the option parameter name' do
+          expect(defined_option.parameter_name)
+            .to be == configured_parameter_name
         end
       end
 

@@ -131,6 +131,19 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
         end
       end
 
+      describe 'with parameter_name: value' do
+        let(:parameter_name) { '<text,json,xml>' }
+        let(:options)        { super().merge(parameter_name:) }
+
+        context 'when the argument is defined' do
+          before(:example) { described_class.option(name, **options) }
+
+          include_deferred 'should define option',
+            :format,
+            parameter_name: -> { parameter_name }
+        end
+      end
+
       describe 'with required: true' do
         let(:options) { super().merge(required: true) }
 

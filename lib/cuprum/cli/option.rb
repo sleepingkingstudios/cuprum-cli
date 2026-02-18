@@ -10,6 +10,7 @@ module Cuprum::Cli
     :default,
     :description,
     :name,
+    :parameter_name,
     :required,
     :type
   ) do
@@ -21,25 +22,36 @@ module Cuprum::Cli
     #   value.
     # @param description [String] a short, human-readable description of the
     #   option.
+    # @param parameter_name [String] a representation of the possible values for
+    #   the option.
     # @param required [true, false] if true, raises an exception if the option
     #   is not provided to the command.
     # @param type [Class, String, Symbol] the expected type of the option value
     #   as a Class or class name. If given, raises an exception if the option
     #   value is not an instance of the type. Defaults to :string.
-    def initialize( # rubocop:disable Metrics/ParameterLists
+    def initialize( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
       name:,
-      aliases:     [],
-      default:     nil,
-      description: nil,
-      required:    false,
-      type:        :string
+      aliases:        [],
+      default:        nil,
+      description:    nil,
+      parameter_name: nil,
+      required:       false,
+      type:           :string
     )
       name     = name.to_sym
       aliases  = Array(aliases).compact.map { |obj| obj.to_s.tr('_', '-') }
       required = required ? true : false
       type     = type.to_sym if type.is_a?(String)
 
-      super(aliases:, default:, description:, name:, required:, type:)
+      super(
+        aliases:,
+        default:,
+        description:,
+        name:,
+        parameter_name:,
+        required:,
+        type:
+      )
     end
 
     alias_method :required?, :required
