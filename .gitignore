@@ -5,6 +5,7 @@
 /.rubocop
 /.ruby-version
 Gemfile.lock
+/gemfiles/*.lock
 
 # Ignore local and generated documentation.
 /coverage

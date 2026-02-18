@@ -12,6 +12,8 @@ gem 'sleeping_king_studios-tools',
   git: 'https://github.com/sleepingkingstudios/sleeping_king_studios-tools'
 
 group :development, :test do
+  gem 'appraisal', '~> 2.5'
+
   gem 'byebug', '~> 12.0'
   gem 'irb', '~> 1.16'
   gem 'readline'
