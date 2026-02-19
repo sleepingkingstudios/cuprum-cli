@@ -9,6 +9,8 @@ unless ENV['COVERAGE'] == 'false'
   require 'simplecov'
 
   SimpleCov.start do
+    add_filter 'cuprum/cli/rspec'
+
     if integration
       excluded_integrations.each do |integration|
         add_filter "cuprum/cli/integrations/#{integration}"

@@ -28,6 +28,10 @@ Metrics/BlockLength:
   Exclude:
     - '**/*_examples.rb'
 
+Metrics/ModuleLength:
+  Exclude:
+    - '**/*_examples.rb'
+
 RSpec/BeNil:
   Enabled: false
 
