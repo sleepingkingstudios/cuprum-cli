@@ -27,3 +27,25 @@ To contribute code, please fork the repository, make the desired updates, and th
 ### Code of Conduct
 
 Please note that the `Cuprum::Cli` project is released with a [Contributor Code of Conduct](https://github.com/sleepingkingstudios/cuprum-cli/blob/master/CODE_OF_CONDUCT.md). By contributing to this project, you agree to abide by its terms.
+
+### Local Development
+
+The test suite for `Cuprum::Cli` is written using [RSpec](https://rspec.info/), with optional integration dependencies managed using [Appraisal](https://github.com/thoughtbot/appraisal).
+
+To run the general test suite:
+
+```bash
+bundle exec rspec
+```
+
+To run the test suite including the `Thor` integration:
+
+```bash
+BUNDLER_GEMFILE=gemfiles/integrations_thor.gemfile INTEGRATION=thor bundle exec rspec
+```
+
+To run the [RuboCop](https://rubocop.org/) linter:
+
+```bash
+bundle exec rubocop
+```
