@@ -22,8 +22,8 @@ module Cuprum::Cli
     # Registers the command with the registry.
     #
     # @param command [Class] the command class to register.
-    # @param as [String] the name under which to register the command. Defaults
-    #   to the value of command.full_name.
+    # @param name [String] the name under which to register the command.
+    #   Defaults to the value of command.full_name.
     #
     # @raise [NameError] if a command is already registered with that name.
     #

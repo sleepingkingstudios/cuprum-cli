@@ -8,6 +8,7 @@ AllCops:
   TargetRubyVersion: 3.2
   NewCops: enable
   Exclude:
+    - gemfiles/*
     - tmp/**/*
     - vendor/**/*
 
@@ -24,6 +25,10 @@ Layout/LineLength:
   Max: 80
 
 Metrics/BlockLength:
+  Exclude:
+    - '**/*_examples.rb'
+
+Metrics/ModuleLength:
   Exclude:
     - '**/*_examples.rb'
 

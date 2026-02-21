@@ -1,9 +1,24 @@
 # frozen_string_literal: true
 
+integration = ENV.fetch('INTEGRATION', nil)
+
+excluded_integrations  = %w[thor]
+excluded_integrations -= [integration] if integration
+
 unless ENV['COVERAGE'] == 'false'
   require 'simplecov'
 
-  SimpleCov.start
+  SimpleCov.start do
+    add_filter 'cuprum/cli/rspec'
+
+    if integration
+      excluded_integrations.each do |integration|
+        add_filter "cuprum/cli/integrations/#{integration}"
+      end
+    else
+      add_filter 'cuprum/cli/integrations'
+    end
+  end
 end
 
 require 'byebug'
@@ -25,6 +40,14 @@ RSpec.configure do |config|
   config.include Cuprum::RSpec::Matchers
 
   config.disable_monkey_patching!
+
+  if integration
+    excluded_integrations.each do |integration|
+      config.filter_run_excluding(integration:)
+    end
+  else
+    config.filter_run_excluding :integration
+  end
 
   # This allows you to limit a spec run to individual examples or groups
   # you care about by tagging them with `:focus` metadata.

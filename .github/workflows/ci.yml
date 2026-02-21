@@ -19,6 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         ruby-version: ['3.2', '3.3', '3.4', '4.0']
+    env:
+      BUNDLER_GEMFILE: gemfiles/default.gemfile
 
     steps:
     - uses: actions/checkout@v4
@@ -32,6 +34,31 @@ jobs:
     - name: Setup RSpec configuration
       run: cp .rspec.example .rspec
     - name: Run RSpec tests
+      run: bundle exec rspec
+
+  rspec-thor:
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, 'skip-ci') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['3.2', '3.3', '3.4', '4.0']
+    env:
+      BUNDLER_GEMFILE: gemfiles/integrations_thor.gemfile
+      INTEGRATION: thor
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+    # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
+    # change this to (see https://github.com/ruby/setup-ruby#versioning):
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Setup RSpec configuration
+      run: cp .rspec.example .rspec
+    - name: Run RSpec tests for Thor integration
       run: bundle exec rspec
 
   rubocop:
