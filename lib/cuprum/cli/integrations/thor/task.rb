@@ -25,6 +25,7 @@ module Cuprum::Cli::Integrations::Thor
         validate_command_class(command_class)
 
         @command_class = command_class
+        @full_name     = nil
       end
 
       # @return [Class] the command to execute.
@@ -34,8 +35,7 @@ module Cuprum::Cli::Integrations::Thor
         :arguments,
         :description,
         :full_description,
-        :full_description?,
-        :short_name
+        :full_description?
 
       # Generates a Thor::Task wrapping the command class.
       #
@@ -43,17 +43,23 @@ module Cuprum::Cli::Integrations::Thor
       # on the configuration of the command class.
       #
       # @return [Class] the generated Task class.
-      def build
+      def build(full_name: nil)
+        @full_name = full_name || command_class.full_name
+
+        tools.assertions.validate_name(@full_name, as: 'full_name')
+
         Cuprum::Cli::Integrations::Thor::Task
           .subclass(command_class)
           .tap do |task|
             apply_metadata(task)
 
-            task.alias_method command_class.short_name, :call_command
+            task.alias_method short_name, :call_command
           end
       end
 
       private
+
+      attr_reader :full_name
 
       def apply_arguments(task)
         command_class.arguments.each do |argument|
@@ -105,7 +111,9 @@ module Cuprum::Cli::Integrations::Thor
       end
 
       def namespace
-        command_class.namespace? ? command_class.namespace : 'default'
+        return 'default' if full_name.nil? || !full_name.include?(':')
+
+        full_name&.sub(/:[\w_]+\z/, '')
       end
 
       def parameter_type(parameter)
@@ -121,6 +129,8 @@ module Cuprum::Cli::Integrations::Thor
 
         type.to_sym
       end
+
+      def short_name = full_name&.split(':')&.last
 
       def signature
         "#{short_name}#{arguments_signature}"
@@ -139,7 +149,6 @@ module Cuprum::Cli::Integrations::Thor
         )
 
         validate_command_description(command_class, as:)
-        validate_command_name(command_class, as:)
       end
 
       def validate_command_description(command_class, as:)
@@ -148,14 +157,6 @@ module Cuprum::Cli::Integrations::Thor
         return unless description.nil? || description.empty?
 
         raise ArgumentError, "#{as} does not have a description"
-      end
-
-      def validate_command_name(command_class, as:)
-        name = command_class.full_name
-
-        return unless name.nil? || name.empty?
-
-        raise ArgumentError, "#{as} does not have a full_name"
       end
     end
 

@@ -60,22 +60,6 @@ do
       end
     end
 
-    describe 'with an anonymous Class' do
-      let(:error_message) do
-        'command_class does not have a full_name'
-      end
-      let(:command_class) do
-        Class.new(Cuprum::Cli::Command) do
-          description 'No one is quite sure what this does.'
-        end
-      end
-
-      it 'should raise an exception' do
-        expect { described_class.new(command_class) }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
     describe 'with a command Class without a description' do
       let(:error_message) do
         'command_class does not have a description'
@@ -98,7 +82,12 @@ do
     let(:task)         { task_class.new }
     let(:thor_command) { task_class.commands[command_class.short_name] }
 
-    it { expect(builder).to respond_to(:build).with(0).arguments }
+    it 'should define the method' do
+      expect(builder)
+        .to respond_to(:build)
+        .with(0).arguments
+        .and_keywords(:full_name)
+    end
 
     it { expect(task_class).to be_a(Class) }
 
@@ -287,6 +276,97 @@ do
         thor_command.options.each do |name, option|
           expect(option).to have_attributes(**expected_options[name])
         end
+      end
+    end
+
+    context 'when the command class is an anonymous class' do
+      let(:command_class) do
+        Class.new(Cuprum::Cli::Command).tap do |klass|
+          klass.description(description)
+        end
+      end
+      let(:error_message) do
+        tools.assertions.error_message_for('presence', as: 'full_name')
+      end
+
+      it 'should raise an exception' do
+        expect { builder.build }
+          .to raise_error ArgumentError, error_message
+      end
+
+      describe 'with full_name: unscoped value' do
+        let(:custom_name) { 'do_something' }
+        let(:task_class)  { builder.build(full_name: custom_name) }
+
+        it { expect(task_class.namespace).to be == 'default' }
+
+        it 'should define the task method' do
+          expect(task)
+            .to have_aliased_method(:call_command)
+            .as(:do_something)
+        end
+      end
+
+      describe 'with full_name: scoped value' do
+        let(:custom_name) { 'category:sub_category:do_something' }
+        let(:task_class)  { builder.build(full_name: custom_name) }
+
+        it { expect(task_class.namespace).to be == 'category:sub_category' }
+
+        it 'should define the task method' do
+          expect(task)
+            .to have_aliased_method(:call_command)
+            .as(:do_something)
+        end
+      end
+    end
+
+    describe 'with full_name: nil' do
+      let(:task_class) { builder.build(full_name: nil) }
+
+      it { expect(task_class.namespace).to be == command_class.namespace }
+
+      it 'should define the task method' do
+        expect(task)
+          .to have_aliased_method(:call_command)
+          .as(command_class.short_name)
+      end
+    end
+
+    describe 'with full_name: an Object' do
+      let(:error_message) do
+        tools.assertions.error_message_for('name', as: 'full_name')
+      end
+
+      it 'should raise an exception' do
+        expect { builder.build(full_name: Object.new.freeze) }
+          .to raise_error ArgumentError, error_message
+      end
+    end
+
+    describe 'with full_name: unscoped value' do
+      let(:custom_name) { 'do_something' }
+      let(:task_class)  { builder.build(full_name: custom_name) }
+
+      it { expect(task_class.namespace).to be == 'default' }
+
+      it 'should define the task method' do
+        expect(task)
+          .to have_aliased_method(:call_command)
+          .as(:do_something)
+      end
+    end
+
+    describe 'with full_name: scoped value' do
+      let(:custom_name) { 'category:sub_category:do_something' }
+      let(:task_class)  { builder.build(full_name: custom_name) }
+
+      it { expect(task_class.namespace).to be == 'category:sub_category' }
+
+      it 'should define the task method' do
+        expect(task)
+          .to have_aliased_method(:call_command)
+          .as(:do_something)
       end
     end
   end
