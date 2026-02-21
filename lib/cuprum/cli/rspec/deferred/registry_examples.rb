@@ -12,13 +12,21 @@ module Cuprum::Cli::RSpec::Deferred
     deferred_context 'when the registry has many commands' do
       let(:commands) do
         {
-          'spec:example'        => Class.new(Cuprum::Cli::Command),
-          'spec:other'          => Class.new(Cuprum::Cli::Command),
-          'spec:scoped:command' => Class.new(Cuprum::Cli::Command)
+          'spec:example'        => Spec::ExampleCommand,
+          'spec:other'          => Spec::OtherCommand,
+          'spec:scoped:command' => Spec::Scoped::Command
         }
       end
 
+      example_class 'Spec::ExampleCommand',  Cuprum::Cli::Command
+      example_class 'Spec::OtherCommand',    Cuprum::Cli::Command
+      example_class 'Spec::Scoped::Command', Cuprum::Cli::Command
+
       before(:example) do
+        Spec::ExampleCommand.description  'An example command.'
+        Spec::OtherCommand.description    'Another command.'
+        Spec::Scoped::Command.description 'A scoped command.'
+
         commands.each do |name, command|
           subject.register(command, name:)
         end
@@ -93,7 +101,9 @@ module Cuprum::Cli::RSpec::Deferred
       describe '#register' do
         let(:command) { Spec::CustomCommand }
 
-        example_class 'Spec::CustomCommand', Cuprum::Cli::Command
+        example_class 'Spec::CustomCommand', Cuprum::Cli::Command do |klass|
+          klass.description 'A custom command.'
+        end
 
         it 'should define the method' do
           expect(subject)
@@ -173,7 +183,11 @@ module Cuprum::Cli::RSpec::Deferred
         end
 
         describe 'with command: an anonymous command class' do
-          let(:command) { Class.new(Cuprum::Cli::Command) }
+          let(:command) do
+            Class.new(Cuprum::Cli::Command) do
+              description 'An anonymous command.'
+            end
+          end
           let(:error_message) do
             tools.assertions.error_message_for('presence', as: 'name')
           end
@@ -193,7 +207,11 @@ module Cuprum::Cli::RSpec::Deferred
             end
 
             context 'when the registry already defines the command' do
-              let(:other_command) { Class.new(Cuprum::Cli::Command) }
+              let(:other_command) do
+                Class.new(Cuprum::Cli::Command) do
+                  description 'Another anonymous command.'
+                end
+              end
               let(:error_message) do
                 "command already registered as #{name} - " \
                   "#{other_command.inspect}"
@@ -221,7 +239,11 @@ module Cuprum::Cli::RSpec::Deferred
           end
 
           context 'when the registry already defines the command' do
-            let(:other_command) { Class.new(Cuprum::Cli::Command) }
+            let(:other_command) do
+              Class.new(Cuprum::Cli::Command) do
+                description 'Another anonymous command.'
+              end
+            end
             let(:error_message) do
               "command already registered as #{command.full_name} - " \
                 "#{other_command.inspect}"
@@ -247,7 +269,11 @@ module Cuprum::Cli::RSpec::Deferred
             end
 
             context 'when the registry already defines the command' do
-              let(:other_command) { Class.new(Cuprum::Cli::Command) }
+              let(:other_command) do
+                Class.new(Cuprum::Cli::Command) do
+                  description 'Another anonymous command.'
+                end
+              end
               let(:error_message) do
                 "command already registered as #{name} - " \
                   "#{other_command.inspect}"
