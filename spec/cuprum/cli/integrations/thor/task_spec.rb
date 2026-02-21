@@ -7,13 +7,12 @@ require 'cuprum/cli/integrations/thor/task'
 RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
   subject(:task) do
     described_class
-      .new(command_class, arguments, options, config, command_dependencies:)
+      .new(command_class, [], options, config, command_dependencies:)
   end
 
   let(:command_class)        { Cuprum::Cli::Commands::EchoCommand }
   let(:mock_io)              { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
   let(:command_dependencies) { { standard_io: mock_io } }
-  let(:arguments)            { [] }
   let(:options)              { {} }
   let(:config)               { {} }
 
@@ -39,7 +38,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
     end
 
     describe 'with a command class' do
-      subject(:task) { described_class.new(arguments, options, config) }
+      subject(:task) { described_class.new([], options, config) }
 
       let(:described_class) { super().subclass(command_class) }
 
@@ -53,7 +52,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
     context 'when the task is called with arguments' do
       let(:arguments) { %w[foo bar baz] }
 
-      it { expect(task.args).to be == arguments }
+      it { expect(task.args).to be == [] }
     end
   end
 
@@ -84,7 +83,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
       end
 
       it 'should call the command' do
-        task.call_command
+        task.call_command(*arguments)
 
         expect(mock_io.output_stream.string).to be == expected
       end
@@ -129,7 +128,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
       end
 
       it 'should call the command' do
-        task.call_command
+        task.call_command(*arguments)
 
         expect(mock_io.output_stream.string).to be == expected
       end

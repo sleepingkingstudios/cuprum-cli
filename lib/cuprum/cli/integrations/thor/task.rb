@@ -61,19 +61,6 @@ module Cuprum::Cli::Integrations::Thor
 
       attr_reader :full_name
 
-      def apply_arguments(task)
-        command_class.arguments.each do |argument|
-          params = {
-            banner:   argument.parameter_name || argument.name.to_s.upcase,
-            desc:     argument.description,
-            optional: !argument.required?,
-            type:     parameter_type(argument)
-          }
-
-          task.argument(argument.name, **params)
-        end
-      end
-
       def apply_options(task)
         command_class.options.each_value do |option|
           params = {
@@ -94,7 +81,6 @@ module Cuprum::Cli::Integrations::Thor
 
         task.long_desc(full_description) if full_description?
 
-        apply_arguments(task)
         apply_options(task)
 
         task
@@ -117,10 +103,6 @@ module Cuprum::Cli::Integrations::Thor
       end
 
       def parameter_type(parameter)
-        if parameter.is_a?(Cuprum::Cli::Argument) && parameter.variadic?
-          return :array
-        end
-
         type = parameter.type
         type = type.name if type.is_a?(Class)
         type = tools.string_tools.underscore(type)
@@ -189,7 +171,7 @@ module Cuprum::Cli::Integrations::Thor
 
     no_commands do
       # Calls the wrapped Cuprum::Cli command with the parsed parameters.
-      def call_command
+      def call_command(*args)
         opts =
           SleepingKingStudios::Tools::Toolbelt
           .instance

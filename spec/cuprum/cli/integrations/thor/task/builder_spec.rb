@@ -136,24 +136,6 @@ do
     end
 
     context 'when the command class defines arguments' do
-      let(:expected_arguments) do
-        [
-          {
-            banner:      'COLOR',
-            description: nil,
-            name:        'color',
-            required:    true,
-            type:        :numeric
-          },
-          {
-            banner:      '<circle, square, triangle>',
-            description: nil,
-            name:        'shape',
-            required:    false,
-            type:        :string
-          }
-        ]
-      end
       let(:expected_usage) do
         "#{command_class.short_name} COLOR <circle, square, triangle>"
       end
@@ -164,51 +146,12 @@ do
           parameter_name: '<circle, square, triangle>'
       end
 
+      it { expect(task_class.arguments).to be == [] }
+
       it { expect(thor_command.usage).to be == expected_usage }
-
-      it 'should define the arguments', :aggregate_failures do
-        expect(task_class.arguments.size).to be == expected_arguments.size
-
-        task_class.arguments.zip(expected_arguments).each \
-        do |argument, expected|
-          expect(argument).to have_attributes(**expected)
-        end
-      end
     end
 
     context 'when the command class defines a variadic argument' do
-      let(:expected_arguments) do
-        [
-          {
-            banner:      'COLOR',
-            description: nil,
-            name:        'color',
-            required:    true,
-            type:        :numeric
-          },
-          {
-            banner:      'SHAPE',
-            description: nil,
-            name:        'shape',
-            required:    false,
-            type:        :string
-          },
-          {
-            banner:      'SIZES',
-            description: nil,
-            name:        'sizes',
-            required:    false,
-            type:        :array
-          },
-          {
-            banner:      'TRANSPARENCY',
-            description: nil,
-            name:        'transparency',
-            required:    false,
-            type:        :string
-          }
-        ]
-      end
       let(:expected_usage) do
         "#{command_class.short_name} COLOR SHAPE ...SIZES TRANSPARENCY"
       end
@@ -220,16 +163,9 @@ do
         command_class.argument :transparency
       end
 
+      it { expect(task_class.arguments).to be == [] }
+
       it { expect(thor_command.usage).to be == expected_usage }
-
-      it 'should define the arguments', :aggregate_failures do
-        expect(task_class.arguments.size).to be == expected_arguments.size
-
-        task_class.arguments.zip(expected_arguments).each \
-        do |argument, expected|
-          expect(argument).to have_attributes(**expected)
-        end
-      end
     end
 
     context 'when the command class defines options' do
