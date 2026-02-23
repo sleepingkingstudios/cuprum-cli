@@ -32,6 +32,9 @@ Metrics/ModuleLength:
   Exclude:
     - '**/*_examples.rb'
 
+Naming/RescuedExceptionsVariableName:
+  PreferredName: exception
+
 RSpec/BeNil:
   Enabled: false
 
