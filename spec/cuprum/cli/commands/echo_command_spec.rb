@@ -13,7 +13,11 @@ RSpec.describe Cuprum::Cli::Commands::EchoCommand do
   let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
   let(:standard_io) { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
 
-  include_deferred 'should define argument', 0, :args, variadic: true
+  include_deferred 'should define argument',
+    0,
+    :args,
+    type:     String,
+    variadic: true
 
   include_deferred 'should define option', :format, type: String, default: nil
   include_deferred 'should define option', :out,    type: String, default: nil
