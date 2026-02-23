@@ -50,7 +50,9 @@ module Cuprum::Cli::Options
         command_class.define_method(:"#{option.name}?") do
           value = @options[option.name]
 
-          !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
+          return false if value.nil? || value == false
+
+          !(value.respond_to?(:empty?) && value.empty?)
         end
       end
     end
@@ -128,6 +130,8 @@ module Cuprum::Cli::Options
     def defined_options
       @defined_options ||= {}
     end
+
+    private
 
     def options_builder
       (

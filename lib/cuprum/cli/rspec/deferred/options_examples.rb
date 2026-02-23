@@ -59,16 +59,40 @@ module Cuprum::Cli::RSpec::Deferred
       end
       let(:defined_option) { described_class.options[option_name.to_sym] }
 
+      define_method :set_option do |option, value|
+        options = subject.instance_variable_get(:@options)
+
+        options[option] = value
+      end
+
       it { expect(described_class.options).to have_key(option_name.to_sym) }
 
       describe '#:option_name' do
         if expect_method
           let(:reader_name) { option_name }
-          let(:expected)    { configured_options[option_name] }
 
           it { expect(subject).to respond_to(reader_name).with(0).arguments }
 
-          it { expect(subject.public_send(reader_name)).to be == expected }
+          context 'when the option is not initialized' do
+            before(:example) do
+              set_option(option_name, configured_default)
+            end
+
+            it 'should return the default value' do
+              expect(subject.public_send(reader_name))
+                .to be == configured_default
+            end
+          end
+
+          context 'when the option is set' do
+            let(:value) { 'option value' }
+
+            before(:example) do
+              set_option(option_name, value)
+            end
+
+            it { expect(subject.public_send(reader_name)).to be == value }
+          end
         else
           it { expect(subject).not_to respond_to(option_name) }
         end
@@ -77,15 +101,68 @@ module Cuprum::Cli::RSpec::Deferred
       describe '#:option_name?' do
         if expect_predicate
           let(:predicate_name) { "#{option_name}?" }
-          let(:expected) do
-            value = configured_options[option_name]
-
-            !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
-          end
 
           it { expect(subject).to respond_to(predicate_name).with(0).arguments }
 
-          it { expect(subject.public_send(predicate_name)).to be == expected }
+          context 'when the option is not initialized' do
+            let(:expected) do
+              next false if configured_default.nil?
+              next false if configured_default == false
+              next true  unless configured_default.respond_to?(:empty?)
+
+              !configured_default.empty?
+            end
+
+            before(:example) do
+              set_option(option_name, configured_default)
+            end
+
+            it 'should return the default value' do
+              expect(subject.public_send(predicate_name)).to be == expected
+            end
+          end
+
+          context 'when the option is set to false' do
+            before(:example) do
+              set_option(option_name, false)
+            end
+
+            it { expect(subject.public_send(predicate_name)).to be false }
+          end
+
+          context 'when the option is set to true' do
+            before(:example) do
+              set_option(option_name, true)
+            end
+
+            it { expect(subject.public_send(predicate_name)).to be true }
+          end
+
+          if option_options[:type] != :boolean
+            context 'when the option is set to an Object' do
+              before(:example) do
+                set_option(option_name, Object.new.freeze)
+              end
+
+              it { expect(subject.public_send(predicate_name)).to be true }
+            end
+
+            context 'when the option is set to an empty value' do
+              before(:example) do
+                set_option(option_name, '')
+              end
+
+              it { expect(subject.public_send(predicate_name)).to be false }
+            end
+
+            context 'when the option is set to a non-empty value' do
+              before(:example) do
+                set_option(option_name, 'value')
+              end
+
+              it { expect(subject.public_send(predicate_name)).to be true }
+            end
+          end
         else
           it { expect(subject).not_to respond_to(:"#{option_name}?") }
         end

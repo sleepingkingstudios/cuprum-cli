@@ -57,16 +57,40 @@ module Cuprum::Cli::RSpec::Deferred
       end
       let(:defined_argument) { described_class.arguments[index] }
 
+      define_method :set_argument do |argument, value|
+        arguments = subject.instance_variable_get(:@arguments)
+
+        arguments[argument] = value
+      end
+
       it { expect(described_class.arguments.size).to be >= 1 + index }
 
       describe '#:argument_name' do
         if expect_method
           let(:reader_name) { argument_name }
-          let(:expected)    { configured_arguments[argument_name] }
 
           it { expect(subject).to respond_to(reader_name).with(0).arguments }
 
-          it { expect(subject.public_send(reader_name)).to be == expected }
+          context 'when the argument is not initialized' do
+            before(:example) do
+              set_argument(argument_name, configured_default)
+            end
+
+            it 'should return the default value' do
+              expect(subject.public_send(reader_name))
+                .to be == configured_default
+            end
+          end
+
+          context 'when the argument is set' do
+            let(:value) { 'argument value' }
+
+            before(:example) do
+              set_argument(argument_name, value)
+            end
+
+            it { expect(subject.public_send(reader_name)).to be == value }
+          end
         else
           it { expect(subject).not_to respond_to(argument_name) }
         end
@@ -75,15 +99,68 @@ module Cuprum::Cli::RSpec::Deferred
       describe '#:argument_name?' do
         if expect_predicate
           let(:predicate_name) { "#{argument_name}?" }
-          let(:expected) do
-            value = configured_arguments[argument_name]
-
-            !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
-          end
 
           it { expect(subject).to respond_to(predicate_name).with(0).arguments }
 
-          it { expect(subject.public_send(predicate_name)).to be == expected }
+          context 'when the argument is not initialized' do
+            let(:expected) do
+              next false if configured_default.nil?
+              next false if configured_default == false
+              next true  unless configured_default.respond_to?(:empty?)
+
+              !configured_default.empty?
+            end
+
+            before(:example) do
+              set_argument(argument_name, configured_default)
+            end
+
+            it 'should return the default value' do
+              expect(subject.public_send(predicate_name)).to be == expected
+            end
+          end
+
+          context 'when the argument is set to false' do
+            before(:example) do
+              set_argument(argument_name, false)
+            end
+
+            it { expect(subject.public_send(predicate_name)).to be false }
+          end
+
+          context 'when the argument is set to true' do
+            before(:example) do
+              set_argument(argument_name, true)
+            end
+
+            it { expect(subject.public_send(predicate_name)).to be true }
+          end
+
+          if argument_options[:type] != :boolean
+            context 'when the argument is set to an Object' do
+              before(:example) do
+                set_argument(argument_name, Object.new.freeze)
+              end
+
+              it { expect(subject.public_send(predicate_name)).to be true }
+            end
+
+            context 'when the argument is set to an empty value' do
+              before(:example) do
+                set_argument(argument_name, '')
+              end
+
+              it { expect(subject.public_send(predicate_name)).to be false }
+            end
+
+            context 'when the argument is set to a non-empty value' do
+              before(:example) do
+                set_argument(argument_name, 'value')
+              end
+
+              it { expect(subject.public_send(predicate_name)).to be true }
+            end
+          end
         else
           it { expect(subject).not_to respond_to(:"#{argument_name}?") }
         end
