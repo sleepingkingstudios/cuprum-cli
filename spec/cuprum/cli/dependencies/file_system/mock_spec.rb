@@ -28,6 +28,35 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
       -> { be_a(Class).and(be < StandardError) }
   end
 
+  describe '::MockTempfile' do
+    subject(:tempfile) { described_class.new(path) }
+
+    let(:described_class) { super()::MockTempfile }
+    let(:path)            { 'path/to/tempfile' }
+
+    describe '.new' do
+      it { expect(described_class).to be_constructible.with(1).argument }
+    end
+
+    describe '#path' do
+      include_examples 'should define reader', :path, -> { path }
+    end
+
+    describe '#read' do
+      it { expect(tempfile.read).to be == '' }
+    end
+
+    describe '#write' do
+      let(:value) { 'Contents of tempfile.' }
+
+      it 'should update the file contents' do
+        expect { tempfile.write(value) }.to(
+          change { tempfile.tap(&:rewind).read }.to(be == value)
+        )
+      end
+    end
+  end
+
   describe '.new' do
     it 'should define the constructor' do
       expect(described_class)
@@ -404,6 +433,23 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
       it { expect(mock_fs.read_file(stream)).to be == stream.string }
     end
 
+    describe 'with a mock Tempfile' do
+      let(:tempfile) { described_class::MockTempfile.new('/path/to/file') }
+
+      it { expect(mock_fs.read_file(tempfile)).to be == '' }
+
+      context 'when the tempfile has contents' do
+        let(:contents) { 'Contents of tempfile.' }
+
+        before(:example) do
+          tempfile.write(contents)
+          tempfile.rewind
+        end
+
+        it { expect(mock_fs.read_file(tempfile)).to be == contents }
+      end
+    end
+
     describe 'with an invalid absolute path' do
       let(:path) { '/invalid-absolute-path' }
       let(:error_message) do
@@ -557,19 +603,19 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
 
     it 'should yield the file object' do
       expect { |block| mock_fs.with_tempfile(&block) }
-        .to yield_with_args(an_instance_of(File))
+        .to yield_with_args(an_instance_of(described_class::MockTempfile))
     end
 
     it 'should clean up the tempfile', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
       path = nil
 
       mock_fs.with_tempfile do |file|
-        path = file.path
+        path = File.split(file.path).last
 
-        expect(File.exist?(path)).to be true
+        expect(mock_fs.files['tempfiles']).to have_key(path)
       end
 
-      expect(File.exist?(path)).to be false
+      expect(mock_fs.files['tempfiles']).not_to have_key(path)
     end
 
     it 'should copy the file contents to #tempfiles', :aggregate_failures do
@@ -661,6 +707,16 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
       it 'should write the data to the stream' do
         expect { mock_fs.write_file(stream, data) }
           .to change(stream, :string)
+          .to be == data
+      end
+    end
+
+    describe 'with file: a mock Tempfile' do
+      let(:tempfile) { described_class::MockTempfile.new('/path/to/file') }
+
+      it 'should write the data to the tempfile' do
+        expect { mock_fs.write_file(tempfile, data) }
+          .to change(tempfile, :string)
           .to be == data
       end
     end
@@ -892,6 +948,18 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
             expect(mock).to be_a(StringIO)
             expect(mock.string).to be == data
           end
+        end
+      end
+    end
+
+    describe 'with a path to a tempfile' do
+      it 'should write the data to the tempfile', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
+        mock_fs.with_tempfile do |tempfile|
+          expect { mock_fs.write_file(tempfile.path, data) }
+            .to change(tempfile, :string)
+            .to be == data
+
+          expect(tempfile.pos).to be 0
         end
       end
     end
