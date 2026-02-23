@@ -201,5 +201,14 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
     end
+
+    deferred_examples 'should define --quiet option' do
+      include_deferred 'should define option',
+        :quiet,
+        aliases:     %w[q],
+        description: 'Silences non-essential console outputs.',
+        type:        :boolean,
+        default:     false
+    end
   end
 end

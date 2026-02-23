@@ -6,7 +6,7 @@ require 'cuprum/cli/rspec/deferred/ci/report_examples'
 RSpec.describe Cuprum::Cli::Commands::Ci::Report do
   include Cuprum::Cli::RSpec::Deferred::Ci::ReportExamples
 
-  subject(:reportz) { described_class.new(**properties) }
+  subject(:report) { described_class.new(**properties) }
 
   let(:properties) { { duration: 1.0, total_count: 100 } }
 

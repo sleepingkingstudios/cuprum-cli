@@ -11,6 +11,19 @@ module Cuprum::Cli::Dependencies
     # Exception raised when trying to read from or write to a non-mocked path.
     class InvalidPathError < StandardError; end
 
+    # Utility class used to simulate tempfile behavior.
+    class MockTempfile < SimpleDelegator
+      # @param path [String] the qualified path to the tempfile.
+      def initialize(path)
+        super(StringIO.new)
+
+        @path = path
+      end
+
+      # @return [String] the qualified path to the tempfile.
+      attr_reader :path
+    end
+
     # @param files [Hash{String => Hash, IO}] the mocked directories and files.
     #   Must be a Hash with String keys representing file path segments; Hash
     #   values represent directories, while IO values represent files.
@@ -90,11 +103,18 @@ module Cuprum::Cli::Dependencies
 
     # (see Cuprum::Cli::Dependencies::FileSystem#with_tempfile)
     def with_tempfile(&block)
-      Tempfile.create do |file|
-        block.call(file).tap do
-          tempfiles << file.tap(&:rewind).read
-        end
+      file_name = SecureRandom.uuid
+      file_path = File.join(root_path, 'tempfiles', file_name)
+
+      tempfile = MockTempfile.new(file_path)
+
+      (files['tempfiles'] ||= {})[file_name] = tempfile
+
+      block.call(tempfile).tap do
+        tempfiles << read_file(tempfile.tap(&:rewind))
       end
+    ensure
+      files['tempfiles'].delete(file_name)
     end
 
     # (see Cuprum::Cli::Dependencies::FileSystem#write_file)
@@ -111,6 +131,13 @@ module Cuprum::Cli::Dependencies
       end
 
       mock = resolve_mock(path)
+
+      if mock.is_a?(MockTempfile)
+        mock.write(data)
+        mock.rewind
+
+        return
+      end
 
       return write_mock_file(path, data) if mock.nil? || io_stream?(mock)
 
@@ -136,6 +163,10 @@ module Cuprum::Cli::Dependencies
 
     def flattened_files
       @flattened_files || flatten_files(files:)
+    end
+
+    def io_stream?(file_or_path)
+      super || file_or_path.is_a?(MockTempfile)
     end
 
     def matches_globbed_pattern?(entry_names:, pattern_strings:) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
@@ -210,6 +241,12 @@ module Cuprum::Cli::Dependencies
       end
 
       directory[file_name] = StringIO.new(data.to_s)
+    end
+
+    def validate_file(file_or_path, as:)
+      return if file_or_path.is_a?(MockTempfile)
+
+      super
     end
   end
 end
