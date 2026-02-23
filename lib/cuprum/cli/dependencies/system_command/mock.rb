@@ -42,5 +42,16 @@ module Cuprum::Cli::Dependencies
         status: MockStatus.new(exitstatus:)
       )
     end
+
+    def spawn_command(command, **rest)
+      recorded_commands << build_command(command, **rest)
+
+      _, _, exitstatus =
+        captures
+        .fetch(command, ['', '', 0])
+        .then { |capture| capture.is_a?(Proc) ? capture.call(**rest) : capture }
+
+      MockStatus.new(exitstatus:)
+    end
   end
 end

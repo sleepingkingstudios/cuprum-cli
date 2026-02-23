@@ -30,7 +30,7 @@ module Cuprum::Cli::Dependencies
     #
     #   @return [Cuprum::Result<Cuprum::Cli::Dependencies::SystemCommand::CapturedOutput]
     #     a Result wrapping the process status and captured output. The Result
-    #     will have a status of :success if the process was successful;
+    #     will have a status of :success if the process ran successfully;
     #     otherwise, the Result will have a status of :failure
     def capture(command, **)
       value = capture_command(command, **)
@@ -44,6 +44,33 @@ module Cuprum::Cli::Dependencies
       )
 
       Cuprum::Result.new(error:, value:)
+    end
+
+    # @overload spawn(command, arguments: [], enviroment:, options: {})
+    #   Spawns a process to run the system command.
+    #
+    #   @param command [String] the command to run.
+    #   @param arguments [Array<String>] command-line flags or arguments to pass
+    #     to the command.
+    #   @param enviroment [Hash<String, Object>] environment variables to set
+    #     for the command.
+    #   @param options [Hash<String, Object>] command line options and values to
+    #     pass to the command.
+    #
+    #   @return [Cuprum::Result<nil>] a result with status :success if the
+    #     process ran successfully; otherwise, a result with status :failure and
+    #     an Error.
+    def spawn(command, **)
+      status = spawn_command(command, **)
+
+      return Cuprum::Result.new if status.success?
+
+      error = Cuprum::Cli::Errors::SystemCommandFailure.new(
+        command:,
+        exit_status: status.exitstatus
+      )
+
+      Cuprum::Result.new(error:)
     end
 
     private
@@ -103,6 +130,14 @@ module Cuprum::Cli::Dependencies
           "#{key.length == 1 ? '-' : '--'}#{key}=#{value}"
         end
         .join(' ')
+    end
+
+    def spawn_command(command, **)
+      command   = build_command(command, **)
+      pid       = Process.spawn(command)
+      _, status = Process.wait2(pid)
+
+      status
     end
 
     def tools
