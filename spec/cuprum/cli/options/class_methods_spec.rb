@@ -173,6 +173,19 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
           include_deferred 'should define option', :format, type: :boolean
         end
 
+        context 'with default: false' do
+          let(:options) { super().merge(default: false) }
+
+          context 'when the option is defined' do
+            before(:example) { described_class.option(name, **options) }
+
+            include_deferred 'should define option',
+              :format,
+              default: false,
+              type:    :boolean
+          end
+        end
+
         describe 'with define_method: false' do
           let(:options) { super().merge(define_method: true) }
 

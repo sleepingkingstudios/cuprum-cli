@@ -49,7 +49,9 @@ module Cuprum::Cli::Arguments
         command_class.define_method(:"#{argument.name}?") do
           value = @arguments[argument.name]
 
-          !value.nil? && !(value.respond_to?(:empty?) && value.empty?)
+          return false if value.nil? || value == false
+
+          !(value.respond_to?(:empty?) && value.empty?)
         end
       end
     end
