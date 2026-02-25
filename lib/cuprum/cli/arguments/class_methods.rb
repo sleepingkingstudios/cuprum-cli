@@ -178,7 +178,13 @@ module Cuprum::Cli::Arguments
     #     is not nil and not empty. Defaults to true for boolean arguments and
     #     false for all other arguments.
     def arguments(name = nil, **)
-      return defined_arguments if name.nil?
+      if name.nil?
+        return defined_arguments unless defined_arguments.empty?
+
+        return superclass.arguments if superclass.respond_to?(:arguments)
+
+        return []
+      end
 
       argument(name, **, variadic: true)
     end

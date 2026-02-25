@@ -8,6 +8,12 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
 
   subject(:command) { Spec::Command.new(constructor_options) }
 
+  deferred_context 'when the command has a parent command' do
+    let(:described_class) { Spec::SubclassCommand }
+
+    example_class 'Spec::SubclassCommand', 'Spec::Command'
+  end
+
   deferred_context 'when the command has many arguments' do
     before(:example) do
       described_class.argument :color, required: true, type: :integer
@@ -21,6 +27,13 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
       described_class.argument :shape
       described_class.argument :sizes, variadic: true
       described_class.argument :transparency
+    end
+  end
+
+  deferred_context 'when the parent command has many arguments' do
+    before(:example) do
+      Spec::Command.argument :size
+      Spec::Command.argument :transparency
     end
   end
 
@@ -307,6 +320,49 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
         it { expect(described_class.arguments[2].name).to be :sizes }
 
         it { expect(described_class.arguments[2].variadic?).to be true }
+      end
+
+      wrap_deferred 'when the command has a parent command' do
+        it { expect(described_class.arguments).to be == [] }
+
+        wrap_deferred 'when the command has many arguments' do
+          let(:expected_names) { %i[color shape] }
+
+          it 'should define the expected arguments' do
+            expect(described_class.arguments.map(&:name))
+              .to be == expected_names
+          end
+
+          it { expect(described_class.arguments[0].name).to be :color }
+
+          it { expect(described_class.arguments[0].type).to be :integer }
+        end
+
+        wrap_deferred 'when the parent command has many arguments' do
+          let(:expected_names) { %i[size transparency] }
+
+          it 'should define the expected arguments' do
+            expect(described_class.arguments.map(&:name))
+              .to be == expected_names
+          end
+
+          it { expect(described_class.arguments[0].name).to be :size }
+
+          it { expect(described_class.arguments[0].type).to be :string }
+
+          wrap_deferred 'when the command has many arguments' do # rubocop:disable RSpec/NestedGroups
+            let(:expected_names) { %i[color shape] }
+
+            it 'should define the expected arguments' do
+              expect(described_class.arguments.map(&:name))
+                .to be == expected_names
+            end
+
+            it { expect(described_class.arguments[0].name).to be :color }
+
+            it { expect(described_class.arguments[0].type).to be :integer }
+          end
+        end
       end
     end
 
