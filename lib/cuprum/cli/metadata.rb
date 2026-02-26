@@ -15,8 +15,18 @@ module Cuprum::Cli
     UNDEFINED = SleepingKingStudios::Tools::UNDEFINED
     private_constant :UNDEFINED
 
+    # Raised when performing a protected operation on an abstract Command.
+    class AbstractCommandError < StandardError; end
+
     # Class methods to extend when including Metadata.
     module ClassMethods
+      # Marks the command as abstract.
+      def abstract = @abstract = true
+
+      # @return [true, false] true if the command is abstract and should not be
+      #   instantiated directly or assigned metadata; otherwise false.
+      def abstract? = @abstract.nil? ? false : @abstract
+
       # @overload description
       #   @return [String] the description for the command.
       #
@@ -27,7 +37,12 @@ module Cuprum::Cli
       #
       #   @return [String] the set description.
       def description(value = UNDEFINED)
-        return @description if value == UNDEFINED
+        return defined_description if value == UNDEFINED
+
+        if abstract?
+          raise AbstractCommandError,
+            abstract_command_message('set description')
+        end
 
         tools.assertions.validate_name(value, as: 'description')
 
@@ -36,7 +51,7 @@ module Cuprum::Cli
 
       # @return [true, false] true if the command defines a description;
       #   otherwise false.
-      def description? = !@description.nil?
+      def description? = !defined_description.nil?
 
       # @overload full_description
       #   @return [String] the full description for the command.
@@ -48,7 +63,14 @@ module Cuprum::Cli
       #
       #   @return [String] the set full description.
       def full_description(value = UNDEFINED)
-        return @full_description || description if value == UNDEFINED
+        if value == UNDEFINED
+          return defined_full_description || defined_description
+        end
+
+        if abstract?
+          raise AbstractCommandError,
+            abstract_command_message('set full_description')
+        end
 
         tools.assertions.validate_name(value, as: 'full_description')
 
@@ -57,7 +79,7 @@ module Cuprum::Cli
 
       # @return [true, false] true if the command defines a full description;
       #   otherwise false.
-      def full_description? = !@full_description.nil?
+      def full_description? = !defined_full_description.nil?
 
       # @overload full_name
       #   Returns the name of the command, used when calling from a CLI.
@@ -79,8 +101,12 @@ module Cuprum::Cli
       #   @param value [String] the full name to set.
       #
       #   @return [String] the set full name.
-      def full_name(value = UNDEFINED)
-        return @full_name ||= default_name if value == UNDEFINED
+      def full_name(value = UNDEFINED) # rubocop:disable Metrics/MethodLength
+        return defined_full_name if value == UNDEFINED
+
+        if abstract?
+          raise AbstractCommandError, abstract_command_message('set full_name')
+        end
 
         tools.assertions.validate_name(value, as: 'full_name')
         tools.assertions.validate_matches(
@@ -127,6 +153,43 @@ module Cuprum::Cli
       #
       # @return [String] the short name for the command.
       def short_name = full_name&.split(':')&.last
+
+      protected
+
+      def abstract_command_message(short_message)
+        class_name =
+          ancestors
+          .find { |ancestor| ancestor.is_a?(Class) && ancestor.name }
+          .name
+
+        "unable to #{short_message} - #{class_name} is an abstract class"
+      end
+
+      def defined_description
+        return @description if @description
+
+        return unless superclass.respond_to?(:defined_description, true)
+
+        superclass.defined_description
+      end
+
+      def defined_full_description
+        return @full_description if @full_description
+
+        return unless superclass.respond_to?(:defined_full_description, true)
+
+        superclass.defined_full_description
+      end
+
+      def defined_full_name
+        return @full_name if @full_name ||= default_name
+
+        return unless superclass.respond_to?(:defined_full_name, true)
+
+        return if superclass.name == 'Cuprum::Cli::Command'
+
+        superclass.defined_full_name
+      end
 
       private
 
