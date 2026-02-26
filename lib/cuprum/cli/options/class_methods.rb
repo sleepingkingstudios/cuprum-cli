@@ -87,6 +87,21 @@ module Cuprum::Cli::Options
         .call(name, define_method:, define_predicate:, **)
     end
 
+    # Assigns a predefined option value for the command.
+    #
+    # @param option [String, Symbol] the option to set.
+    # @param value [Object] the option value to append.
+    #
+    # @return [void]
+    def option_value(option, value)
+      defined_option_values[option.to_sym] = value
+
+      nil
+    end
+
+    # @return [Hash<Symbol => Object>] predefined option values for the command.
+    def option_values = inherited_option_values.merge(defined_option_values)
+
     # The defined options, including options defined on ancestor classes.
     #
     # @return [Hash{Symbol => Cuprum::Cli::Option}] the defined options.
@@ -112,6 +127,7 @@ module Cuprum::Cli::Options
     # @raise [Cuprum::Cli::Options::InvalidOptionError] if any value does not
     #   match the expected option type, or any required value is missing.
     def resolve_options(**values)
+      values          = option_values.merge(values)
       defined_options = options
       unknown_options = values.keys - defined_options.keys
 
@@ -129,6 +145,14 @@ module Cuprum::Cli::Options
 
     def defined_options
       @defined_options ||= {}
+    end
+
+    def defined_option_values = @defined_option_values ||= {}
+
+    def inherited_option_values
+      return {} unless superclass.respond_to?(:inherited_option_values, true)
+
+      superclass.inherited_option_values.merge(superclass.defined_option_values)
     end
 
     private

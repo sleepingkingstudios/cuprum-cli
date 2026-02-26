@@ -149,6 +149,20 @@ module Cuprum::Cli::Arguments
       arguments_builder.call(name, define_method:, define_predicate:, **)
     end
 
+    # Appends a predefined argument value for the command.
+    #
+    # @param value [Object] the argument value to append.
+    #
+    # @return [void]
+    def argument_value(value)
+      defined_argument_values << value
+
+      nil
+    end
+
+    # @return [Array<Object>] predefined argument values for the command.
+    def argument_values = defined_argument_values
+
     # @overload arguments()
     #   The defined arguments for the command class.
     #
@@ -201,7 +215,8 @@ module Cuprum::Cli::Arguments
     #   arguments than the command class defines arguments.
     # @raise [Cuprum::Cli::Arguments::InvalidArgumentError] if any value does
     #   not match the expected argument type, or any required value is missing.
-    def resolve_arguments(*values) # rubocop:disable Metrics/MethodLength
+    def resolve_arguments(*values) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      values            = argument_values + values
       defined_arguments = arguments
 
       if defined_arguments.any?(&:variadic?)
@@ -232,6 +247,10 @@ module Cuprum::Cli::Arguments
         Builder.new(command_class: self, defined_arguments:)
       )
       # :nocov:
+    end
+
+    def defined_argument_values
+      @defined_argument_values ||= []
     end
 
     def defined_arguments
