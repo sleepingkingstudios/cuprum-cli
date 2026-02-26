@@ -9,6 +9,7 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
   subject(:command) { Spec::Command.new(constructor_options) }
 
   deferred_context 'when the command has a parent command' do
+    let(:parent_class)    { Spec::Command }
     let(:described_class) { Spec::SubclassCommand }
 
     example_class 'Spec::SubclassCommand', 'Spec::Command'
@@ -274,6 +275,67 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
     end
   end
 
+  describe '.argument_value' do
+    let(:value) { Object.new.freeze }
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:argument_value)
+        .with(1).argument
+    end
+
+    it 'should append the value to .argument_values', :aggregate_failures do
+      expect { described_class.argument_value(value) }.to(
+        change { described_class.argument_values.size }.by(1)
+      )
+
+      expect(described_class.argument_values.last).to be == value
+    end
+
+    context 'when the command has many argument values' do
+      before(:example) do
+        described_class.argument_value 16_724_838
+        described_class.argument_value 'trapezoid'
+      end
+
+      it 'should append the value to .argument_values', :aggregate_failures do
+        expect { described_class.argument_value(value) }.to(
+          change { described_class.argument_values.size }.by(1)
+        )
+
+        expect(described_class.argument_values.last).to be == value
+      end
+    end
+  end
+
+  describe '.argument_values' do
+    include_examples 'should define class reader', :argument_values, []
+
+    context 'when the command has many argument values' do
+      let(:expected) { [16_724_838, 'trapezoid'] }
+
+      before(:example) do
+        described_class.argument_value 16_724_838
+        described_class.argument_value 'trapezoid'
+      end
+
+      it { expect(described_class.argument_values).to be == expected }
+    end
+
+    wrap_deferred 'when the command has a parent command' do
+      it { expect(described_class.argument_values).to be == [] }
+
+      context 'when the parent command has many argument values' do
+        before(:example) do
+          parent_class.argument_value 16_724_838
+          parent_class.argument_value 'trapezoid'
+        end
+
+        it { expect(described_class.argument_values).to be == [] }
+      end
+    end
+  end
+
   describe '.arguments' do
     let(:expected_keywords) do
       %i[
@@ -441,6 +503,25 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
       end
     end
 
+    context 'when the command has many argument values' do
+      let(:error_message) do
+        'wrong number of arguments (given 2, expected 0)'
+      end
+
+      before(:example) do
+        described_class.argument_value 16_724_838
+        described_class.argument_value 'trapezoid'
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.resolve_arguments(*values) }
+          .to raise_error(
+            Cuprum::Cli::Arguments::ExtraArgumentsError,
+            error_message
+          )
+      end
+    end
+
     describe 'when the command has optional arguments' do
       let(:expected) do
         {
@@ -512,6 +593,30 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
               Cuprum::Cli::Arguments::ExtraArgumentsError,
               error_message
             )
+        end
+      end
+
+      context 'when the command has many argument values' do
+        let(:expected) do
+          super().merge(color: 16_724_838, shape: 'trapezoid')
+        end
+
+        before(:example) do
+          described_class.argument_value 16_724_838
+          described_class.argument_value 'trapezoid'
+        end
+
+        it 'should apply the argument defaults' do
+          expect(described_class.resolve_arguments(*values)).to be == expected
+        end
+
+        describe 'with additional values' do
+          let(:values) { %w[medium] }
+          let(:expected) { super().merge(size: values[0]) }
+
+          it 'should apply the argument defaults' do
+            expect(described_class.resolve_arguments(*values)).to be == expected
+          end
         end
       end
     end
@@ -612,6 +717,30 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
               Cuprum::Cli::Arguments::ExtraArgumentsError,
               error_message
             )
+        end
+      end
+
+      context 'when the command has many argument values' do
+        let(:expected) do
+          super().merge(color: 16_724_838, shape: 'trapezoid')
+        end
+
+        before(:example) do
+          described_class.argument_value 16_724_838
+          described_class.argument_value 'trapezoid'
+        end
+
+        it 'should apply the argument defaults' do
+          expect(described_class.resolve_arguments(*values)).to be == expected
+        end
+
+        describe 'with additional values' do
+          let(:values) { %w[medium] }
+          let(:expected) { super().merge(size: values[0]) }
+
+          it 'should apply the argument defaults' do
+            expect(described_class.resolve_arguments(*values)).to be == expected
+          end
         end
       end
     end
@@ -817,6 +946,34 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
           end
 
           it 'should map extra arguments to the variadic parameter' do
+            expect(described_class.resolve_arguments(*values)).to be == expected
+          end
+        end
+      end
+
+      context 'when the command has many argument values' do
+        let(:expected) do
+          super().merge(sizes: %w[circle trapezoid])
+        end
+
+        before(:example) do
+          described_class.arguments :sizes
+
+          described_class.argument_value 'circle'
+          described_class.argument_value 'trapezoid'
+        end
+
+        it 'should merge the variadic parameters' do
+          expect(described_class.resolve_arguments(*values)).to be == expected
+        end
+
+        describe 'with additional values' do
+          let(:values) { %w[triangle square] }
+          let(:expected) do
+            super().merge(sizes: %w[circle trapezoid triangle square])
+          end
+
+          it 'should merge the variadic parameters' do
             expect(described_class.resolve_arguments(*values)).to be == expected
           end
         end

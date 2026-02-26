@@ -9,6 +9,7 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
   subject(:command) { Spec::Command.new(constructor_options) }
 
   deferred_context 'when the command has a parent command' do
+    let(:parent_class)    { Spec::Command }
     let(:described_class) { Spec::SubclassCommand }
 
     example_class 'Spec::SubclassCommand', 'Spec::Command'
@@ -250,6 +251,108 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
     end
   end
 
+  describe '.option_value' do
+    let(:option) { :custom }
+    let(:value)  { Object.new.freeze }
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:option_value)
+        .with(2).arguments
+    end
+
+    it 'should assign the value to .option_values' do
+      expect { described_class.option_value(option, value) }.to(
+        change { described_class.option_values[option] }.to(be value)
+      )
+    end
+
+    context 'when the command has many option values' do
+      before(:example) do
+        described_class.option_value :color, 0xff3366
+        described_class.option_value :shape, 'trapezoid'
+      end
+
+      it 'should assign the value to .option_values' do
+        expect { described_class.option_value(option, value) }.to(
+          change { described_class.option_values[option] }.to(be value)
+        )
+      end
+    end
+  end
+
+  describe '.option_values' do
+    include_examples 'should define class reader', :option_values, {}
+
+    context 'when the command has many option values' do
+      let(:expected) do
+        {
+          color: 0xff3366,
+          shape: 'trapezoid'
+        }
+      end
+
+      before(:example) do
+        described_class.option_value :color, 0xff3366
+        described_class.option_value :shape, 'trapezoid'
+      end
+
+      it { expect(described_class.option_values).to be == expected }
+    end
+
+    wrap_deferred 'when the command has a parent command' do
+      include_examples 'should define class reader', :option_values, {}
+
+      context 'when the command has many option values' do
+        let(:expected) do
+          {
+            color: 0xff3366,
+            shape: 'trapezoid'
+          }
+        end
+
+        before(:example) do
+          described_class.option_value :color, 0xff3366
+          described_class.option_value :shape, 'trapezoid'
+        end
+
+        it { expect(described_class.option_values).to be == expected }
+      end
+
+      context 'when the parent command has many option values' do
+        let(:expected) do
+          {
+            color: 0xff0000,
+            size:  'medium'
+          }
+        end
+
+        before(:example) do
+          parent_class.option_value :color, 0xff0000
+          parent_class.option_value :size,  'medium'
+        end
+
+        it { expect(described_class.option_values).to be == expected }
+
+        context 'when the command has many option values' do
+          let(:expected) do
+            super().merge(
+              color: 0xff3366,
+              shape: 'trapezoid'
+            )
+          end
+
+          before(:example) do
+            described_class.option_value :color, 0xff3366
+            described_class.option_value :shape, 'trapezoid'
+          end
+
+          it { expect(described_class.option_values).to be == expected }
+        end
+      end
+    end
+  end
+
   describe '.options' do
     it { expect(described_class).to respond_to(:options).with(0).arguments }
 
@@ -345,6 +448,25 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
       end
     end
 
+    context 'when the command has many option values' do
+      let(:error_message) do
+        "unrecognized options :color, :shape for #{described_class.name}"
+      end
+
+      before(:example) do
+        described_class.option_value :color, 0xff3366
+        described_class.option_value :shape, 'trapezoid'
+      end
+
+      it 'should raise an exception' do
+        expect { described_class.resolve_options(**values) }
+          .to raise_error(
+            Cuprum::Cli::Options::UnknownOptionError,
+            error_message
+          )
+      end
+    end
+
     context 'when the command and parent command have many options' do
       include_deferred 'when the command has a parent command'
       include_deferred 'when the command has many options'
@@ -421,6 +543,37 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
               Cuprum::Cli::Options::UnknownOptionError,
               error_message
             )
+        end
+      end
+
+      context 'when the command has many option values' do
+        let(:expected) do
+          {
+            color:       0xff3366,
+            shape:       'trapezoid',
+            size:        'medium',
+            transparent: false
+          }
+        end
+
+        before(:example) do
+          parent_class.option_value    :color, 0xff0000
+          parent_class.option_value    :size,  'medium'
+          described_class.option_value :color, 0xff3366
+          described_class.option_value :shape, 'trapezoid'
+        end
+
+        it 'should apply the option defaults' do
+          expect(described_class.resolve_options(**values)).to be == expected
+        end
+
+        describe 'with extra values' do
+          let(:values)   { { shape: 'triangle', transparent: true } }
+          let(:expected) { super().merge(values) }
+
+          it 'should apply the option defaults' do
+            expect(described_class.resolve_options(**values)).to be == expected
+          end
         end
       end
     end
