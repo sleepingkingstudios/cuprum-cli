@@ -42,12 +42,6 @@ RSpec.describe Cuprum::Cli::Command do
 
   let(:constructor_options) { {} }
 
-  describe '::AbstractCommandError' do
-    include_examples 'should define constant',
-      :AbstractCommandError,
-      -> { be_a(Class).and be < StandardError }
-  end
-
   include_deferred 'should implement the Metadata interface'
 
   wrap_deferred 'with a command subclass' do

@@ -35,6 +35,12 @@ RSpec.describe Cuprum::Cli::Metadata do
     klass.include concern
   end
 
+  describe '::AbstractCommandError' do
+    include_examples 'should define constant',
+      :AbstractCommandError,
+      -> { be_a(Class).and be < StandardError }
+  end
+
   describe '::FULL_NAME_FORMAT' do
     let(:format) { described_class::FULL_NAME_FORMAT }
 

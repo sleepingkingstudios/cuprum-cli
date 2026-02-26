@@ -10,6 +10,21 @@ module Cuprum::Cli::RSpec::Deferred
     include RSpec::SleepingKingStudios::Deferred::Provider
 
     deferred_examples 'should implement the Metadata interface' do
+      describe '.abstract' do
+        it 'should define the class method' do
+          expect(described_class)
+            .to respond_to(:abstract)
+            .with(0).arguments
+        end
+      end
+
+      describe '.abstract?' do
+        it 'should define the class predicate' do
+          expect(described_class)
+            .to define_predicate(:abstract?)
+        end
+      end
+
       describe '.description' do
         it 'should define the class method' do
           expect(described_class)
@@ -18,14 +33,14 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
 
-      describe '#description?' do
+      describe '.description?' do
         it 'should define the class predicate' do
           expect(described_class)
             .to define_predicate(:description?)
         end
       end
 
-      describe '#full_description' do
+      describe '.full_description' do
         it 'should define the class method' do
           expect(described_class)
             .to respond_to(:full_description)
@@ -33,14 +48,14 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
 
-      describe '#full_description?' do
+      describe '.full_description?' do
         it 'should define the class predicate' do
           expect(described_class)
             .to define_predicate(:full_description?)
         end
       end
 
-      describe '#full_name' do
+      describe '.full_name' do
         it 'should define the class method' do
           expect(described_class)
             .to respond_to(:full_name)
@@ -48,23 +63,63 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
 
-      describe '#namespace' do
+      describe '.namespace' do
         include_examples 'should define class reader', :namespace
       end
 
-      describe '#namespace?' do
+      describe '.namespace?' do
         it 'should define the class predicate' do
           expect(described_class)
             .to define_predicate(:namespace?)
         end
       end
 
-      describe '#short_name' do
+      describe '.short_name' do
         include_examples 'should define class reader', :short_name
       end
     end
 
     deferred_examples 'should define metadata for the command' do
+      describe '.abstract' do
+        it 'should mark the command as abstract' do
+          expect { described_class.abstract }
+            .to change(described_class, :abstract?)
+            .to be true
+        end
+      end
+
+      describe '.abstract?' do
+        it { expect(described_class.abstract?).to be false }
+
+        context 'when the command is abstract' do
+          before(:example) do
+            described_class.abstract
+          end
+
+          it { expect(described_class.abstract?).to be true }
+        end
+
+        wrap_deferred 'when the command has a parent command' do
+          it { expect(described_class.abstract?).to be false }
+
+          context 'when the command is abstract' do
+            before(:example) do
+              described_class.abstract
+            end
+
+            it { expect(described_class.abstract?).to be true }
+          end
+
+          context 'when the parent command is abstract' do
+            before(:example) do
+              parent_class.abstract
+            end
+
+            it { expect(described_class.abstract?).to be false }
+          end
+        end
+      end
+
       describe '.description' do
         describe 'with no arguments' do
           it { expect(described_class.description).to be nil }
@@ -117,6 +172,25 @@ module Cuprum::Cli::RSpec::Deferred
           end
         end
 
+        context 'when the command is abstract' do
+          let(:value) do
+            'No one is quite sure what this does.'
+          end
+          let(:error_message) do
+            'unable to set description - Spec::CustomCommand is an abstract ' \
+              'class'
+          end
+
+          before(:example) { described_class.abstract }
+
+          it 'should raise an exception' do
+            expect { described_class.description(value) }.to raise_error(
+              described_class::AbstractCommandError,
+              error_message
+            )
+          end
+        end
+
         wrap_deferred 'when the command has a parent command' do
           it { expect(described_class.description).to be nil }
 
@@ -160,7 +234,7 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
 
-      describe '#description?' do
+      describe '.description?' do
         it { expect(described_class.description?).to be false }
 
         context 'when the command has a description' do
@@ -204,7 +278,7 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
 
-      describe '#full_description' do
+      describe '.full_description' do
         describe 'with no arguments' do
           it { expect(described_class.full_description).to be nil }
         end
@@ -445,9 +519,32 @@ module Cuprum::Cli::RSpec::Deferred
             end
           end
         end
+
+        context 'when the command is abstract' do
+          let(:value) do
+            <<~DESC
+              No one is quite sure what this does.
+
+              ...but it sure looks cool!
+            DESC
+          end
+          let(:error_message) do
+            'unable to set full_description - Spec::CustomCommand is an ' \
+              'abstract class'
+          end
+
+          before(:example) { described_class.abstract }
+
+          it 'should raise an exception' do
+            expect { described_class.full_description(value) }.to raise_error(
+              described_class::AbstractCommandError,
+              error_message
+            )
+          end
+        end
       end
 
-      describe '#full_description?' do
+      describe '.full_description?' do
         it { expect(described_class.full_description?).to be false }
 
         context 'when the command has a description' do
@@ -533,7 +630,7 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
 
-      describe '#full_name' do
+      describe '.full_name' do
         let(:expected) { 'spec:custom' }
 
         describe 'with no arguments' do
@@ -659,9 +756,25 @@ module Cuprum::Cli::RSpec::Deferred
             end
           end
         end
+
+        context 'when the command is abstract' do
+          let(:value) { 'category:sub_category:do_something' }
+          let(:error_message) do
+            'unable to set full_name - Spec::CustomCommand is an abstract class'
+          end
+
+          before(:example) { described_class.abstract }
+
+          it 'should raise an exception' do
+            expect { described_class.full_name(value) }.to raise_error(
+              described_class::AbstractCommandError,
+              error_message
+            )
+          end
+        end
       end
 
-      describe '#namespace' do
+      describe '.namespace' do
         it { expect(described_class.namespace).to be == 'spec' }
 
         wrap_deferred 'when the command is an anonymous class' do
@@ -687,7 +800,7 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
 
-      describe '#namespace?' do
+      describe '.namespace?' do
         it { expect(described_class.namespace?).to be true }
 
         wrap_deferred 'when the command is an anonymous class' do
@@ -713,7 +826,7 @@ module Cuprum::Cli::RSpec::Deferred
         end
       end
 
-      describe '#short_name' do
+      describe '.short_name' do
         let(:expected) { 'custom' }
 
         it { expect(described_class.short_name).to be == expected }

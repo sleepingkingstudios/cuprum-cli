@@ -14,8 +14,7 @@ module Cuprum::Cli
     extend  Cuprum::Cli::Arguments::ClassMethods
     extend  Cuprum::Cli::Options::ClassMethods
 
-    # Exception raised when defining an argument or  option directly on Command.
-    class AbstractCommandError < StandardError; end
+    abstract
 
     provider Cuprum::Cli::Dependencies.provider
 
@@ -24,32 +23,25 @@ module Cuprum::Cli
       def argument(argument_name, **)
         return super unless abstract?
 
-        raise AbstractCommandError,
-          "unable to define argument :#{argument_name} - #{name} is an " \
-          'abstract class'
+        raise Cuprum::Cli::Metadata::AbstractCommandError,
+          abstract_command_message("define argument :#{argument_name}")
       end
 
       # (see Cuprum::Cli::Dependencies::ClassMethods#dependency)
       def dependency(dependency_name, **)
         return super unless abstract?
 
-        raise AbstractCommandError,
-          "unable to add dependency :#{dependency_name} - #{name} is an " \
-          'abstract class'
+        raise Cuprum::Cli::Metadata::AbstractCommandError,
+          abstract_command_message("add dependency :#{dependency_name}")
       end
 
       # (see Cuprum::Cli::Dependencies::ClassMethods#option)
       def option(option_name, **)
         return super unless abstract?
 
-        raise AbstractCommandError,
-          "unable to define option :#{option_name} - #{name} is an abstract " \
-          'class'
+        raise Cuprum::Cli::Metadata::AbstractCommandError,
+          abstract_command_message("define option :#{option_name}")
       end
-
-      private
-
-      def abstract? = self == Cuprum::Cli::Command
     end
 
     def initialize(**)

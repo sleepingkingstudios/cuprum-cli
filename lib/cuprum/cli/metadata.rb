@@ -15,8 +15,18 @@ module Cuprum::Cli
     UNDEFINED = SleepingKingStudios::Tools::UNDEFINED
     private_constant :UNDEFINED
 
+    # Raised when performing a protected operation on an abstract Command.
+    class AbstractCommandError < StandardError; end
+
     # Class methods to extend when including Metadata.
     module ClassMethods
+      # Marks the command as abstract.
+      def abstract = @abstract = true
+
+      # @return [true, false] true if the command is abstract and should not be
+      #   instantiated directly or assigned metadata; otherwise false.
+      def abstract? = @abstract.nil? ? false : @abstract
+
       # @overload description
       #   @return [String] the description for the command.
       #
@@ -28,6 +38,11 @@ module Cuprum::Cli
       #   @return [String] the set description.
       def description(value = UNDEFINED)
         return defined_description if value == UNDEFINED
+
+        if abstract?
+          raise AbstractCommandError,
+            abstract_command_message('set description')
+        end
 
         tools.assertions.validate_name(value, as: 'description')
 
@@ -50,6 +65,11 @@ module Cuprum::Cli
       def full_description(value = UNDEFINED)
         if value == UNDEFINED
           return defined_full_description || defined_description
+        end
+
+        if abstract?
+          raise AbstractCommandError,
+            abstract_command_message('set full_description')
         end
 
         tools.assertions.validate_name(value, as: 'full_description')
@@ -81,8 +101,12 @@ module Cuprum::Cli
       #   @param value [String] the full name to set.
       #
       #   @return [String] the set full name.
-      def full_name(value = UNDEFINED)
+      def full_name(value = UNDEFINED) # rubocop:disable Metrics/MethodLength
         return defined_full_name if value == UNDEFINED
+
+        if abstract?
+          raise AbstractCommandError, abstract_command_message('set full_name')
+        end
 
         tools.assertions.validate_name(value, as: 'full_name')
         tools.assertions.validate_matches(
@@ -131,6 +155,15 @@ module Cuprum::Cli
       def short_name = full_name&.split(':')&.last
 
       protected
+
+      def abstract_command_message(short_message)
+        class_name =
+          ancestors
+          .find { |ancestor| ancestor.is_a?(Class) && ancestor.name }
+          .name
+
+        "unable to #{short_message} - #{class_name} is an abstract class"
+      end
 
       def defined_description
         return @description if @description
