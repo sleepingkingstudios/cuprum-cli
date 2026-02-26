@@ -27,7 +27,7 @@ module Cuprum::Cli
       #
       #   @return [String] the set description.
       def description(value = UNDEFINED)
-        return @description if value == UNDEFINED
+        return defined_description if value == UNDEFINED
 
         tools.assertions.validate_name(value, as: 'description')
 
@@ -36,7 +36,7 @@ module Cuprum::Cli
 
       # @return [true, false] true if the command defines a description;
       #   otherwise false.
-      def description? = !@description.nil?
+      def description? = !defined_description.nil?
 
       # @overload full_description
       #   @return [String] the full description for the command.
@@ -48,7 +48,9 @@ module Cuprum::Cli
       #
       #   @return [String] the set full description.
       def full_description(value = UNDEFINED)
-        return @full_description || description if value == UNDEFINED
+        if value == UNDEFINED
+          return defined_full_description || defined_description
+        end
 
         tools.assertions.validate_name(value, as: 'full_description')
 
@@ -57,7 +59,7 @@ module Cuprum::Cli
 
       # @return [true, false] true if the command defines a full description;
       #   otherwise false.
-      def full_description? = !@full_description.nil?
+      def full_description? = !defined_full_description.nil?
 
       # @overload full_name
       #   Returns the name of the command, used when calling from a CLI.
@@ -80,7 +82,7 @@ module Cuprum::Cli
       #
       #   @return [String] the set full name.
       def full_name(value = UNDEFINED)
-        return @full_name ||= default_name if value == UNDEFINED
+        return defined_full_name if value == UNDEFINED
 
         tools.assertions.validate_name(value, as: 'full_name')
         tools.assertions.validate_matches(
@@ -127,6 +129,34 @@ module Cuprum::Cli
       #
       # @return [String] the short name for the command.
       def short_name = full_name&.split(':')&.last
+
+      protected
+
+      def defined_description
+        return @description if @description
+
+        return unless superclass.respond_to?(:defined_description, true)
+
+        superclass.defined_description
+      end
+
+      def defined_full_description
+        return @full_description if @full_description
+
+        return unless superclass.respond_to?(:defined_full_description, true)
+
+        superclass.defined_full_description
+      end
+
+      def defined_full_name
+        return @full_name if @full_name ||= default_name
+
+        return unless superclass.respond_to?(:defined_full_name, true)
+
+        return if superclass.name == 'Cuprum::Cli::Command'
+
+        superclass.defined_full_name
+      end
 
       private
 

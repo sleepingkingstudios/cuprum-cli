@@ -6,6 +6,13 @@ RSpec.describe Cuprum::Cli::Metadata do
   let(:described_class) { Spec::CustomCommand }
   let(:concern)         { Cuprum::Cli::Metadata } # rubocop:disable RSpec/DescribedClass
 
+  deferred_context 'when the command has a parent command' do
+    let(:parent_class)    { Spec::CustomCommand }
+    let(:described_class) { Spec::SubclassCommand }
+
+    example_class 'Spec::SubclassCommand', 'Spec::CustomCommand'
+  end
+
   example_class 'Spec::CustomCommand' do |klass|
     klass.include concern
   end
@@ -103,6 +110,46 @@ RSpec.describe Cuprum::Cli::Metadata do
           .to be == value
       end
     end
+
+    wrap_deferred 'when the command has a parent command' do
+      it { expect(described_class.description).to be nil }
+
+      context 'when the command has a description' do
+        let(:description) do
+          'No one is quite sure what this does.'
+        end
+
+        before(:example) do
+          described_class.description(description)
+        end
+
+        it { expect(described_class.description).to be == description }
+      end
+
+      context 'when the parent command has a description' do
+        let(:parent_description) do
+          'A thing of mystery.'
+        end
+
+        before(:example) do
+          Spec::CustomCommand.description(parent_description)
+        end
+
+        it { expect(described_class.description).to be == parent_description }
+
+        context 'when the command has a description' do
+          let(:description) do
+            'No one is quite sure what this does.'
+          end
+
+          before(:example) do
+            described_class.description(description)
+          end
+
+          it { expect(described_class.description).to be == description }
+        end
+      end
+    end
   end
 
   describe '#description?' do
@@ -122,6 +169,34 @@ RSpec.describe Cuprum::Cli::Metadata do
       end
 
       it { expect(described_class.description?).to be true }
+    end
+
+    wrap_deferred 'when the command has a parent command' do
+      it { expect(described_class.description?).to be false }
+
+      context 'when the command has a description' do
+        let(:description) do
+          'No one is quite sure what this does.'
+        end
+
+        before(:example) do
+          described_class.description(description)
+        end
+
+        it { expect(described_class.description?).to be true }
+      end
+
+      context 'when the parent command has a description' do
+        let(:parent_description) do
+          'A thing of mystery.'
+        end
+
+        before(:example) do
+          Spec::CustomCommand.description(parent_description)
+        end
+
+        it { expect(described_class.description?).to be true }
+      end
     end
   end
 
@@ -216,6 +291,148 @@ RSpec.describe Cuprum::Cli::Metadata do
         end
       end
     end
+
+    wrap_deferred 'when the command has a parent command' do
+      it { expect(described_class.full_description).to be nil }
+
+      context 'when the command has a description' do
+        let(:description) do
+          'No one is quite sure what this does.'
+        end
+
+        before(:example) do
+          described_class.description(description)
+        end
+
+        it { expect(described_class.full_description).to be == description }
+
+        context 'when the command has a full description' do
+          let(:full_description) do
+            <<~DESC
+              No one is quite sure what this does.
+
+              ...but it sure looks cool!
+            DESC
+          end
+
+          before(:example) do
+            described_class.full_description(full_description)
+          end
+
+          it 'should return the full description' do
+            expect(described_class.full_description).to be == full_description
+          end
+        end
+      end
+
+      context 'when the command has a full description' do
+        let(:full_description) do
+          <<~DESC
+            No one is quite sure what this does.
+
+            ...but it sure looks cool!
+          DESC
+        end
+
+        before(:example) do
+          described_class.full_description(full_description)
+        end
+
+        it 'should return the full description' do
+          expect(described_class.full_description).to be == full_description
+        end
+      end
+
+      context 'when the parent command has a description' do
+        let(:parent_description) do
+          'A thing of mystery.'
+        end
+
+        before(:example) do
+          Spec::CustomCommand.description(parent_description)
+        end
+
+        it 'should return the parent value' do
+          expect(described_class.full_description).to be == parent_description
+        end
+
+        context 'when the command has a description' do
+          let(:description) do
+            'No one is quite sure what this does.'
+          end
+
+          before(:example) do
+            described_class.description(description)
+          end
+
+          it { expect(described_class.full_description).to be == description }
+        end
+
+        context 'when the command has a full description' do
+          let(:full_description) do
+            <<~DESC
+              No one is quite sure what this does.
+
+              ...but it sure looks cool!
+            DESC
+          end
+
+          before(:example) do
+            described_class.full_description(full_description)
+          end
+
+          it 'should return the full description' do
+            expect(described_class.full_description).to be == full_description
+          end
+        end
+      end
+
+      context 'when the parent command has a full description' do
+        let(:parent_description) do
+          'A thing of mystery.'
+        end
+
+        before(:example) do
+          Spec::CustomCommand.full_description(parent_description)
+        end
+
+        it 'should return the parent value' do
+          expect(described_class.full_description).to be == parent_description
+        end
+
+        context 'when the command has a description' do
+          let(:description) do
+            'No one is quite sure what this does.'
+          end
+
+          before(:example) do
+            described_class.description(description)
+          end
+
+          it 'should return the parent value' do
+            expect(described_class.full_description).to be == parent_description
+          end
+        end
+
+        context 'when the command has a full description' do
+          let(:full_description) do
+            <<~DESC
+              No one is quite sure what this does.
+
+              ...but it sure looks cool!
+            DESC
+          end
+
+          before(:example) do
+            described_class.full_description(full_description)
+          end
+
+          it 'should return the full description' do
+            expect(described_class.full_description).to be == full_description
+          end
+        end
+      end
+    end
   end
 
   describe '#full_description?' do
@@ -251,6 +468,60 @@ RSpec.describe Cuprum::Cli::Metadata do
       end
 
       it { expect(described_class.full_description?).to be true }
+    end
+
+    wrap_deferred 'when the command has a parent command' do
+      context 'when the command has a description' do
+        let(:description) do
+          'No one is quite sure what this does.'
+        end
+
+        before(:example) do
+          described_class.description(description)
+        end
+
+        it { expect(described_class.full_description?).to be false }
+      end
+
+      context 'when the command has a full description' do
+        let(:full_description) do
+          <<~DESC
+            No one is quite sure what this does.
+
+            ...but it sure looks cool!
+          DESC
+        end
+
+        before(:example) do
+          described_class.full_description(full_description)
+        end
+
+        it { expect(described_class.full_description?).to be true }
+      end
+
+      context 'when the parent command has a description' do
+        let(:parent_description) do
+          'A thing of mystery.'
+        end
+
+        before(:example) do
+          Spec::CustomCommand.description(parent_description)
+        end
+
+        it { expect(described_class.full_description?).to be false }
+      end
+
+      context 'when the parent command has a full description' do
+        let(:parent_description) do
+          'A thing of mystery.'
+        end
+
+        before(:example) do
+          Spec::CustomCommand.full_description(parent_description)
+        end
+
+        it { expect(described_class.full_description?).to be true }
+      end
     end
   end
 
@@ -354,6 +625,51 @@ RSpec.describe Cuprum::Cli::Metadata do
         expect { described_class.full_name(value) }
           .to change(described_class, :full_name)
           .to be == value
+      end
+    end
+
+    wrap_deferred 'when the command has a parent command' do
+      let(:expected) { 'spec:subclass' }
+
+      it { expect(described_class.full_name).to be == expected }
+
+      context 'when the command is an anonymous class' do
+        let(:described_class) do
+          Class.new(parent_class) do
+            include Cuprum::Cli::Metadata
+
+            def self.name
+              Class.instance_method(:name).bind(self).call
+            end
+          end
+        end
+        let(:expected) { 'spec:custom' }
+
+        it { expect(described_class.full_name).to be == expected }
+
+        context 'when the parent command defines a full name' do
+          let(:expected) { 'category:sub_category:do_something' }
+
+          before(:example) do
+            parent_class.full_name 'category:sub_category:do_something'
+          end
+
+          it { expect(described_class.full_name).to be == expected }
+        end
+
+        context 'when the parent command is an anonymous class' do
+          let(:parent_class) do
+            Class.new do
+              include Cuprum::Cli::Metadata
+
+              def self.name
+                Class.instance_method(:name).bind(self).call
+              end
+            end
+          end
+
+          it { expect(described_class.full_name).to be nil }
+        end
       end
     end
   end
