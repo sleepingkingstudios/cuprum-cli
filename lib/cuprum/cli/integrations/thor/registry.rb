@@ -23,6 +23,8 @@ module Cuprum::Cli::Integrations::Thor
     # @return [self]
     def register(command, arguments: nil, name: nil, options: nil)
       super.tap do
+        command = commands[name || command.full_name]
+
         Cuprum::Cli::Integrations::Thor::Task::Builder
           .new(command)
           .build(full_name: name)
