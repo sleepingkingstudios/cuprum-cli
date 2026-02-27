@@ -109,7 +109,49 @@ module Cuprum::Cli::RSpec::Deferred
           expect(subject)
             .to respond_to(:register)
             .with(1).argument
-            .and_keywords(:name)
+            .and_keywords(:arguments, :options, :name)
+        end
+
+        describe 'with arguments: value' do
+          let(:arguments)  { %w[ichi ni san] }
+          let(:registered) { registry.commands[command.full_name] }
+
+          it { expect(subject.register(command)).to be registry }
+
+          it 'should register the command' do
+            expect { subject.register(command, arguments:) }
+              .to change(registry, :commands)
+              .to have_key(command.full_name)
+          end
+
+          it 'should configure the command', :aggregate_failures do
+            subject.register(command, arguments:)
+
+            expect(registered).to be_a(Class).and(be < command)
+            expect(registered.argument_values).to be == arguments
+            expect(registered.option_values).to be == {}
+          end
+        end
+
+        describe 'with options: value' do
+          let(:options)    { { option: 'value', other: 'other' } }
+          let(:registered) { registry.commands[command.full_name] }
+
+          it { expect(subject.register(command)).to be registry }
+
+          it 'should register the command' do
+            expect { subject.register(command, options:) }
+              .to change(registry, :commands)
+              .to have_key(command.full_name)
+          end
+
+          it 'should configure the command', :aggregate_failures do
+            subject.register(command, options:)
+
+            expect(registered).to be_a(Class).and(be < command)
+            expect(registered.argument_values).to be == []
+            expect(registered.option_values).to be == options
+          end
         end
 
         describe 'with command: nil' do
@@ -204,6 +246,8 @@ module Cuprum::Cli::RSpec::Deferred
               expect { subject.register(command, name:) }
                 .to change(registry, :commands)
                 .to have_key(name)
+
+              expect(registry.commands[name]).to be command
             end
 
             context 'when the registry already defines the command' do
@@ -236,6 +280,8 @@ module Cuprum::Cli::RSpec::Deferred
             expect { subject.register(command) }
               .to change(registry, :commands)
               .to have_key(command.full_name)
+
+            expect(registry.commands[command.full_name]).to be command
           end
 
           context 'when the registry already defines the command' do
@@ -266,6 +312,8 @@ module Cuprum::Cli::RSpec::Deferred
               expect { subject.register(command, name:) }
                 .to change(registry, :commands)
                 .to have_key(name)
+
+              expect(registry.commands[name]).to be command
             end
 
             context 'when the registry already defines the command' do

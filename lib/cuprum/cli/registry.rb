@@ -22,18 +22,25 @@ module Cuprum::Cli
     # Registers the command with the registry.
     #
     # @param command [Class] the command class to register.
+    # @param arguments [Array] arguments to pass to the command on
+    #   initialization.
+    # @param options [Hash] options to pass to the command on initialization.
     # @param name [String] the name under which to register the command.
     #   Defaults to the value of command.full_name.
     #
     # @raise [NameError] if a command is already registered with that name.
     #
     # @return [self]
-    def register(command, name: nil)
+    def register(command, arguments: nil, name: nil, options: nil)
       validate_command(command)
 
       name ||= command.full_name
 
       validate_name(name)
+
+      if present?(arguments) || present?(options)
+        command = build_command(command, arguments:, options:)
+      end
 
       registered_commands[name] = command
 
@@ -42,8 +49,28 @@ module Cuprum::Cli
 
     private
 
+    def build_command(command, arguments:, options:)
+      Class.new(command).tap do |command_class|
+        arguments&.each do |argument|
+          command_class.argument_value(argument)
+        end
+
+        options&.each do |option, value|
+          command_class.option_value(option, value)
+        end
+      end
+    end
+
     def invalid_name_format_message
       'name does not match format category:sub_category:do_something'
+    end
+
+    def present?(value)
+      return false if value.nil?
+
+      return false unless value.respond_to?(:empty?) && !value.empty?
+
+      true
     end
 
     def registered_commands = @registered_commands ||= {}

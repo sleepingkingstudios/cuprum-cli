@@ -12,13 +12,16 @@ module Cuprum::Cli::Integrations::Thor
     # Also registers a Thor task with compatible parameters and metadata.
     #
     # @param command [Class] the command class to register.
+    # @param arguments [Array] arguments to pass to the command on
+    #   initialization.
+    # @param options [Hash] options to pass to the command on initialization.
     # @param name [String] the name under which to register the command.
     #   Defaults to the value of command.full_name.
     #
     # @raise [NameError] if a command is already registered with that name.
     #
     # @return [self]
-    def register(command, name: nil)
+    def register(command, arguments: nil, name: nil, options: nil)
       super.tap do
         Cuprum::Cli::Integrations::Thor::Task::Builder
           .new(command)
