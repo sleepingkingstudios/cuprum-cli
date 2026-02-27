@@ -25,4 +25,6 @@ group :development, :test do
   gem 'rubocop-rspec', '~> 3.8'
 
   gem 'simplecov', '~> 0.22'
+
+  gem 'thor', '~> 1.5'
 end
