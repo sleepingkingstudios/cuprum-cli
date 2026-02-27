@@ -7,7 +7,7 @@ module Cuprum::Cli
   class Registry
     # @return [Class, nil] the command registered with the given name, if any.
     def [](name)
-      tools.assertions.validate_name(name, as: 'name')
+      tools.assertions.validate_name(name, as: 'full_name')
 
       registered_commands[name]
     end
@@ -22,18 +22,29 @@ module Cuprum::Cli
     # Registers the command with the registry.
     #
     # @param command [Class] the command class to register.
-    # @param name [String] the name under which to register the command.
-    #   Defaults to the value of command.full_name.
+    # @param config [Hash] options for configuring the command.
+    #
+    # @option config arguments [Array] arguments to pass to the command on
+    #   initialization.
+    # @option config description [String] the description for the command.
+    # @option config full_description [String] the full description for the
+    #   command.
+    # @option config full_name [String] the name under which to register the
+    #   command. Defaults to the value of command.full_name.
+    # @option config options [Hash] options to pass to the command on
+    #   initialization.
     #
     # @raise [NameError] if a command is already registered with that name.
     #
     # @return [self]
-    def register(command, name: nil)
+    def register(command, **config)
       validate_command(command)
 
-      name ||= command.full_name
+      name = config.fetch(:full_name, command.full_name)
 
       validate_name(name)
+
+      command = build_command(command, **config) if any_present?(config)
 
       registered_commands[name] = command
 
@@ -42,8 +53,57 @@ module Cuprum::Cli
 
     private
 
+    def any_present?(config)
+      return false if config.empty?
+
+      config.each_value.any? { |value| present?(value) }
+    end
+
+    def build_command( # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/ParameterLists
+      command,
+      arguments:        nil,
+      description:      nil,
+      full_description: nil,
+      full_name:        nil,
+      options:          nil,
+      **
+    )
+      Class.new(command).tap do |command_class|
+        command_class.description(description) if present?(description)
+
+        command_class.full_name(full_name) if present?(full_name)
+
+        if present?(full_description)
+          command_class.full_description(full_description)
+        end
+
+        arguments&.each do |argument|
+          command_class.argument_value(argument)
+        end
+
+        options&.each do |option, value|
+          command_class.option_value(option, value)
+        end
+      end
+    end
+
+    def command_name(command)
+      command
+        .ancestors
+        .find { |ancestor| ancestor.is_a?(Class) && ancestor.name }
+        .name
+    end
+
     def invalid_name_format_message
-      'name does not match format category:sub_category:do_something'
+      'full_name does not match format category:sub_category:do_something'
+    end
+
+    def present?(value)
+      return false if value.nil?
+
+      return false unless value.respond_to?(:empty?) && !value.empty?
+
+      true
     end
 
     def registered_commands = @registered_commands ||= {}
@@ -60,10 +120,10 @@ module Cuprum::Cli
     end
 
     def validate_name(name) # rubocop:disable Metrics/MethodLength
-      tools.assertions.validate_name(name, as: 'name')
+      tools.assertions.validate_name(name, as: 'full_name')
       tools.assertions.validate_matches(
         name,
-        as:       'name',
+        as:       'full_name',
         expected: Cuprum::Cli::Metadata::FULL_NAME_FORMAT,
         message:  invalid_name_format_message
       )
@@ -71,7 +131,8 @@ module Cuprum::Cli
       return unless registered_commands.key?(name)
 
       command = registered_commands[name]
-      message = "command already registered as #{name} - #{command.inspect}"
+      message =
+        "command already registered as #{name} - #{command_name(command)}"
 
       raise NameError, message
     end
