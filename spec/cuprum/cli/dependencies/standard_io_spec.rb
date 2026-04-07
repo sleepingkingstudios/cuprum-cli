@@ -18,6 +18,64 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
     end
   end
 
+  describe '#color' do
+    let(:text)       { 'Greetings, starfighter!' }
+    let(:color_code) { 0 }
+    let(:expected)   { "\e[#{color_code}m#{text}\e[0m" }
+
+    it { expect(standard_io).to respond_to(:color).with(2).arguments }
+
+    describe 'with color name: an invalid value' do
+      let(:color) { 'octarine' }
+      let(:error_message) do
+        {}.fetch(color)
+      rescue KeyError => exception
+        exception.message
+      end
+
+      it 'should raise an exception' do
+        expect { standard_io.color(text, color) }
+          .to raise_error KeyError, error_message
+      end
+    end
+
+    describe 'with color name: black' do
+      let(:color_code) { 0 }
+
+      it { expect(standard_io.color(text, 'black')).to be == expected }
+    end
+
+    describe 'with color name: blue' do
+      let(:color_code) { 34 }
+
+      it { expect(standard_io.color(text, 'blue')).to be == expected }
+    end
+
+    describe 'with color name: green' do
+      let(:color_code) { 32 }
+
+      it { expect(standard_io.color(text, 'green')).to be == expected }
+    end
+
+    describe 'with color name: purple' do
+      let(:color_code) { 35 }
+
+      it { expect(standard_io.color(text, 'purple')).to be == expected }
+    end
+
+    describe 'with color name: red' do
+      let(:color_code) { 31 }
+
+      it { expect(standard_io.color(text, 'red')).to be == expected }
+    end
+
+    describe 'with color name: yellow' do
+      let(:color_code) { 33 }
+
+      it { expect(standard_io.color(text, 'yellow')).to be == expected }
+    end
+  end
+
   describe '#error_stream' do
     include_examples 'should define private reader',
       :error_stream,
@@ -201,7 +259,7 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
     describe 'with a multi-line String' do
       let(:message) do
         <<~MESSAGE.strip
-          Greetings, starfighters!
+          Greetings, starfighter!
 
           You have been recruited by the Star League to defend the frontier
           against Xur and the Ko-Dan Armada!
@@ -376,7 +434,7 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
     describe 'with a multi-line String' do
       let(:message) do
         <<~MESSAGE.strip
-          Greetings, starfighters!
+          Greetings, starfighter!
 
           You have been recruited by the Star League to defend the frontier
           against Xur and the Ko-Dan Armada!
