@@ -90,8 +90,8 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecCommand do # rubocop:disable RSpe
           "summary": {
             "duration": 0.5,
             "example_count": 10,
-            "failure_count": 1,
-            "pending_count": 2,
+            "failure_count": 0,
+            "pending_count": 0,
             "errors_outside_of_examples_count": 0
           }
         }
@@ -102,8 +102,8 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecCommand do # rubocop:disable RSpe
         label:         'ci:rspec',
         duration:      0.5,
         error_count:   0,
-        failure_count: 1,
-        pending_count: 2,
+        failure_count: 0,
+        pending_count: 0,
         total_count:   10
       )
     end
@@ -131,6 +131,102 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecCommand do # rubocop:disable RSpe
     end
 
     include_deferred 'should run the rspec command'
+
+    context 'when the report includes errors' do
+      let(:json) do
+        <<~JSON
+          {
+            "summary": {
+              "duration": 0.5,
+              "example_count": 10,
+              "failure_count": 0,
+              "pending_count": 0,
+              "errors_outside_of_examples_count": 1
+            }
+          }
+        JSON
+      end
+      let(:expected_value) do
+        described_class::Report.new(
+          label:         'ci:rspec',
+          duration:      0.5,
+          error_count:   1,
+          failure_count: 0,
+          pending_count: 0,
+          total_count:   10
+        )
+      end
+
+      it 'should return a failing result' do
+        expect(command.call)
+          .to be_a_failing_result
+          .with_value(expected_value)
+      end
+    end
+
+    context 'when the report includes failing specs' do
+      let(:json) do
+        <<~JSON
+          {
+            "summary": {
+              "duration": 0.5,
+              "example_count": 10,
+              "failure_count": 3,
+              "pending_count": 0,
+              "errors_outside_of_examples_count": 0
+            }
+          }
+        JSON
+      end
+      let(:expected_value) do
+        described_class::Report.new(
+          label:         'ci:rspec',
+          duration:      0.5,
+          error_count:   0,
+          failure_count: 3,
+          pending_count: 0,
+          total_count:   10
+        )
+      end
+
+      it 'should return a failing result' do
+        expect(command.call)
+          .to be_a_failing_result
+          .with_value(expected_value)
+      end
+    end
+
+    context 'when the report includes pending specs' do
+      let(:json) do
+        <<~JSON
+          {
+            "summary": {
+              "duration": 0.5,
+              "example_count": 10,
+              "failure_count": 0,
+              "pending_count": 5,
+              "errors_outside_of_examples_count": 0
+            }
+          }
+        JSON
+      end
+      let(:expected_value) do
+        described_class::Report.new(
+          label:         'ci:rspec',
+          duration:      0.5,
+          error_count:   0,
+          failure_count: 0,
+          pending_count: 5,
+          total_count:   10
+        )
+      end
+
+      it 'should return a passing result' do
+        expect(command.call)
+          .to be_a_passing_result
+          .with_value(expected_value)
+      end
+    end
 
     context 'when the process does not write JSON to the tempfile' do
       let(:json) { '' }

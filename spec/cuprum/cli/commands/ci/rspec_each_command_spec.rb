@@ -329,9 +329,9 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           RAW
         end
 
-        it 'should return a passing result' do
+        it 'should return a failing result' do
           expect(command.call(*arguments, **options))
-            .to be_a_passing_result
+            .to be_a_failing_result
             .with_value(expected_value)
         end
 
@@ -369,9 +369,9 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           RAW
         end
 
-        it 'should return a passing result' do
+        it 'should return a failing result' do
           expect(command.call(*arguments, **options))
-            .to be_a_passing_result
+            .to be_a_failing_result
             .with_value(expected_value)
         end
 
@@ -458,9 +458,9 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           RAW
         end
 
-        it 'should return a passing result' do
+        it 'should return a failing result' do
           expect(command.call(*arguments, **options))
-            .to be_a_passing_result
+            .to be_a_failing_result
             .with_value(expected_value)
         end
 

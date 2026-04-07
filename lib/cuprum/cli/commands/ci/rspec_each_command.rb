@@ -32,8 +32,10 @@ module Cuprum::Cli::Commands::Ci
 
     attr_reader :report
 
-    def aggregate_file_results(filename:, result:) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      merge_report(result) if result.success?
+    def aggregate_file_results(filename:, result:) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      if result.value.is_a?(Cuprum::Cli::Commands::Ci::Report)
+        merge_report(result)
+      end
 
       if result.value&.errored? || result.failure?
         errored_files << filename
@@ -92,12 +94,13 @@ module Cuprum::Cli::Commands::Ci
 
       matching_files.each { |filename| run_file(filename) }
 
-      say_pending
-      say_failures
-      say_errored
-      say_summary
+      summarize_report
 
-      report.with(label: 'ci:rspec_each')
+      report = @report.with(label: 'ci:rspec_each')
+
+      return success(report) unless report.errored? || report.failure?
+
+      build_result(status: :failure, value: report)
     end
 
     def reset_report
@@ -166,6 +169,13 @@ module Cuprum::Cli::Commands::Ci
         end
 
       say color(report.summary, summary_color)
+    end
+
+    def summarize_report
+      say_pending
+      say_failures
+      say_errored
+      say_summary
     end
 
     def trim_filename(filename)
