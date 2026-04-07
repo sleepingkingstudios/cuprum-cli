@@ -45,7 +45,7 @@ RSpec/ExampleWording:
   Enabled: false
 
 RSpec/HookArgument:
-  Enabled: false
+  EnforcedStyle: example
 
 RSpec/IncludeExamples:
   Enabled: false
