@@ -57,7 +57,7 @@ module Cuprum::Cli::Commands::Ci
 
       return patterns unless patterns.empty?
 
-      ['**{,/*/**}/*_spec.rb']
+      ['spec/**{,/*/**}/*_spec.rb']
     end
 
     def format_status(result)

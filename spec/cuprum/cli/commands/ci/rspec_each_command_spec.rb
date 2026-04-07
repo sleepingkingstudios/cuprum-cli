@@ -192,11 +192,16 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
     context 'when there are matching spec files' do
       let(:files) do
         {
-          'root_dir'     => {
-            'child_spec.rb'   => StringIO.new,
-            'sibling_spec.rb' => StringIO.new
+          'spec'   => {
+            'root_dir'     => {
+              'child_spec.rb'   => StringIO.new,
+              'sibling_spec.rb' => StringIO.new
+            },
+            'root_spec.rb' => StringIO.new
           },
-          'root_spec.rb' => StringIO.new
+          'vendor' => {
+            'excluded_spec.rb' => StringIO.new
+          }
         }
       end
       let(:file_system) do
@@ -231,15 +236,15 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
         )
       end
       let(:expected_files) do
-        file_system.each_file('**/*').to_a
+        file_system.each_file('spec/**/*').to_a
       end
       let(:expected_output) do
         <<~RAW
           Running 3 spec files...
 
-          \e[32mPassing\e[0m root_dir/child_spec.rb
-          \e[32mPassing\e[0m root_dir/sibling_spec.rb
-          \e[32mPassing\e[0m root_spec.rb
+          \e[32mPassing\e[0m spec/root_dir/child_spec.rb
+          \e[32mPassing\e[0m spec/root_dir/sibling_spec.rb
+          \e[32mPassing\e[0m spec/root_spec.rb
 
           Finished in 6.0 seconds
           \e[32m30 examples, 0 failures\e[0m
@@ -276,13 +281,13 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           <<~RAW
             Running 3 spec files...
 
-            \e[32mPassing\e[0m root_dir/child_spec.rb
-            \e[31mErrored\e[0m root_dir/sibling_spec.rb
-            \e[32mPassing\e[0m root_spec.rb
+            \e[32mPassing\e[0m spec/root_dir/child_spec.rb
+            \e[31mErrored\e[0m spec/root_dir/sibling_spec.rb
+            \e[32mPassing\e[0m spec/root_spec.rb
 
             Errored:
 
-            \e[31m  root_dir/sibling_spec.rb\e[0m
+            \e[31m  spec/root_dir/sibling_spec.rb\e[0m
 
             Finished in 4.0 seconds
             \e[31m20 examples, 0 failures\e[0m
@@ -316,13 +321,13 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           <<~RAW
             Running 3 spec files...
 
-            \e[32mPassing\e[0m root_dir/child_spec.rb
-            \e[31mErrored\e[0m root_dir/sibling_spec.rb
-            \e[32mPassing\e[0m root_spec.rb
+            \e[32mPassing\e[0m spec/root_dir/child_spec.rb
+            \e[31mErrored\e[0m spec/root_dir/sibling_spec.rb
+            \e[32mPassing\e[0m spec/root_spec.rb
 
             Errored:
 
-            \e[31m  root_dir/sibling_spec.rb\e[0m
+            \e[31m  spec/root_dir/sibling_spec.rb\e[0m
 
             Finished in 6.0 seconds
             \e[31m30 examples, 0 failures, 1 errors\e[0m
@@ -356,13 +361,13 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           <<~RAW
             Running 3 spec files...
 
-            \e[32mPassing\e[0m root_dir/child_spec.rb
-            \e[31mFailing\e[0m root_dir/sibling_spec.rb
-            \e[32mPassing\e[0m root_spec.rb
+            \e[32mPassing\e[0m spec/root_dir/child_spec.rb
+            \e[31mFailing\e[0m spec/root_dir/sibling_spec.rb
+            \e[32mPassing\e[0m spec/root_spec.rb
 
             Failures:
 
-            \e[31m  root_dir/sibling_spec.rb\e[0m
+            \e[31m  spec/root_dir/sibling_spec.rb\e[0m
 
             Finished in 6.0 seconds
             \e[31m30 examples, 5 failures\e[0m
@@ -396,13 +401,13 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           <<~RAW
             Running 3 spec files...
 
-            \e[32mPassing\e[0m root_dir/child_spec.rb
-            \e[33mPending\e[0m root_dir/sibling_spec.rb
-            \e[32mPassing\e[0m root_spec.rb
+            \e[32mPassing\e[0m spec/root_dir/child_spec.rb
+            \e[33mPending\e[0m spec/root_dir/sibling_spec.rb
+            \e[32mPassing\e[0m spec/root_spec.rb
 
             Pending:
 
-            \e[33m  root_dir/sibling_spec.rb\e[0m
+            \e[33m  spec/root_dir/sibling_spec.rb\e[0m
 
             Finished in 6.0 seconds
             \e[33m30 examples, 0 failures, 5 pending\e[0m
@@ -440,18 +445,18 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           <<~RAW
             Running 3 spec files...
 
-            \e[31mFailing\e[0m root_dir/child_spec.rb
-            \e[31mFailing\e[0m root_dir/sibling_spec.rb
-            \e[33mPending\e[0m root_spec.rb
+            \e[31mFailing\e[0m spec/root_dir/child_spec.rb
+            \e[31mFailing\e[0m spec/root_dir/sibling_spec.rb
+            \e[33mPending\e[0m spec/root_spec.rb
 
             Pending:
 
-            \e[33m  root_spec.rb\e[0m
+            \e[33m  spec/root_spec.rb\e[0m
 
             Failures:
 
-            \e[31m  root_dir/child_spec.rb\e[0m
-            \e[31m  root_dir/sibling_spec.rb\e[0m
+            \e[31m  spec/root_dir/child_spec.rb\e[0m
+            \e[31m  spec/root_dir/sibling_spec.rb\e[0m
 
             Finished in 6.0 seconds
             \e[31m30 examples, 15 failures, 10 pending\e[0m
