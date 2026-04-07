@@ -178,12 +178,16 @@ module Cuprum::Cli::Integrations::Thor
           .hash_tools
           .convert_keys_to_symbols(options)
 
-        command_class.new(**command_dependencies).call(*args, **opts)
+        result = command_class.new(**command_dependencies).call(*args, **opts)
+
+        exit_proxy(result.error&.message || false) if result.failure?
       end
     end
 
     private
 
     attr_reader :command_dependencies
+
+    def exit_proxy(*) = Kernel.exit(*)
   end
 end

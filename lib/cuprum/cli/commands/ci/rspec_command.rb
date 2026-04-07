@@ -90,7 +90,11 @@ module Cuprum::Cli::Commands::Ci
         collect_stats { |tempfile| run_command(tempfile) }
       end
 
-      generate_report(json)
+      report = generate_report(json)
+
+      return success(report) unless report.errored? || report.failure?
+
+      build_result(status: :failure, value: report)
     end
 
     def run_command(tempfile)

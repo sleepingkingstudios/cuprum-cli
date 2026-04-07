@@ -12,3 +12,4 @@ registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
     env:     { integration: 'thor' },
     gemfile: 'gemfiles/integrations_thor.gemfile'
   }
+registry.register Cuprum::Cli::Commands::Ci::RSpecEachCommand
