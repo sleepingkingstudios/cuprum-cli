@@ -112,7 +112,9 @@ module Cuprum::Cli::Integrations::Thor
         type.to_sym
       end
 
-      def short_name = full_name&.split(':')&.last
+      def short_name
+        full_name&.split(':')&.last
+      end
 
       def signature
         "#{short_name}#{arguments_signature}"
@@ -180,7 +182,7 @@ module Cuprum::Cli::Integrations::Thor
 
         result = command_class.new(**command_dependencies).call(*args, **opts)
 
-        exit_proxy(result.error&.message || false) if result.failure?
+        handle_failure(result) if result.failure?
       end
     end
 
@@ -188,6 +190,15 @@ module Cuprum::Cli::Integrations::Thor
 
     attr_reader :command_dependencies
 
-    def exit_proxy(*) = Kernel.exit(*)
+    def abort(*) = Kernel.abort(*)
+
+    def handle_failure(result)
+      message =
+        result
+        .error
+        &.then { |err| "#{err.class.name}: #{err.message}" } || false
+
+      abort(message)
+    end
   end
 end

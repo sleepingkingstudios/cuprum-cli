@@ -83,7 +83,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
           end
         end
 
-        before(:example) { allow(task).to receive(:exit_proxy) } # rubocop:disable RSpec/SubjectStub
+        before(:example) { allow(task).to receive(:abort) } # rubocop:disable RSpec/SubjectStub
 
         it 'should call the command' do
           task.call_command
@@ -94,7 +94,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
         it 'should exit with a non-zero status code' do
           task.call_command
 
-          expect(task).to have_received(:exit_proxy).with(false) # rubocop:disable RSpec/SubjectStub
+          expect(task).to have_received(:abort).with(false) # rubocop:disable RSpec/SubjectStub
         end
       end
 
@@ -113,7 +113,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
           end
         end
 
-        before(:example) { allow(task).to receive(:exit_proxy) } # rubocop:disable RSpec/SubjectStub
+        before(:example) { allow(task).to receive(:abort) } # rubocop:disable RSpec/SubjectStub
 
         it 'should call the command' do
           task.call_command
@@ -125,8 +125,8 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
           task.call_command
 
           expect(task) # rubocop:disable RSpec/SubjectStub
-            .to have_received(:exit_proxy)
-            .with('Something went wrong.')
+            .to have_received(:abort)
+            .with('Cuprum::Error: Something went wrong.')
         end
       end
     end
