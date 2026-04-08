@@ -6,6 +6,7 @@ module Cuprum::Cli
   # Namespace for predefined commands.
   module Commands
     autoload :Ci,          'cuprum/cli/commands/ci'
+    autoload :File,        'cuprum/cli/commands/file'
     autoload :EchoCommand, 'cuprum/cli/commands/echo_command'
   end
 end
