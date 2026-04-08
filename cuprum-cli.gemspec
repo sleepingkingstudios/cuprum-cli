@@ -33,5 +33,6 @@ Gem::Specification.new do |gem|
   ]
 
   gem.add_dependency 'cuprum', '~> 1.3', '>= 1.3.1'
+  gem.add_dependency 'herb', '~> 0.9'
   gem.add_dependency 'plumbum'
 end
