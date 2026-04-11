@@ -10,6 +10,21 @@ module Cuprum::Cli::Dependencies
   class FileSystem
     autoload :Mock, 'cuprum/cli/dependencies/file_system/mock'
 
+    # Abstract class for exceptions raised by failing file system operations.
+    class FileError < StandardError; end
+
+    # Exception raised when attempting to access a file as a directory.
+    class DirectoryIsAFileError < FileError; end
+
+    # Exception raised when attempting to access a non-existent directory.
+    class DirectoryNotFoundError < FileError; end
+
+    # Exception raised when attempting to access a directory as a file.
+    class FileIsADirectoryError < FileError; end
+
+    # Exception raised when attempting to access a non-existent file.
+    class FileNotFoundError < FileError; end
+
     # @param root_path [String] the path to the root directory. Defaults to the
     #   value of `Dir.pwd`.
     def initialize(root_path: Dir.pwd)
@@ -95,6 +110,12 @@ module Cuprum::Cli::Dependencies
       path = resolve_path(file_or_path)
 
       File.read(path)
+    rescue Errno::EISDIR
+      raise FileIsADirectoryError,
+        "unable to read file #{file_or_path} - file is a directory"
+    rescue Errno::ENOENT
+      raise FileNotFoundError,
+        "unable to read file #{file_or_path} - file not found"
     end
     alias read read_file
 
@@ -127,7 +148,7 @@ module Cuprum::Cli::Dependencies
 
       path = resolve_path(file_or_path)
 
-      File.write(path, data)
+      handle_write_errors(file_or_path) { File.write(path, data) }
     end
     alias write write_file
 
@@ -135,6 +156,19 @@ module Cuprum::Cli::Dependencies
 
     def empty_file_message(as:)
       tools.assertions.error_message_for('presence', as:)
+    end
+
+    def handle_write_errors(file_or_path)
+      yield
+    rescue Errno::EISDIR
+      raise FileIsADirectoryError,
+        "unable to write file #{file_or_path} - file is a directory"
+    rescue Errno::ENOENT
+      raise DirectoryNotFoundError,
+        "unable to write file #{file_or_path} - directory not found"
+    rescue Errno::ENOTDIR
+      raise DirectoryIsAFileError,
+        "unable to write file #{file_or_path} - directory is a file"
     end
 
     def invalid_file_message(as:)

@@ -86,18 +86,21 @@ module Cuprum::Cli::Dependencies
       path = resolve_path(file_or_path)
 
       unless path.start_with?(root_path)
-        raise InvalidPathError,
-          "unable to read file #{path} - file path is not mocked"
+        raise FileNotFoundError,
+          "unable to read file #{file_or_path} - file not found"
       end
 
       mock = resolve_mock(path)
 
       return mock.read if io_stream?(mock)
 
-      message = "unable to read file #{path} - "
-      message += mock ? 'path is a mock directory' : 'mock file does not exist'
+      if mock
+        raise FileIsADirectoryError,
+          "unable to read file #{file_or_path} - file is a directory"
+      end
 
-      raise InvalidPathError, message
+      raise FileNotFoundError,
+        "unable to read file #{file_or_path} - file not found"
     end
     alias read read_file
 
@@ -126,8 +129,8 @@ module Cuprum::Cli::Dependencies
       path = resolve_path(file_or_path)
 
       unless path.start_with?(root_path)
-        raise InvalidPathError,
-          "unable to write file #{path} - file path is not mocked"
+        raise DirectoryNotFoundError,
+          "unable to write file #{file_or_path} - directory not found"
       end
 
       mock = resolve_mock(path)
@@ -139,11 +142,12 @@ module Cuprum::Cli::Dependencies
         return
       end
 
-      return write_mock_file(path, data) if mock.nil? || io_stream?(mock)
+      if mock.nil? || io_stream?(mock)
+        return write_mock_file(path, data, file_or_path)
+      end
 
-      message = "unable to write file #{path} - path is a mock directory"
-
-      raise InvalidPathError, message
+      raise FileIsADirectoryError,
+        "unable to write file #{file_or_path} - file is a directory"
     end
     alias write write_file
 
@@ -217,7 +221,7 @@ module Cuprum::Cli::Dependencies
     def resolve_mock(path)
       return unless path.start_with?(root_path)
 
-      *rest, last = File.split(path[(1 + root_path.length)..])
+      *rest, last = split_path(path)
 
       dir = rest.reduce(files) do |dir, segment|
         break if dir[segment].nil? || io_stream?(dir[segment])
@@ -228,13 +232,18 @@ module Cuprum::Cli::Dependencies
       dir&.[](last)
     end
 
-    def write_mock_file(path, data)
-      *dir_names, file_name = File.split(path[(1 + root_path.length)..])
+    def split_path(path)
+      path[(1 + root_path.length)..]
+        &.split(File::SEPARATOR) || []
+    end
+
+    def write_mock_file(path, data, file_or_path)
+      *dir_names, file_name = split_path(path)
 
       directory = dir_names.reduce(files) do |dir, dir_name|
         if io_stream?(dir[dir_name])
-          raise InvalidPathError,
-            "unable to write file #{path} - #{dir_name} is a mock file"
+          raise DirectoryIsAFileError,
+            "unable to write file #{file_or_path} - directory is a file"
         end
 
         dir[dir_name] ||= {}
