@@ -210,5 +210,14 @@ module Cuprum::Cli::RSpec::Deferred
         type:        :boolean,
         default:     false
     end
+
+    deferred_examples 'should define --verbose option' do
+      include_deferred 'should define option',
+        :verbose,
+        aliases:     %w[v],
+        description: 'Enables optional console outputs.',
+        type:        :boolean,
+        default:     false
+    end
   end
 end
