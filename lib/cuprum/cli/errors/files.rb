@@ -7,6 +7,7 @@ module Cuprum::Cli::Errors
   module Files
     autoload :FileNotWriteable, 'cuprum/cli/errors/files/file_not_writeable'
     autoload :MissingParameter, 'cuprum/cli/errors/files/missing_parameter'
+    autoload :MissingTemplate,  'cuprum/cli/errors/files/missing_template'
     autoload :TemplateError,    'cuprum/cli/errors/files/template_error'
   end
 end
