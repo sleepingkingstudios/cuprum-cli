@@ -79,6 +79,11 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
   deferred_context 'when initialized with root_path: value' do
     let(:root_path) { File.join(Cuprum::Cli.gem_path, 'tmp', 'files') }
     let(:options)   { super().merge(root_path:) }
+    let(:files)     { super().merge({ 'nested' => {} }) }
+  end
+
+  deferred_context 'when created directories are cleaned up' do
+    # Automatically handled by the test scope.
   end
 
   deferred_context 'when created files are cleaned up' do

@@ -88,11 +88,50 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
     end
   end
 
-  deferred_context 'when created files are cleaned up' do
+  deferred_context 'when created directories are cleaned up' do
+    define_method :resolve_to_absolute_path do |path|
+      path = File.join(file_system.root_path, path) unless path.start_with?('/')
+
+      File.expand_path(path)
+    end
+
     around(:example) do |example|
       example.call
     ensure
-      FileUtils.remove_file(path, force: true)
+      next if path.nil?
+
+      dir_path = resolve_to_absolute_path(path)
+
+      next if dir_path == file_system.root_path
+
+      expanded_base = resolve_to_absolute_path(base_path)
+
+      dir_path  = dir_path[(1 + File.expand_path(expanded_base).length)..]
+      dir_names = dir_path.split(File::SEPARATOR)
+
+      dir_names.size.times do |index|
+        dir_name = dir_names[..index].join(File::SEPARATOR)
+        dir_name = File.expand_path(File.join(expanded_base, dir_name))
+
+        FileUtils.remove_dir(dir_name, force: true)
+      end
+    end
+  end
+
+  deferred_context 'when created files are cleaned up' do
+    define_method :resolve_to_absolute_path do |path|
+      path = File.join(file_system.root_path, path) unless path.start_with?('/')
+
+      File.expand_path(path)
+    end
+
+    around(:example) do |example|
+      example.call
+    ensure
+      resolved = defined?(file_path) ? file_path : path
+      resolved = resolve_to_absolute_path(resolved)
+
+      FileUtils.remove_file(resolved, force: true)
     end
   end
 

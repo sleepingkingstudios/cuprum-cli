@@ -42,6 +42,30 @@ module Cuprum::Cli::Dependencies
     # @return [Array<String>] the contents of each generated tempfile.
     attr_reader :tempfiles
 
+    # (see Cuprum::Cli::Dependencies::FileSystem#create_directory)
+    def create_directory(path, recursive: false) # rubocop:disable Metrics/MethodLength
+      tools.assertions.validate_name(path, as: 'path')
+
+      *dir_names, dir_name = split_path(resolve_path(path))
+
+      directory = write_directory(
+        *dir_names,
+        action:       'create directory',
+        file_or_path: path,
+        recursive:
+      )
+
+      if io_stream?(directory[dir_name])
+        raise DirectoryIsAFileError,
+          "unable to create directory #{path} - directory is a file"
+      end
+
+      directory[dir_name] = {}
+
+      path
+    end
+    alias make_directory create_directory
+
     # (see Cuprum::Cli::Dependencies::FileSystem#directory?)
     def directory?(path)
       tools.assertions.validate_name(path, as: 'path')
@@ -92,7 +116,7 @@ module Cuprum::Cli::Dependencies
 
       mock = resolve_mock(path)
 
-      return mock.read if io_stream?(mock)
+      return mock.tap(&:rewind).read if io_stream?(mock)
 
       if mock
         raise FileIsADirectoryError,
@@ -237,17 +261,29 @@ module Cuprum::Cli::Dependencies
         &.split(File::SEPARATOR) || []
     end
 
-    def write_mock_file(path, data, file_or_path)
-      *dir_names, file_name = split_path(path)
-
-      directory = dir_names.reduce(files) do |dir, dir_name|
+    def write_directory(*dir_names, action:, file_or_path:, recursive: false)
+      dir_names.reduce(files) do |dir, dir_name|
         if io_stream?(dir[dir_name])
           raise DirectoryIsAFileError,
-            "unable to write file #{file_or_path} - directory is a file"
+            "unable to #{action} #{file_or_path} - directory is a file"
+        elsif dir[dir_name].nil? && !recursive
+          raise DirectoryNotFoundError,
+            "unable to #{action} #{file_or_path} - directory not found"
         end
 
         dir[dir_name] ||= {}
       end
+    end
+
+    def write_mock_file(path, data, file_or_path)
+      *dir_names, file_name = split_path(path)
+
+      directory = write_directory(
+        *dir_names,
+        action:       'write file',
+        file_or_path:,
+        recursive:    false
+      )
 
       directory[file_name] = StringIO.new(data.to_s)
     end

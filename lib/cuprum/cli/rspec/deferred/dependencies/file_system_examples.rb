@@ -10,6 +10,429 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
     include RSpec::SleepingKingStudios::Deferred::Provider
 
     deferred_examples 'should implement the file_system dependency' do
+      describe '#create_directory', :writeable_root_path do
+        let(:base_path) { nil }
+        let(:path)      { nil }
+
+        include_deferred 'with valid file paths'
+
+        include_deferred 'when created directories are cleaned up'
+
+        it 'should define the method' do
+          expect(subject)
+            .to respond_to(:create_directory)
+            .with(1).argument
+            .and_keywords(:recursive)
+        end
+
+        it 'should define the aliased method' do
+          expect(subject)
+            .to have_aliased_method(:create_directory)
+            .as(:make_directory)
+        end
+
+        describe 'with nil' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: :path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.create_directory(nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an Object' do
+          let(:error_message) do
+            tools.assertions.error_message_for('name', as: :path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.create_directory(Object.new.freeze) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an empty String' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: :path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.create_directory('') }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an absolute path' do
+          let(:base_path) { absolute_directory_path }
+          let(:path)      { File.join(base_path, 'custom_dir') }
+
+          it { expect(subject.create_directory(path)).to be == path }
+
+          it 'should create the directory' do
+            expect { subject.create_directory(path) }.to(
+              change { subject.directory?(path) }.to(be true)
+            )
+          end
+
+          describe 'with a multi-segment path' do
+            let(:path) { File.join(base_path, 'custom_dir/inner/path') }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+            end
+            let(:error_message) do
+              "unable to create directory #{path} - directory not found"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.create_directory(path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            describe 'with recursive: true' do
+              it 'should return the path' do
+                expect(subject.create_directory(path, recursive: true))
+                  .to be == path
+              end
+
+              it 'should create the directory' do
+                expect { subject.create_directory(path, recursive: true) }.to(
+                  change { subject.directory?(path) }.to(be true)
+                )
+              end
+
+              context 'when the directory already exists' do
+                before(:example) do
+                  subject.create_directory(path, recursive: true)
+                end
+
+                it { expect(subject.create_directory(path)).to be == path }
+              end
+
+              context 'when the path includes a file' do
+                let(:error_class) do
+                  Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
+                end
+                let(:error_message) do
+                  "unable to create directory #{path} - directory is a file"
+                end
+                let(:file_path) { File.join(base_path, 'custom_dir') }
+
+                before(:example) do
+                  subject.write_file(file_path, '')
+                end
+
+                include_deferred 'when created files are cleaned up'
+
+                it 'should raise an exception' do
+                  expect { subject.create_directory(path, recursive: true) }
+                    .to raise_error(error_class, error_message)
+                end
+
+                it 'should not create the directory' do
+                  subject.create_directory(path, recursive: true)
+                rescue error_class
+                  expect(subject.directory?(path)).to be false
+                end
+              end
+            end
+          end
+
+          context 'when the directory already exists' do
+            before(:example) { subject.create_directory(path) }
+
+            it { expect(subject.create_directory(path)).to be == path }
+          end
+
+          context 'when the path includes a file' do
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
+            end
+            let(:error_message) do
+              "unable to create directory #{path} - directory is a file"
+            end
+
+            before(:example) { subject.write_file(path, '') }
+
+            include_deferred 'when created files are cleaned up'
+
+            it 'should raise an exception' do
+              expect { subject.create_directory(path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            it 'should not create the directory' do
+              subject.create_directory(path)
+            rescue error_class
+              expect(subject.directory?(path)).to be false
+            end
+          end
+        end
+
+        describe 'with a qualified path' do
+          let(:base_path) { qualified_directory_path }
+          let(:path)      { File.join(base_path, 'custom_dir') }
+
+          it { expect(subject.create_directory(path)).to be == path }
+
+          describe 'with a multi-segment path' do
+            let(:path) { File.join(base_path, 'custom_dir/inner/path') }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+            end
+            let(:error_message) do
+              "unable to create directory #{path} - directory not found"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.create_directory(path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            describe 'with recursive: true' do
+              it 'should return the path' do
+                expect(subject.create_directory(path, recursive: true))
+                  .to be == path
+              end
+
+              it 'should create the directory' do
+                expect { subject.create_directory(path, recursive: true) }.to(
+                  change { subject.directory?(path) }.to(be true)
+                )
+              end
+
+              context 'when the directory already exists' do
+                before(:example) do
+                  subject.create_directory(path, recursive: true)
+                end
+
+                it { expect(subject.create_directory(path)).to be == path }
+              end
+
+              context 'when the path includes a file' do
+                let(:error_class) do
+                  Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
+                end
+                let(:error_message) do
+                  "unable to create directory #{path} - directory is a file"
+                end
+                let(:file_path) { File.join(base_path, 'custom_dir') }
+
+                before(:example) do
+                  subject.write_file(file_path, '')
+                end
+
+                include_deferred 'when created files are cleaned up'
+
+                it 'should raise an exception' do
+                  expect { subject.create_directory(path, recursive: true) }
+                    .to raise_error(error_class, error_message)
+                end
+
+                it 'should not create the directory' do
+                  subject.create_directory(path, recursive: true)
+                rescue error_class
+                  expect(subject.directory?(path)).to be false
+                end
+              end
+            end
+          end
+
+          context 'when the directory already exists' do
+            before(:example) { subject.create_directory(path) }
+
+            it { expect(subject.create_directory(path)).to be == path }
+          end
+
+          context 'when the path includes a file' do
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
+            end
+            let(:error_message) do
+              "unable to create directory #{path} - directory is a file"
+            end
+
+            before(:example) { subject.write_file(path, '') }
+
+            include_deferred 'when created files are cleaned up'
+
+            it 'should raise an exception' do
+              expect { subject.create_directory(path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            it 'should not create the directory' do
+              subject.create_directory(path)
+            rescue error_class
+              expect(subject.directory?(path)).to be false
+            end
+          end
+        end
+
+        describe 'with a relative path' do
+          let(:base_path) { relative_directory_path }
+          let(:path)      { File.join(base_path, 'custom_dir') }
+
+          it { expect(subject.create_directory(path)).to be == path }
+
+          describe 'with a multi-segment path' do
+            let(:path) { File.join(base_path, 'custom_dir/inner/path') }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+            end
+            let(:error_message) do
+              "unable to create directory #{path} - directory not found"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.create_directory(path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            describe 'with recursive: true' do
+              it 'should return the path' do
+                expect(subject.create_directory(path, recursive: true))
+                  .to be == path
+              end
+
+              it 'should create the directory' do
+                expect { subject.create_directory(path, recursive: true) }.to(
+                  change { subject.directory?(path) }.to(be true)
+                )
+              end
+
+              context 'when the directory already exists' do
+                before(:example) do
+                  subject.create_directory(path, recursive: true)
+                end
+
+                it { expect(subject.create_directory(path)).to be == path }
+              end
+
+              context 'when the path includes a file' do
+                let(:error_class) do
+                  Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
+                end
+                let(:error_message) do
+                  "unable to create directory #{path} - directory is a file"
+                end
+                let(:file_path) { File.join(base_path, 'custom_dir') }
+
+                before(:example) do
+                  subject.write_file(file_path, '')
+                end
+
+                include_deferred 'when created files are cleaned up'
+
+                it 'should raise an exception' do
+                  expect { subject.create_directory(path, recursive: true) }
+                    .to raise_error(error_class, error_message)
+                end
+
+                it 'should not create the directory' do
+                  subject.create_directory(path, recursive: true)
+                rescue error_class
+                  expect(subject.directory?(path)).to be false
+                end
+              end
+            end
+          end
+
+          context 'when the directory already exists' do
+            before(:example) { subject.create_directory(path) }
+
+            it { expect(subject.create_directory(path)).to be == path }
+          end
+
+          context 'when the path includes a file' do
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
+            end
+            let(:error_message) do
+              "unable to create directory #{path} - directory is a file"
+            end
+
+            before(:example) { subject.write_file(path, '') }
+
+            include_deferred 'when created files are cleaned up'
+
+            it 'should raise an exception' do
+              expect { subject.create_directory(path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            it 'should not create the directory' do
+              subject.create_directory(path)
+            rescue error_class
+              expect(subject.directory?(path)).to be false
+            end
+          end
+        end
+
+        wrap_deferred 'when initialized with root_path: value' do
+          describe 'with a qualified path' do
+            let(:base_path) { File.join('..', '..', 'tmp', 'files') }
+            let(:path)      { File.join(base_path, 'custom_dir') }
+
+            it { expect(subject.create_directory(path)).to be == path }
+
+            it 'should create the directory' do
+              expect { subject.create_directory(path) }.to(
+                change { subject.directory?(path) }.to(be true)
+              )
+            end
+
+            describe 'with a multi-segment path' do
+              let(:path) { File.join(base_path, 'custom_dir/inner/path') }
+
+              describe 'with recursive: true' do
+                it 'should return the path' do
+                  expect(subject.create_directory(path, recursive: true))
+                    .to be == path
+                end
+
+                it 'should create the directory' do
+                  expect { subject.create_directory(path, recursive: true) }.to(
+                    change { subject.directory?(path) }.to(be true)
+                  )
+                end
+              end
+            end
+          end
+
+          describe 'with a relative path' do
+            let(:base_path) { 'nested' }
+            let(:path)      { File.join(base_path, 'custom_dir') }
+
+            it { expect(subject.create_directory(path)).to be == path }
+
+            it 'should create the directory' do
+              expect { subject.create_directory(path) }.to(
+                change { subject.directory?(path) }.to(be true)
+              )
+            end
+
+            describe 'with a multi-segment path' do
+              let(:path) { File.join(base_path, 'custom_dir/inner/path') }
+
+              describe 'with recursive: true' do
+                it 'should return the path' do
+                  expect(subject.create_directory(path, recursive: true))
+                    .to be == path
+                end
+
+                it 'should create the directory' do
+                  expect { subject.create_directory(path, recursive: true) }.to(
+                    change { subject.directory?(path) }.to(be true)
+                  )
+                end
+              end
+            end
+          end
+        end
+      end
+
       describe '#directory?' do
         let(:invalid_absolute_path) do
           defined?(super()) ? super() : '/invalid-absolute-path'
@@ -795,6 +1218,23 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
                 .to raise_error(error_class, error_message)
             end
           end
+
+          context 'when the path includes missing directories' do
+            let(:directory) do
+              File.join(super(), 'missing', 'directories')
+            end
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+            end
+            let(:error_message) do
+              "unable to write file #{path} - directory not found"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.write_file(path, data) }
+                .to raise_error(error_class, error_message)
+            end
+          end
         end
 
         describe 'with a qualified path' do
@@ -866,6 +1306,23 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
 
             before(:example) do
               subject.write_file(directory, "Existing contents...\n")
+            end
+
+            it 'should raise an exception' do
+              expect { subject.write_file(path, data) }
+                .to raise_error(error_class, error_message)
+            end
+          end
+
+          context 'when the path includes missing directories' do
+            let(:directory) do
+              File.join(super(), 'missing', 'directories')
+            end
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+            end
+            let(:error_message) do
+              "unable to write file #{path} - directory not found"
             end
 
             it 'should raise an exception' do
@@ -951,10 +1408,27 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
                 .to raise_error(error_class, error_message)
             end
           end
+
+          context 'when the path includes missing directories' do
+            let(:directory) do
+              File.join(super(), 'missing', 'directories')
+            end
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+            end
+            let(:error_message) do
+              "unable to write file #{path} - directory not found"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.write_file(path, data) }
+                .to raise_error(error_class, error_message)
+            end
+          end
         end
 
         wrap_deferred 'when initialized with root_path: value' do
-          let(:nested_path) { File.join(subject.root_path, 'nested') }
+          include_deferred 'when created files are cleaned up'
 
           describe 'with a qualified path' do
             let(:directory) do
