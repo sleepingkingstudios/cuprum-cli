@@ -91,6 +91,41 @@ RSpec.describe Cuprum::Cli::Commands::File::RenderErb do
         end
       end
 
+      describe 'with a parameter of invalid type' do
+        let(:template)   { "<h1><%= greetings.join(', ') %></h1>" }
+        let(:parameters) { super().merge(greetings: 'Greetings, starfighter!') }
+        let(:expected_error) do
+          message =
+            begin
+              ''.join
+            rescue NameError => exception
+              exception.message
+            end
+
+          Cuprum::Cli::Errors::Files::TemplateError.new(
+            message:       "unable to render ERB template - #{message}",
+            template_name: command.template_name
+          )
+        end
+
+        it 'should return a failing result' do
+          expect(command.call(template, **parameters))
+            .to be_a_failing_result
+            .with_error(expected_error)
+        end
+
+        context 'when initialized with template_name: value' do
+          let(:template_name) { 'template.html.erb' }
+          let(:options)       { super().merge(template_name:) }
+
+          it 'should return a failing result' do
+            expect(command.call(template, **parameters))
+              .to be_a_failing_result
+              .with_error(expected_error)
+          end
+        end
+      end
+
       describe 'with valid parameters' do
         let(:parameters) { super().merge(greeting: 'Greetings, starfighter!') }
         let(:expected_value) do
