@@ -57,14 +57,19 @@ module Cuprum::Cli::Commands::File
       )
     end
 
-    def process(template, **params) # rubocop:disable Metrics/MethodLength
+    def process(template, **params) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       engine  = step { generate_engine(template) }
       binding = generate_binding(**params)
 
       binding.eval(engine.src)
     rescue NameError => exception
       error =
-        if exception.message.end_with?(RenderingContext.name)
+        # @todo [RUBY_VERSION <= '3.3'] remove regexp case
+        if exception.message.match?(/RenderingContext:0x\h+>/)
+          # :nocov:
+          missing_parameter_error(exception.name)
+          # :nocov:
+        elsif exception.message.end_with?(RenderingContext.name) # rubocop:disable Lint/DuplicateBranch
           missing_parameter_error(exception.name)
         else
           template_error(exception.message)

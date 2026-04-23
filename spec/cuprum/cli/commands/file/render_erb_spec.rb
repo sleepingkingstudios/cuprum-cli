@@ -97,7 +97,7 @@ RSpec.describe Cuprum::Cli::Commands::File::RenderErb do
         let(:expected_error) do
           message =
             begin
-              ''.join
+              'Greetings, starfighter!'.join
             rescue NameError => exception
               exception.message
             end
