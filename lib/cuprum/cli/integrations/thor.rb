@@ -7,7 +7,8 @@ module Cuprum::Cli::Integrations
   #
   # @see http://whatisthor.com/
   module Thor
-    autoload :Registry, 'cuprum/cli/integrations/thor/registry'
-    autoload :Task,     'cuprum/cli/integrations/thor/task'
+    autoload :ArgumentsParser, 'cuprum/cli/integrations/thor/arguments_parser'
+    autoload :Registry,        'cuprum/cli/integrations/thor/registry'
+    autoload :Task,            'cuprum/cli/integrations/thor/task'
   end
 end
