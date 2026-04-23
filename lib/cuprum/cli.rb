@@ -9,6 +9,7 @@ module Cuprum
   module Cli
     autoload :Argument,     'cuprum/cli/argument'
     autoload :Arguments,    'cuprum/cli/arguments'
+    autoload :Coercion,     'cuprum/cli/coercion'
     autoload :Command,      'cuprum/cli/command'
     autoload :Commands,     'cuprum/cli/commands'
     autoload :Dependencies, 'cuprum/cli/dependencies'
