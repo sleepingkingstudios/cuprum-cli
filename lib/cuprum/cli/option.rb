@@ -3,7 +3,7 @@
 require 'cuprum/cli'
 require 'cuprum/cli/options'
 
-module Cuprum::Cli
+module Cuprum::Cli # rubocop:disable Metrics/ModuleLength
   # Data object representing a command option.
   Option = Data.define(
     :aliases,
@@ -12,7 +12,8 @@ module Cuprum::Cli
     :name,
     :parameter_name,
     :required,
-    :type
+    :type,
+    :variadic
   ) do
     # @param name [String, Symbol] the name of the option.
     # @param aliases [Array<String, Symbol>] aliases for the option when parsing
@@ -29,6 +30,9 @@ module Cuprum::Cli
     # @param type [Class, String, Symbol] the expected type of the option value
     #   as a Class or class name. If given, raises an exception if the option
     #   value is not an instance of the type. Defaults to :string.
+    # @param variadic [true, false] if true, the option is variadic and
+    #   represents an hash of options provided to the command. Defaults to
+    #   false.
     def initialize( # rubocop:disable Metrics/MethodLength, Metrics/ParameterLists
       name:,
       aliases:        [],
@@ -36,12 +40,14 @@ module Cuprum::Cli
       description:    nil,
       parameter_name: nil,
       required:       false,
-      type:           :string
+      type:           :string,
+      variadic:       false
     )
       name     = name.to_sym
       aliases  = Array(aliases).compact.map { |obj| obj.to_s.tr('_', '-') }
       required = required ? true : false
       type     = type.to_sym if type.is_a?(String)
+      variadic = variadic ? true : false
 
       super(
         aliases:,
@@ -50,11 +56,14 @@ module Cuprum::Cli
         name:,
         parameter_name:,
         required:,
-        type:
+        type:,
+        variadic:
       )
     end
 
     alias_method :required?, :required
+
+    alias_method :variadic?, :variadic
 
     # @overload def resolve(value)
     #   Validates the value for the current option.
@@ -72,9 +81,8 @@ module Cuprum::Cli
       value = default_value if blank?(value)
       value = value.to_s    if value.is_a?(Symbol)
 
-      return (type == :boolean ? false : nil) if value.nil? && !required?
-
-      return value if valid_option?(value)
+      return default_value_for_type if value.nil? && !required?
+      return value                  if valid_option?(value)
 
       raise Cuprum::Cli::Options::InvalidOptionError,
         invalid_option_message(original_value)
@@ -90,7 +98,28 @@ module Cuprum::Cli
       default.is_a?(Proc) ? default.call : default
     end
 
+    def default_value_for_type
+      return {} if variadic?
+
+      return false if type == :boolean && !required?
+
+      nil
+    end
+
+    def expected_hash_type
+      message = required? ? 'a non-empty Hash of' : 'a Hash of'
+
+      return "#{message} true or false values" if type == :boolean
+
+      plural_type =
+        tools.string_tools.pluralize(type.is_a?(Class) ? type.name : type)
+
+      "#{message} #{tools.string_tools.camelize(plural_type)}"
+    end
+
     def expected_type
+      return expected_hash_type if variadic?
+
       case type
       when :boolean
         'true or false'
@@ -111,6 +140,15 @@ module Cuprum::Cli
     end
 
     def valid_option?(value)
+      return validate_option(value) unless variadic?
+
+      return false unless value.is_a?(Hash)
+      return false if required? && value.empty?
+
+      value.each_value.all? { |item| validate_option(item) }
+    end
+
+    def validate_option(value) # rubocop:disable Naming/PredicateMethod
       case type
       when :boolean
         value == true || value == false # rubocop:disable Style/MultipleComparison

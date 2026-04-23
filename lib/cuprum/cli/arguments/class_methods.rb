@@ -246,6 +246,7 @@ module Cuprum::Cli::Arguments
       @arguments_builder = WeakRef.new(
         Builder.new(command_class: self, defined_arguments:)
       )
+      @arguments_builder.__getobj__
       # :nocov:
     end
 

@@ -11,12 +11,14 @@ module Cuprum::Cli::RSpec::Deferred
 
     deferred_examples 'should define option' do |option_name, **option_options|
       describe "should define option #{option_name.inspect}" do
-        expect_method =
+        boolean_option =
+          option_options[:type] == :boolean && !option_options[:variadic]
+        expect_method  =
           option_options
-          .fetch(:define_method, option_options[:type] != :boolean)
+          .fetch(:define_method, !boolean_option)
         expect_predicate =
           option_options
-          .fetch(:define_predicate, option_options[:type] == :boolean)
+          .fetch(:define_predicate, boolean_option)
 
         let(:configured_aliases) do
           value = option_options.fetch(:aliases, [])
@@ -48,6 +50,11 @@ module Cuprum::Cli::RSpec::Deferred
         end
         let(:configured_type) do
           value = option_options.fetch(:type, :string)
+
+          value.is_a?(Proc) ? instance_exec(&value) : value
+        end
+        let(:configured_variadic) do
+          value = option_options.fetch(:variadic, false)
 
           value.is_a?(Proc) ? instance_exec(&value) : value
         end
@@ -198,6 +205,10 @@ module Cuprum::Cli::RSpec::Deferred
 
         describe '#type' do
           it { expect(defined_option.type).to be configured_type }
+        end
+
+        describe '#variadic?' do
+          it { expect(defined_option.variadic?).to be configured_variadic }
         end
       end
     end

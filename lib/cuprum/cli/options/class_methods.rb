@@ -31,8 +31,10 @@ module Cuprum::Cli::Options
 
         defined_options[option.name] = option
 
-        define_method    = (options[:type] != :boolean) if define_method.nil?
-        define_predicate = (options[:type] == :boolean) if define_predicate.nil?
+        boolean_option = options[:type] == :boolean && !options[:variadic]
+
+        define_method    = !boolean_option if define_method.nil?
+        define_predicate = boolean_option  if define_predicate.nil?
 
         define_method_for(option)    if define_method
         define_predicate_for(option) if define_predicate
@@ -83,6 +85,8 @@ module Cuprum::Cli::Options
     #     not nil and not empty. Defaults to true for boolean options and false
     #     for all other options.
     def option(name, define_method: nil, define_predicate: nil, **)
+      handle_multiple_variadic_options(**)
+
       options_builder
         .call(name, define_method:, define_predicate:, **)
     end
@@ -127,9 +131,9 @@ module Cuprum::Cli::Options
     # @raise [Cuprum::Cli::Options::InvalidOptionError] if any value does not
     #   match the expected option type, or any required value is missing.
     def resolve_options(**values)
-      values          = option_values.merge(values)
-      defined_options = options
-      unknown_options = values.keys - defined_options.keys
+      values                  = option_values.merge(values)
+      defined_options         = options
+      values, unknown_options = resolve_variadic_values(values)
 
       unless unknown_options.empty?
         raise Cuprum::Cli::Options::UnknownOptionError,
@@ -157,6 +161,18 @@ module Cuprum::Cli::Options
 
     private
 
+    def handle_multiple_variadic_options(variadic: false, **)
+      return unless variadic
+
+      matching = defined_options.each_value.find(&:variadic?)
+
+      return unless matching
+
+      message = "command already defines variadic option :#{matching.name}"
+
+      raise ArgumentError, message
+    end
+
     def options_builder
       (
         @options_builder ||= WeakRef.new(
@@ -168,7 +184,32 @@ module Cuprum::Cli::Options
       @options_builder = WeakRef.new(
         Builder.new(command_class: self, defined_options:)
       )
+      @arguments_builder.__getobj__
       # :nocov:
+    end
+
+    def resolve_variadic_values(values) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      defined_options = options
+      unknown_options = values.keys - options.keys
+
+      return [values, unknown_options] if unknown_options.empty?
+
+      variadic_key = defined_options.find { |_, value| value.variadic? }&.first
+
+      return [values, unknown_options] unless variadic_key
+
+      variadic_value = values.fetch(variadic_key, {})
+
+      unless variadic_value.is_a?(Hash)
+        return [values.except(*unknown_options), []]
+      end
+
+      variadic_value = values.slice(*unknown_options).merge(variadic_value)
+
+      values =
+        values.except(*unknown_options).merge(variadic_key => variadic_value)
+
+      [values, []]
     end
 
     def tools
