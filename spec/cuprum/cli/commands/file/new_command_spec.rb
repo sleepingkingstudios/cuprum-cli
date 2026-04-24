@@ -223,7 +223,12 @@ RSpec.describe Cuprum::Cli::Commands::File::NewCommand do
           <<~TEXT
             Generating file lib/file.rb...
 
-            #{rendered_ruby.each_line.map { |line| "  #{line}" }.join}
+            #{
+              rendered_ruby
+              .each_line
+              .map { |line| line == "\n" ? "\n" : "  #{line}" }
+              .join
+            }
           TEXT
         end
 
@@ -277,10 +282,20 @@ RSpec.describe Cuprum::Cli::Commands::File::NewCommand do
           <<~TEXT
             Generating file lib/file.rb...
 
-            #{rendered_ruby.each_line.map { |line| "  #{line}" }.join}
+            #{
+              rendered_ruby
+              .each_line
+              .map { |line| line == "\n" ? "\n" : "  #{line}" }
+              .join
+            }
             Generating file spec/file_spec.rb...
 
-            #{rendered_rspec.each_line.map { |line| "  #{line}" }.join}
+            #{
+              rendered_rspec
+              .each_line
+              .map { |line| line == "\n" ? "\n" : "  #{line}" }
+              .join
+            }
           TEXT
         end
 
@@ -336,10 +351,20 @@ RSpec.describe Cuprum::Cli::Commands::File::NewCommand do
         <<~TEXT
           Generating file lib/file.rb...
 
-          #{rendered_ruby.each_line.map { |line| "  #{line}" }.join}
+          #{
+            rendered_ruby
+            .each_line
+            .map { |line| line == "\n" ? "\n" : "  #{line}" }
+            .join
+          }
           Generating file spec/file_spec.rb...
 
-          #{rendered_rspec.each_line.map { |line| "  #{line}" }.join}
+          #{
+            rendered_rspec
+            .each_line
+            .map { |line| line == "\n" ? "\n" : "  #{line}" }
+            .join
+          }
         TEXT
       end
 

@@ -97,9 +97,7 @@ module Cuprum::Cli::Commands::File
       contents =
         step { render_template(parameters:, template:, template_path:) }
 
-      say "\n", verbose: true
-      say contents.each_line.map { |line| "  #{line}" }.join, verbose: true
-      say "\n", verbose: true
+      report_file_contents(contents)
 
       step { create_directory(file_path:) }
 
@@ -115,6 +113,17 @@ module Cuprum::Cli::Commands::File
       else
         template
       end
+    end
+
+    def report_file_contents(contents)
+      say "\n", verbose: true
+      say(
+        contents
+          .each_line
+          .map { |line| line == "\n" ? "\n" : "  #{line}" }.join,
+        verbose: true
+      )
+      say "\n", verbose: true
     end
 
     def write_file(contents:, file_path:)

@@ -127,7 +127,12 @@ RSpec.describe Cuprum::Cli::Commands::File::GenerateFile do
           <<~OUTPUT
             Generating file #{file_path}...
 
-            #{contents.each_line.map { |line| "  #{line}" }.join}
+            #{
+              contents
+                .each_line
+                .map { |line| line == "\n" ? "\n" : "  #{line}" }
+                .join
+            }
           OUTPUT
         end
 
