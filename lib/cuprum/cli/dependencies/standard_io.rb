@@ -22,13 +22,13 @@ module Cuprum::Cli::Dependencies
     # @param input_stream [IO] the input stream. Defaults to $stdin.
     # @param output_stream [IO] the output stream. Defaulst to $stdout.
     def initialize(
-      error_stream:  $stderr,
-      input_stream:  $stdin,
-      output_stream: $stdout
+      error_stream:  -> { $stderr },
+      input_stream:  -> { $stdin },
+      output_stream: -> { $stdout }
     )
-      @error_stream  = error_stream
-      @input_stream  = input_stream
-      @output_stream = output_stream
+      @lazy_error_stream  = error_stream
+      @lazy_input_stream  = input_stream
+      @lazy_output_stream = output_stream
     end
 
     # Wraps the text in an ANSI color escape code.
@@ -80,10 +80,31 @@ module Cuprum::Cli::Dependencies
 
     private
 
-    attr_reader :error_stream
+    def error_stream
+      @error_stream ||=
+        if @lazy_error_stream.is_a?(Proc)
+          @lazy_error_stream.call
+        else
+          @lazy_error_stream
+        end
+    end
 
-    attr_reader :input_stream
+    def input_stream
+      @input_stream ||=
+        if @lazy_input_stream.is_a?(Proc)
+          @lazy_input_stream.call
+        else
+          @lazy_input_stream
+        end
+    end
 
-    attr_reader :output_stream
+    def output_stream
+      @output_stream ||=
+        if @lazy_output_stream.is_a?(Proc)
+          @lazy_output_stream.call
+        else
+          @lazy_output_stream
+        end
+    end
   end
 end
