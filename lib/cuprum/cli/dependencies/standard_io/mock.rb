@@ -51,13 +51,13 @@ module Cuprum::Cli::Dependencies
     attr_reader :combined_stream
 
     # @return [IO] the error stream
-    attr_reader :error_stream
+    def error_stream = super # rubocop:disable Lint/UselessMethodDefinition
 
     # @return [IO] the input stream.
-    attr_reader :input_stream
+    def input_stream = super # rubocop:disable Lint/UselessMethodDefinition
 
     # @return [IO] the output stream.
-    attr_reader :output_stream
+    def output_stream = super # rubocop:disable Lint/UselessMethodDefinition
 
     # (see Cuprum::Cli::Dependencies::StandardIo#read_input)
     def read_input

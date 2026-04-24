@@ -132,12 +132,12 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
     end
 
     context 'when the task is initialized with arguments' do
-      let(:arguments) { ['foo', 123, 'bar'] }
+      let(:arguments) { %w[foo 123 bar] }
       let(:expected) do
         <<~OUTPUT
           #{command_class} called with parameters:
 
-            Arguments: ["foo", 123, "bar"]
+            Arguments: ["foo", "123", "bar"]
             Options:   {}
         OUTPUT
       end
@@ -170,14 +170,14 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
     end
 
     context 'when the task is initialized with arguments and options' do
-      let(:arguments) { ['foo', 123, 'bar'] }
+      let(:arguments) { %w[foo 123 bar] }
       let(:options)   { { format: 'json' } }
       let(:expected) do
         <<~JSON
           {
             "arguments": [
               "foo",
-              123,
+              "123",
               "bar"
             ],
             "options": {
@@ -191,6 +191,57 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
         task.call_command(*arguments)
 
         expect(mock_io.output_stream.string).to be == expected
+      end
+    end
+
+    context 'when the task is initialized with extra options as arguments' do
+      let(:arguments) { %w[foo 123 --skip-flag bar --secret=12345] }
+      let(:options)   { { format: 'json' } }
+      let(:error_message) do
+        'unrecognized options :flag, :secret for Cuprum::Cli::Commands::' \
+          'EchoCommand - valid options are :format, :out'
+      end
+
+      before(:example) { allow(task).to receive(:abort) } # rubocop:disable RSpec/SubjectStub
+
+      it 'should call the command' do
+        task.call_command(*arguments)
+
+        expect(task).to have_received(:abort).with(error_message) # rubocop:disable RSpec/SubjectStub
+      end
+
+      context 'when the command accepts variadic options' do
+        let(:command_class) { Spec::EchoWithOptionsCommand }
+        let(:expected) do
+          <<~JSON
+            {
+              "arguments": [
+                "foo",
+                "123",
+                "bar"
+              ],
+              "options": {
+                "config": {
+                  "flag": false,
+                  "secret": 12345
+                },
+                "format": "json"
+              }
+            }
+          JSON
+        end
+
+        example_class 'Spec::EchoWithOptionsCommand',
+          Cuprum::Cli::Commands::EchoCommand \
+        do |klass|
+          klass.option :config, type: Object, variadic: true
+        end
+
+        it 'should call the command' do
+          task.call_command(*arguments)
+
+          expect(mock_io.output_stream.string).to be == expected
+        end
       end
     end
   end

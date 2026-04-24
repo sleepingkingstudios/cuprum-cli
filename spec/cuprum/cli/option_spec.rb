@@ -312,6 +312,82 @@ RSpec.describe Cuprum::Cli::Option do
       end
     end
 
+    context 'when initialized with variadic: true' do
+      let(:constructor_options) { super().merge(variadic: true) }
+
+      describe 'with nil' do
+        it { expect(option.resolve(nil)).to be == {} }
+      end
+
+      describe 'with an Object' do
+        let(:value) { Object.new.freeze }
+        let(:error_message) do
+          'invalid value for option :format - expected a Hash of Strings, ' \
+            "received #{value.inspect}"
+        end
+
+        it 'should raise an exception' do
+          expect { option.resolve(value) }
+            .to raise_error(
+              Cuprum::Cli::Options::InvalidOptionError,
+              error_message
+            )
+        end
+      end
+
+      describe 'with an empty Hash' do
+        it { expect(option.resolve({})).to be == {} }
+      end
+
+      describe 'with a Hash with invalid values' do
+        let(:value) { { bypass_security: true } }
+        let(:error_message) do
+          'invalid value for option :format - expected a Hash of Strings, ' \
+            "received #{value.inspect}"
+        end
+
+        it 'should raise an exception' do
+          expect { option.resolve(value) }
+            .to raise_error(
+              Cuprum::Cli::Options::InvalidOptionError,
+              error_message
+            )
+        end
+      end
+
+      describe 'with a Hash with valid values' do
+        let(:value) { { 'password' => 'letm3in', 'secret' => '12345' } }
+
+        it { expect(option.resolve(value)).to be == value }
+      end
+
+      context 'when initialized with required: true' do
+        let(:constructor_options) { super().merge(required: true) }
+
+        describe 'with an empty Hash' do
+          let(:value) { {} }
+          let(:error_message) do
+            'invalid value for option :format - expected a non-empty Hash of ' \
+              "Strings, received #{value.inspect}"
+          end
+
+          it 'should raise an exception' do
+            expect { option.resolve(value) }
+              .to raise_error(
+                Cuprum::Cli::Options::InvalidOptionError,
+                error_message
+              )
+          end
+        end
+
+        describe 'with a Hash with valid values' do
+          let(:value) { { 'password' => 'letm3in', 'secret' => '12345' } }
+
+          it { expect(option.resolve(value)).to be == value }
+        end
+      end
+    end
+
     context 'when initialized with type: :boolean' do
       let(:constructor_options) { super().merge(type: :boolean) }
 
@@ -400,6 +476,82 @@ RSpec.describe Cuprum::Cli::Option do
           it { expect(option.resolve(true)).to be true }
         end
       end
+
+      context 'when initialized with variadic: true' do
+        let(:constructor_options) { super().merge(variadic: true) }
+
+        describe 'with nil' do
+          it { expect(option.resolve(nil)).to be == {} }
+        end
+
+        describe 'with an Object' do
+          let(:value) { Object.new.freeze }
+          let(:error_message) do
+            'invalid value for option :format - expected a Hash of true or ' \
+              "false values, received #{value.inspect}"
+          end
+
+          it 'should raise an exception' do
+            expect { option.resolve(value) }
+              .to raise_error(
+                Cuprum::Cli::Options::InvalidOptionError,
+                error_message
+              )
+          end
+        end
+
+        describe 'with an empty Hash' do
+          it { expect(option.resolve({})).to be == {} }
+        end
+
+        describe 'with a Hash with invalid values' do
+          let(:value) { { 'password' => 'letm3in', 'secret' => '12345' } }
+          let(:error_message) do
+            'invalid value for option :format - expected a Hash of true or ' \
+              "false values, received #{value.inspect}"
+          end
+
+          it 'should raise an exception' do
+            expect { option.resolve(value) }
+              .to raise_error(
+                Cuprum::Cli::Options::InvalidOptionError,
+                error_message
+              )
+          end
+        end
+
+        describe 'with a Hash with valid values' do
+          let(:value) { { bypass_security: true } }
+
+          it { expect(option.resolve(value)).to be == value }
+        end
+
+        context 'when initialized with required: true' do
+          let(:constructor_options) { super().merge(required: true) }
+
+          describe 'with an empty Hash' do # rubocop:disable RSpec/NestedGroups
+            let(:value) { {} }
+            let(:error_message) do
+              'invalid value for option :format - expected a non-empty Hash ' \
+                "of true or false values, received #{value.inspect}"
+            end
+
+            it 'should raise an exception' do
+              expect { option.resolve(value) }
+                .to raise_error(
+                  Cuprum::Cli::Options::InvalidOptionError,
+                  error_message
+                )
+            end
+          end
+
+          describe 'with a Hash with valid values' do # rubocop:disable RSpec/NestedGroups
+            let(:value) { { bypass_security: true } }
+
+            it { expect(option.resolve(value)).to be == value }
+          end
+        end
+      end
     end
 
     context 'when initialized with type: a Class' do
@@ -480,6 +632,82 @@ RSpec.describe Cuprum::Cli::Option do
           it { expect(option.resolve(value)).to be value }
         end
       end
+
+      context 'when initialized with variadic: true' do
+        let(:constructor_options) { super().merge(variadic: true) }
+
+        describe 'with nil' do
+          it { expect(option.resolve(nil)).to be == {} }
+        end
+
+        describe 'with an Object' do
+          let(:value) { Object.new.freeze }
+          let(:error_message) do
+            'invalid value for option :format - expected a Hash of Integers, ' \
+              "received #{value.inspect}"
+          end
+
+          it 'should raise an exception' do
+            expect { option.resolve(value) }
+              .to raise_error(
+                Cuprum::Cli::Options::InvalidOptionError,
+                error_message
+              )
+          end
+        end
+
+        describe 'with an empty Hash' do
+          it { expect(option.resolve({})).to be == {} }
+        end
+
+        describe 'with a Hash with invalid values' do
+          let(:value) { { bypass_security: true } }
+          let(:error_message) do
+            'invalid value for option :format - expected a Hash of Integers, ' \
+              "received #{value.inspect}"
+          end
+
+          it 'should raise an exception' do
+            expect { option.resolve(value) }
+              .to raise_error(
+                Cuprum::Cli::Options::InvalidOptionError,
+                error_message
+              )
+          end
+        end
+
+        describe 'with a Hash with valid values' do
+          let(:value) { { 'red' => 184, 'green' => 0, 'blue' => 73 } }
+
+          it { expect(option.resolve(value)).to be == value }
+        end
+
+        context 'when initialized with required: true' do
+          let(:constructor_options) { super().merge(required: true) }
+
+          describe 'with an empty Hash' do # rubocop:disable RSpec/NestedGroups
+            let(:value) { {} }
+            let(:error_message) do
+              'invalid value for option :format - expected a non-empty Hash ' \
+                "of Integers, received #{value.inspect}"
+            end
+
+            it 'should raise an exception' do
+              expect { option.resolve(value) }
+                .to raise_error(
+                  Cuprum::Cli::Options::InvalidOptionError,
+                  error_message
+                )
+            end
+          end
+
+          describe 'with a Hash with valid values' do # rubocop:disable RSpec/NestedGroups
+            let(:value) { { 'red' => 184, 'green' => 0, 'blue' => 73 } }
+
+            it { expect(option.resolve(value)).to be == value }
+          end
+        end
+      end
     end
   end
 
@@ -502,6 +730,36 @@ RSpec.describe Cuprum::Cli::Option do
       let(:constructor_options) { super().merge(type: :boolean) }
 
       it { expect(option.type).to be :boolean }
+    end
+  end
+
+  describe '#variadic' do
+    include_examples 'should define reader', :variadic, false
+
+    it { expect(option).to have_aliased_method(:variadic).as(:variadic?) }
+
+    context 'when initialized with variadic: nil' do
+      let(:constructor_options) { super().merge(variadic: nil) }
+
+      it { expect(option.variadic).to be false }
+    end
+
+    context 'when initialized with variadic: an Object' do
+      let(:constructor_options) { super().merge(variadic: Object.new.freeze) }
+
+      it { expect(option.variadic).to be true }
+    end
+
+    context 'when initialized with variadic: false' do
+      let(:constructor_options) { super().merge(variadic: false) }
+
+      it { expect(option.variadic).to be false }
+    end
+
+    context 'when initialized with variadic: true' do
+      let(:constructor_options) { super().merge(variadic: true) }
+
+      it { expect(option.variadic).to be true }
     end
   end
 end

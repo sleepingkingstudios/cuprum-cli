@@ -7,6 +7,7 @@ require 'sleeping_king_studios/tools/toolbox/subclass'
 require 'thor'
 
 require 'cuprum/cli/integrations/thor'
+require 'cuprum/cli/integrations/thor/arguments_parser'
 
 module Cuprum::Cli::Integrations::Thor
   # Thor task wrapping a Cuprum::Cli command.
@@ -174,15 +175,17 @@ module Cuprum::Cli::Integrations::Thor
     no_commands do
       # Calls the wrapped Cuprum::Cli command with the parsed parameters.
       def call_command(*args)
-        opts =
-          SleepingKingStudios::Tools::Toolbelt
-          .instance
-          .hash_tools
-          .convert_keys_to_symbols(options)
-
-        result = command_class.new(**command_dependencies).call(*args, **opts)
+        args, opts =
+          Cuprum::Cli::Integrations::Thor::ArgumentsParser.new.call(*args)
+        opts       = opts.merge(options)
+        opts       = tools.hash_tools.convert_keys_to_symbols(opts)
+        result     =
+          command_class.new(**command_dependencies).call(*args, **opts)
 
         handle_failure(result) if result.failure?
+      rescue Cuprum::Cli::Options::UnknownOptionError,
+             Cuprum::Cli::Arguments::ExtraArgumentsError => exception
+        abort(exception.message)
       end
     end
 
@@ -199,6 +202,10 @@ module Cuprum::Cli::Integrations::Thor
         &.then { |err| "#{err.class.name}: #{err.message}" } || false
 
       abort(message)
+    end
+
+    def tools
+      SleepingKingStudios::Tools::Toolbelt.instance
     end
   end
 end

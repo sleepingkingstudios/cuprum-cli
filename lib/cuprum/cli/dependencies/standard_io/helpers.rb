@@ -103,18 +103,15 @@ module Cuprum::Cli::Dependencies
     end
 
     def format_boolean(value)
-      lower = value.downcase.strip
-
-      return false if FALSY_VALUES.include?(lower)
-      return true  if TRUTHY_VALUES.include?(lower)
-
+      Cuprum::Cli::Coercion.coerce_boolean(value.strip)
+    rescue Cuprum::Cli::Coercion::CoercionError
       nil
     end
 
     def format_integer(value)
-      return unless INTEGER_PATTERN.match?(value)
-
-      value.tr('_,', '').to_i
+      Cuprum::Cli::Coercion.coerce_integer(value.strip)
+    rescue Cuprum::Cli::Coercion::CoercionError
+      nil
     end
 
     def tools = SleepingKingStudios::Tools::Toolbelt.instance

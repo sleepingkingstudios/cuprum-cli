@@ -45,7 +45,7 @@ module Cuprum::Cli
     end
 
     def initialize(**)
-      super
+      super()
 
       @arguments = {}
       @options   = {}

@@ -81,6 +81,14 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
       :error_stream,
       -> { $stderr }
 
+    context 'when initialized with error_stream: a Proc' do
+      let(:error_stream)        { StringIO.new }
+      let(:lazy_stream)         { -> { error_stream } }
+      let(:constructor_options) { super().merge(error_stream: lazy_stream) }
+
+      it { expect(standard_io.send(:error_stream)).to be error_stream }
+    end
+
     context 'when initialized with error_stream: value' do
       let(:error_stream)        { StringIO.new }
       let(:constructor_options) { super().merge(error_stream:) }
@@ -94,6 +102,14 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
       :input_stream,
       -> { $stdin }
 
+    context 'when initialized with input_stream: a Proc' do
+      let(:input_stream)        { StringIO.new }
+      let(:lazy_stream)         { -> { input_stream } }
+      let(:constructor_options) { super().merge(input_stream: lazy_stream) }
+
+      it { expect(standard_io.send(:input_stream)).to be input_stream }
+    end
+
     context 'when initialized with input_stream: value' do
       let(:input_stream)        { StringIO.new }
       let(:constructor_options) { super().merge(input_stream:) }
@@ -106,6 +122,14 @@ RSpec.describe Cuprum::Cli::Dependencies::StandardIo do
     include_examples 'should define private reader',
       :output_stream,
       -> { $stdout }
+
+    context 'when initialized with output_stream: a Proc' do
+      let(:output_stream)       { StringIO.new }
+      let(:lazy_stream)         { -> { output_stream } }
+      let(:constructor_options) { super().merge(output_stream: lazy_stream) }
+
+      it { expect(standard_io.send(:output_stream)).to be output_stream }
+    end
 
     context 'when initialized with output_stream: value' do
       let(:output_stream)       { StringIO.new }

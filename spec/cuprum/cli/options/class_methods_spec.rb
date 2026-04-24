@@ -22,6 +22,12 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
     end
   end
 
+  deferred_context 'when the command has a variadic option' do
+    before(:example) do
+      described_class.option :flags, type: :boolean, variadic: true
+    end
+  end
+
   deferred_context 'when the parent command has many options' do
     before(:example) do
       Spec::Command.option :size,        default: 'medium'
@@ -165,6 +171,16 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
         end
       end
 
+      describe 'with variadic: true' do
+        let(:options) { super().merge(variadic: true) }
+
+        context 'when the option is defined' do
+          before(:example) { described_class.option(name, **options) }
+
+          include_deferred 'should define option', :format, variadic: true
+        end
+      end
+
       describe 'with type: :boolean' do
         let(:options) { super().merge(type: :boolean) }
 
@@ -212,6 +228,19 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
               define_predicate: false
           end
         end
+
+        describe 'with variadic: true' do
+          let(:options) { super().merge(variadic: true) }
+
+          context 'when the option is defined' do
+            before(:example) { described_class.option(name, **options) }
+
+            include_deferred 'should define option',
+              :format,
+              type:     :boolean,
+              variadic: true
+          end
+        end
       end
     end
 
@@ -248,6 +277,20 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
       it { expect(described_class.option(name)).to be name }
 
       include_deferred 'should define the option'
+    end
+
+    wrap_deferred 'when the command has a variadic option' do
+      describe 'with variadic: true' do
+        let(:options) { super().merge(variadic: true) }
+        let(:error_message) do
+          'command already defines variadic option :flags'
+        end
+
+        it 'should raise an exception' do
+          expect { described_class.option(name, **options) }
+            .to raise_error ArgumentError, error_message
+        end
+      end
     end
   end
 
@@ -467,6 +510,78 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
       end
     end
 
+    wrap_deferred 'when the command has a variadic option' do
+      describe 'with no values' do
+        let(:values)   { {} }
+        let(:expected) { { flags: {} } }
+
+        it 'should apply the option defaults' do
+          expect(described_class.resolve_options(**values)).to be == expected
+        end
+      end
+
+      describe 'with invalid values' do
+        let(:values) { { flags: :skipped, reason: false } }
+        let(:error_message) do
+          'invalid value for option :flags - expected a Hash of true or ' \
+            "false values, received #{values[:flags].inspect}"
+        end
+
+        it 'should raise an exception' do
+          expect { described_class.resolve_options(**values) }
+            .to raise_error(
+              Cuprum::Cli::Options::InvalidOptionError,
+              error_message
+            )
+        end
+      end
+
+      describe 'with invalid value items' do
+        let(:values) { { flags: { password: 'letm3in' } } }
+        let(:error_message) do
+          'invalid value for option :flags - expected a Hash of true or ' \
+            "false values, received #{values[:flags].inspect}"
+        end
+
+        it 'should raise an exception' do
+          expect { described_class.resolve_options(**values) }
+            .to raise_error(
+              Cuprum::Cli::Options::InvalidOptionError,
+              error_message
+            )
+        end
+      end
+
+      describe 'with valid values' do
+        let(:values)   { { flags: { ok: true, warnings: false } } }
+        let(:expected) { values }
+
+        it 'should return the values' do
+          expect(described_class.resolve_options(**values)).to be == expected
+        end
+
+        describe 'with extra values' do
+          let(:values) { super().merge(deprecated: false, warnings: true) }
+          let(:expected) do
+            { flags: { deprecated: false, ok: true, warnings: false } }
+          end
+
+          it 'should merge the extra values' do
+            expect(described_class.resolve_options(**values)).to be == expected
+          end
+        end
+      end
+
+      describe 'with extra values' do
+        let(:values)   { { ok: true, warnings: false } }
+        let(:expected) { { flags: { ok: true, warnings: false } } }
+
+        it 'should merge the extra values' do
+          expect(described_class.resolve_options(**values)).to be == expected
+        end
+      end
+    end
+
     context 'when the command and parent command have many options' do
       include_deferred 'when the command has a parent command'
       include_deferred 'when the command has many options'
@@ -572,6 +687,39 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
           let(:expected) { super().merge(values) }
 
           it 'should apply the option defaults' do
+            expect(described_class.resolve_options(**values)).to be == expected
+          end
+        end
+      end
+
+      wrap_deferred 'when the command has a variadic option' do
+        describe 'with valid values' do
+          let(:values)   { { shape: 'triangle', transparent: true } }
+          let(:expected) { values.merge(color: nil, size: 'medium', flags: {}) }
+
+          it 'should apply the option defaults' do
+            expect(described_class.resolve_options(**values)).to be == expected
+          end
+        end
+
+        describe 'with extra values' do
+          let(:values) do
+            {
+              shape:       'triangle',
+              transparent: true,
+              ok:          true,
+              warnings:    false
+            }
+          end
+          let(:expected) do
+            values.except(:ok, :warnings).merge(
+              color: nil,
+              size:  'medium',
+              flags: { ok: true, warnings: false }
+            )
+          end
+
+          it 'should merge the extra values' do
             expect(described_class.resolve_options(**values)).to be == expected
           end
         end

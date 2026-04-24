@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+<% tools = SleepingKingStudios::Tools::Toolbelt.new %>
+
+<% if relative_path.empty? %>
+<% if defined?(parent_class) && parent_class %>
+class <%= tools.str.camelize(short_name) %> < <%= parent_class %>
+
+end
+<% else %>
+module <%= tools.str.camelize(short_name) %>
+
+end
+<% end %>
+<% else %>
+<% module_path = relative_path.sub(/\/\z/, '').split('/') %>
+require '<%= module_path.join('/') %>'
+
+module <%= module_path.map { |rel| tools.str.camelize(rel) }.join('::') %>
+  <% if defined?(parent_class) && parent_class %>
+  class <%= tools.str.camelize(short_name) %> < <%= parent_class %>
+
+  end
+  <% else %>
+  module <%= tools.str.camelize(short_name) %>
+
+  end
+  <% end %>
+end
+<% end %>

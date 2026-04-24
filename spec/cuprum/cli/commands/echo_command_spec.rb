@@ -10,8 +10,12 @@ RSpec.describe Cuprum::Cli::Commands::EchoCommand do
 
   subject(:command) { described_class.new(file_system:, standard_io:) }
 
-  let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
-  let(:standard_io) { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
+  let(:file_system) do
+    Cuprum::Cli::Dependencies::FileSystem::Mock.new(files: { 'tmp' => {} })
+  end
+  let(:standard_io) do
+    Cuprum::Cli::Dependencies::StandardIo::Mock.new
+  end
 
   include_deferred 'should define argument',
     0,

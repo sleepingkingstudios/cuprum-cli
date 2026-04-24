@@ -1,0 +1,14 @@
+# frozen_string_literal: true
+<% tools = SleepingKingStudios::Tools::Toolbelt.new %>
+
+<% module_path = relative_path.sub(/\/\z/, '').split('/') %>
+<% full_path = [*module_path, short_name.sub(/_spec\z/, '')] %>
+require '<%= full_path.join('/') %>'
+
+<%
+  qualified_module =
+    full_path.map { |rel| tools.str.camelize(rel) }.join('::')
+%>
+RSpec.describe <%= qualified_module %> do
+  pending
+end
