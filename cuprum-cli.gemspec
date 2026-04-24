@@ -27,6 +27,7 @@ Gem::Specification.new do |gem|
   gem.bindir        = 'bin'
   gem.files         = Dir[
     'bin/cuprum-cli',
+    'lib/**/*.erb',
     'lib/**/*.rb',
     'LICENSE',
     '*.md'
