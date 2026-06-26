@@ -68,12 +68,14 @@ module Cuprum::Cli::Dependencies
       message
     end
 
+    # (see Cuprum::Cli::Dependencies::StandardIo#write_output)
     def write_output(message = nil, newline: true)
       super
 
       newline ? combined_stream.puts(message) : combined_stream.print(message)
     end
 
+    # (see Cuprum::Cli::Dependencies::StandardIo#write_error)
     def write_error(message = nil, newline: true)
       super
 

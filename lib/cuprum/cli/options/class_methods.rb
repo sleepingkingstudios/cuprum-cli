@@ -103,7 +103,7 @@ module Cuprum::Cli::Options
       nil
     end
 
-    # @return [Hash<Symbol => Object>] predefined option values for the command.
+    # @return [Hash{Symbol => Object}] predefined option values for the command.
     def option_values = inherited_option_values.merge(defined_option_values)
 
     # The defined options, including options defined on ancestor classes.

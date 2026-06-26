@@ -67,6 +67,7 @@ module Cuprum::Cli::Arguments
         @resolved          = {}
       end
 
+      # @private
       def call(*values)
         values = resolve_before(values)
         values = resolve_after(values)

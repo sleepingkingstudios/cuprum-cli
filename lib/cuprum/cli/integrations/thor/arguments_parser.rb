@@ -31,7 +31,7 @@ module Cuprum::Cli::Integrations::Thor
     #
     # @param inputs [Array<String>] the arguments captured by Thor.
     #
-    # @return [Array<Array<String>, Hash<Symbol=>Object>] the parsed arguments
+    # @return [Array<Array<String>, Hash{Symbol=>Object}>] the parsed arguments
     #   and options.
     def call(*inputs)
       raw_options, arguments = inputs.partition { |str| str.start_with?('-') }
