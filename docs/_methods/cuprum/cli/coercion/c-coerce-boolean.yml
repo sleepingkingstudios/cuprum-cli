@@ -1,0 +1,25 @@
+---
+name: Cuprum::Cli::Coercion.coerce_boolean
+parent_path: cuprum/cli/coercion
+signature: coerce_boolean(value)
+slug: coerce-boolean
+constructor: false
+data_path: cuprum/cli/coercion/c-coerce-boolean
+params:
+- description: the value to convert.
+  name: value
+  type:
+  - name: Object
+raises:
+- description: |-
+    if the value cannot be coerced to either true or
+    false.
+  type:
+  - name: CoercionError
+returns:
+- description: the coerced value.
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Converts the value to true or false.
+version: "*"

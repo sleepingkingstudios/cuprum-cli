@@ -1,0 +1,39 @@
+---
+name: Cuprum::Cli::Dependencies::SystemCommand::Mock
+slug: mock
+type: class
+files:
+- lib/cuprum/cli/dependencies/system_command/mock.rb
+parent_path: cuprum/cli/dependencies/system-command
+short_description: Mock implementation of SystemCommand for testing purposes.
+defined_classes:
+- name: MockStatus
+  slug: mock-status
+instance_attributes:
+- name: recorded_commands
+  read: true
+  write: false
+  path: cuprum/cli/dependencies/system-command/mock/i-recorded-commands
+  slug: recorded-commands
+  inherited: false
+instance_methods:
+- name: capture
+  path: cuprum/cli/dependencies/system-command/i-capture
+  slug: capture
+  inherited: true
+- name: initialize
+  path: cuprum/cli/dependencies/system-command/mock/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: spawn
+  path: cuprum/cli/dependencies/system-command/i-spawn
+  slug: spawn
+  inherited: true
+data_path: cuprum/cli/dependencies/system-command/mock
+constructor: true
+inherited_classes:
+- name: Cuprum::Cli::Dependencies::SystemCommand
+  slug: system-command
+  path: cuprum/cli/dependencies/system-command
+version: "*"

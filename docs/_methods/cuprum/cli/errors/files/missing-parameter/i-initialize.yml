@@ -1,0 +1,39 @@
+---
+name: Cuprum::Cli::Errors::Files::MissingParameter#initialize
+parent_path: cuprum/cli/errors/files/missing-parameter
+signature: 'initialize(parameter_name:, details: nil, format: nil, message: nil, template_name:
+  nil)'
+slug: initialize
+constructor: true
+data_path: cuprum/cli/errors/files/missing-parameter/i-initialize
+params:
+- description: the name of the missing parameter.
+  name: parameter_name
+  type:
+  - name: String
+  - name: Symbol
+- description: additional information about the error.
+  name: details
+  type:
+  - name: String
+  default: nil
+- description: the content format.
+  name: format
+  type:
+  - name: String
+  default: nil
+- description: an optional message to display.
+  name: message
+  type:
+  - name: String
+  default: nil
+- description: the name of the rendered content, if any,
+  name: template_name
+  type:
+  - name: String
+  default: nil
+returns:
+- description: a new instance of MissingParameter
+  type:
+  - name: MissingParameter
+version: "*"

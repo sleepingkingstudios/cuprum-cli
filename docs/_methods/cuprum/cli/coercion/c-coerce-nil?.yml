@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Coercion.coerce_nil?
+parent_path: cuprum/cli/coercion
+signature: coerce_nil?(value)
+slug: coerce-nil?
+constructor: false
+data_path: cuprum/cli/coercion/c-coerce-nil?
+returns:
+- description: |-
+    true if the value can be safely coerced to nil,
+    otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

@@ -1,0 +1,42 @@
+---
+name: Cuprum::Cli::Coercion
+slug: coercion
+type: module
+files:
+- lib/cuprum/cli/coercion.rb
+parent_path: cuprum/cli
+short_description: Utility for coercing raw string values to other literal types.
+class_methods:
+- name: coerce
+  path: cuprum/cli/coercion/c-coerce
+  slug: coerce
+  inherited: false
+- name: coerce_boolean
+  path: cuprum/cli/coercion/c-coerce-boolean
+  slug: coerce-boolean
+  inherited: false
+- name: coerce_boolean?
+  path: cuprum/cli/coercion/c-coerce-boolean?
+  slug: coerce-boolean?
+  inherited: false
+- name: coerce_integer
+  path: cuprum/cli/coercion/c-coerce-integer
+  slug: coerce-integer
+  inherited: false
+- name: coerce_integer?
+  path: cuprum/cli/coercion/c-coerce-integer?
+  slug: coerce-integer?
+  inherited: false
+- name: coerce_nil
+  path: cuprum/cli/coercion/c-coerce-nil
+  slug: coerce-nil
+  inherited: false
+- name: coerce_nil?
+  path: cuprum/cli/coercion/c-coerce-nil?
+  slug: coerce-nil?
+  inherited: false
+defined_classes:
+- name: CoercionError
+  slug: coercion-error
+data_path: cuprum/cli/coercion
+version: "*"

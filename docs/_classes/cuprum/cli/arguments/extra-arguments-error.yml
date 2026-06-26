@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Arguments::ExtraArgumentsError
+slug: extra-arguments-error
+type: class
+files:
+- lib/cuprum/cli/arguments.rb
+parent_path: cuprum/cli/arguments
+short_description: Exception raised when a command receives too many positional arguments.
+data_path: cuprum/cli/arguments/extra-arguments-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

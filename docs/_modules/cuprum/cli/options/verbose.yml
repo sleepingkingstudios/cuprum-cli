@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Options::Verbose
+slug: verbose
+type: module
+files:
+- lib/cuprum/cli/options/verbose.rb
+parent_path: cuprum/cli/options
+short_description: Defines --verbose option, which enables optional console outputs.
+instance_methods:
+- name: say
+  path: cuprum/cli/options/verbose/i-say
+  slug: say
+  inherited: false
+data_path: cuprum/cli/options/verbose
+version: "*"

@@ -1,0 +1,51 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods
+slug: class-methods
+type: module
+files:
+- lib/cuprum/cli/metadata.rb
+parent_path: cuprum/cli/metadata
+short_description: Class methods to extend when including Metadata.
+instance_methods:
+- name: abstract
+  path: cuprum/cli/metadata/class-methods/i-abstract
+  slug: abstract
+  inherited: false
+- name: abstract?
+  path: cuprum/cli/metadata/class-methods/i-abstract?
+  slug: abstract?
+  inherited: false
+- name: description
+  path: cuprum/cli/metadata/class-methods/i-description
+  slug: description
+  inherited: false
+- name: description?
+  path: cuprum/cli/metadata/class-methods/i-description?
+  slug: description?
+  inherited: false
+- name: full_description
+  path: cuprum/cli/metadata/class-methods/i-full-description
+  slug: full-description
+  inherited: false
+- name: full_description?
+  path: cuprum/cli/metadata/class-methods/i-full-description?
+  slug: full-description?
+  inherited: false
+- name: full_name
+  path: cuprum/cli/metadata/class-methods/i-full-name
+  slug: full-name
+  inherited: false
+- name: namespace
+  path: cuprum/cli/metadata/class-methods/i-namespace
+  slug: namespace
+  inherited: false
+- name: namespace?
+  path: cuprum/cli/metadata/class-methods/i-namespace?
+  slug: namespace?
+  inherited: false
+- name: short_name
+  path: cuprum/cli/metadata/class-methods/i-short-name
+  slug: short-name
+  inherited: false
+data_path: cuprum/cli/metadata/class-methods
+version: "*"

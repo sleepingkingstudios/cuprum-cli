@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Errors::Files::FileNotWriteable#file_path
+parent_path: cuprum/cli/errors/files/file-not-writeable
+signature: file_path
+slug: file-path
+constructor: false
+data_path: cuprum/cli/errors/files/file-not-writeable/i-file-path
+returns:
+- description: the path to the expected file.
+  type:
+  - name: String
+version: "*"

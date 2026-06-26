@@ -1,0 +1,54 @@
+---
+name: Cuprum::Cli::Errors::Files::TemplateNotResolved
+slug: template-not-resolved
+type: class
+files:
+- lib/cuprum/cli/errors/files/template_not_resolved.rb
+parent_path: cuprum/cli/errors/files
+short_description: Error returned when unable to resolve a template for a templated
+  file.
+constants:
+- name: TYPE
+  path: cuprum/cli/errors/files/template-not-resolved/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: details
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/template-error/i-details
+  slug: details
+  inherited: true
+- name: file_path
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/template-not-resolved/i-file-path
+  slug: file-path
+  inherited: false
+- name: options
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/template-not-resolved/i-options
+  slug: options
+  inherited: false
+- name: template_name
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/template-error/i-template-name
+  slug: template-name
+  inherited: true
+instance_methods:
+- name: initialize
+  path: cuprum/cli/errors/files/template-not-resolved/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/errors/files/template-not-resolved
+constructor: true
+inherited_classes:
+- name: Cuprum::Cli::Errors::Files::TemplateError
+  slug: template-error
+  path: cuprum/cli/errors/files/template-error
+- name: Cuprum::Error
+  slug: error
+version: "*"

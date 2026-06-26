@@ -1,0 +1,9 @@
+---
+name: Cuprum::Cli::Errors::SystemCommandFailure#exit_status
+parent_path: cuprum/cli/errors/system-command-failure
+signature: exit_status
+slug: exit-status
+constructor: false
+data_path: cuprum/cli/errors/system-command-failure/i-exit-status
+short_description: Returns the value of attribute exit_status.
+version: "*"

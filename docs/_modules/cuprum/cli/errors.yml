@@ -1,0 +1,18 @@
+---
+name: Cuprum::Cli::Errors
+slug: errors
+type: module
+files:
+- lib/cuprum/cli/errors.rb
+- lib/cuprum/cli/errors/files.rb
+- lib/cuprum/cli/errors/system_command_failure.rb
+parent_path: cuprum/cli
+short_description: Namespace for errors, which represent failure states of commands.
+defined_classes:
+- name: SystemCommandFailure
+  slug: system-command-failure
+defined_modules:
+- name: Files
+  slug: files
+data_path: cuprum/cli/errors
+version: "*"

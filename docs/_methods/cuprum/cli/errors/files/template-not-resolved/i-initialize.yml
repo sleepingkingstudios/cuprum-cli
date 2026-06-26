@@ -1,0 +1,34 @@
+---
+name: Cuprum::Cli::Errors::Files::TemplateNotResolved#initialize
+parent_path: cuprum/cli/errors/files/template-not-resolved
+signature: 'initialize(file_path:, details: nil, message: nil, options: {})'
+slug: initialize
+constructor: true
+data_path: cuprum/cli/errors/files/template-not-resolved/i-initialize
+params:
+- description: the file path for the templated file.
+  name: file_path
+  type:
+  - name: String
+- description: additional information about the error.
+  name: details
+  type:
+  - name: String
+  default: nil
+- description: an optional message to display.
+  name: message
+  type:
+  - name: String
+  default: nil
+- description: |-
+    options used when attempting to resolve the
+    template.
+  name: options
+  type:
+  - name: Hash
+  default: "{}"
+returns:
+- description: a new instance of TemplateNotResolved
+  type:
+  - name: TemplateNotResolved
+version: "*"

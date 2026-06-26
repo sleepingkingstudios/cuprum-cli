@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Commands::Ci::RSpecCommand::Report
+parent_path: cuprum/cli/commands/ci/r-spec-command
+slug: report
+short_description: Data class for recording the results of an RSpec command.
+value: |-
+  Cuprum::Cli::Commands::Ci::Report.define do
+    private
+
+    def item_name = 'example'
+  end
+data_path: cuprum/cli/commands/ci/r-spec-command/report
+version: "*"

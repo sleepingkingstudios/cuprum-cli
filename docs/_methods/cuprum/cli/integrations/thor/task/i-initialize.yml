@@ -1,0 +1,41 @@
+---
+name: Cuprum::Cli::Integrations::Thor::Task#initialize
+parent_path: cuprum/cli/integrations/thor/task
+signature: 'initialize(command_class, arguments = [], options = {}, config = {}, command_dependencies:
+  {})'
+slug: initialize
+constructor: true
+data_path: cuprum/cli/integrations/thor/task/i-initialize
+overloads:
+- name: Cuprum::Cli::Integrations::Thor::Task#initialize
+  parent_path: cuprum/cli/integrations/thor/task
+  signature: initialize(command_class, arguments = [], options = {}, config = {})
+  slug: initialize
+  constructor: true
+  params:
+  - description: the command to execute.
+    name: command_class
+    type:
+    - name: Class
+  - description: the arguments passed by the Thor runtime.
+    name: arguments
+    type:
+    - name: Array
+    default: "[]"
+  - description: the options passed by the Thor runtime.
+    name: options
+    type:
+    - name: Hash
+    default: "{}"
+  - description: |-
+      additional configuration passed by the Thor
+      runtime.
+    name: config
+    type:
+    - name: Hash
+    default: "{}"
+returns:
+- description: a new instance of Task
+  type:
+  - name: Task
+version: "*"

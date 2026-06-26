@@ -1,0 +1,34 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods::Builder
+slug: builder
+type: class
+files:
+- lib/cuprum/cli/arguments/class_methods.rb
+parent_path: cuprum/cli/arguments/class-methods
+short_description: Helper class for defining command arguments.
+instance_attributes:
+- name: command_class
+  read: true
+  write: false
+  path: cuprum/cli/arguments/class-methods/builder/i-command-class
+  slug: command-class
+  inherited: false
+- name: defined_arguments
+  read: true
+  write: false
+  path: cuprum/cli/arguments/class-methods/builder/i-defined-arguments
+  slug: defined-arguments
+  inherited: false
+instance_methods:
+- name: call
+  path: cuprum/cli/arguments/class-methods/builder/i-call
+  slug: call
+  inherited: false
+- name: initialize
+  path: cuprum/cli/arguments/class-methods/builder/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/arguments/class-methods/builder
+constructor: true
+version: "*"

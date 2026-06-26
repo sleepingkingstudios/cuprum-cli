@@ -1,0 +1,38 @@
+---
+name: Cuprum::Cli::Integrations::Thor::Task
+slug: task
+type: class
+files:
+- lib/cuprum/cli/integrations/thor/task.rb
+parent_path: cuprum/cli/integrations/thor
+short_description: Thor task wrapping a Cuprum::Cli command.
+class_methods:
+- name: exit_on_failure?
+  path: cuprum/cli/integrations/thor/task/c-exit-on-failure?
+  slug: exit-on-failure?
+  inherited: false
+defined_classes:
+- name: Builder
+  slug: builder
+instance_attributes:
+- name: command_class
+  read: true
+  write: false
+  path: cuprum/cli/integrations/thor/task/i-command-class
+  slug: command-class
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/integrations/thor/task/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/integrations/thor/task
+extended_modules:
+- name: SleepingKingStudios::Tools::Toolbox::Subclass
+  slug: subclass
+constructor: true
+inherited_classes:
+- name: Thor
+  slug: thor
+version: "*"

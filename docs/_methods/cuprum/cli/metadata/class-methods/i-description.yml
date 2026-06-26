@@ -1,0 +1,33 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#description
+parent_path: cuprum/cli/metadata/class-methods
+signature: description(value = UNDEFINED)
+slug: description
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-description
+overloads:
+- name: Cuprum::Cli::Metadata::ClassMethods#description
+  parent_path: cuprum/cli/metadata/class-methods
+  signature: description
+  slug: description
+  constructor: false
+  returns:
+  - description: the description for the command.
+    type:
+    - name: String
+- name: Cuprum::Cli::Metadata::ClassMethods#description
+  parent_path: cuprum/cli/metadata/class-methods
+  signature: description(value)
+  slug: description
+  constructor: false
+  params:
+  - description: the description to set.
+    name: value
+    type:
+    - name: String
+  returns:
+  - description: the set description.
+    type:
+    - name: String
+  short_description: Sets the description for the command.
+version: "*"

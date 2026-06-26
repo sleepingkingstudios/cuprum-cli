@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Dependencies::FileSystem::Mock#tempfiles
+parent_path: cuprum/cli/dependencies/file-system/mock
+signature: tempfiles
+slug: tempfiles
+constructor: false
+data_path: cuprum/cli/dependencies/file-system/mock/i-tempfiles
+returns:
+- description: the contents of each generated tempfile.
+  type:
+  - name: Array
+    items:
+    - name: String
+version: "*"

@@ -1,0 +1,22 @@
+---
+name: Cuprum::Cli::Coercion.coerce_nil
+parent_path: cuprum/cli/coercion
+signature: coerce_nil(value)
+slug: coerce-nil
+constructor: false
+data_path: cuprum/cli/coercion/c-coerce-nil
+params:
+- description: the value to convert.
+  name: value
+  type:
+  - name: Object
+raises:
+- description: if the value cannot be coerced to nil.
+  type:
+  - name: CoercionError
+returns:
+- description: the coerced value.
+  type:
+  - name: nil
+short_description: Converts the value to nil.
+version: "*"

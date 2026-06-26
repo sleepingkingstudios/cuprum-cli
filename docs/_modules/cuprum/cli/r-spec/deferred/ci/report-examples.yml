@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::RSpec::Deferred::Ci::ReportExamples
+slug: report-examples
+type: module
+files:
+- lib/cuprum/cli/rspec/deferred/ci/report_examples.rb
+parent_path: cuprum/cli/r-spec/deferred/ci
+short_description: Deferred examples for testing CI reports.
+data_path: cuprum/cli/r-spec/deferred/ci/report-examples
+included_modules:
+- name: RSpec::SleepingKingStudios::Deferred::Provider
+  slug: provider
+version: "*"

@@ -1,0 +1,44 @@
+---
+name: Cuprum::Cli::Errors::SystemCommandFailure
+slug: system-command-failure
+type: class
+files:
+- lib/cuprum/cli/errors/system_command_failure.rb
+parent_path: cuprum/cli/errors
+short_description: Error returned when a system command returns a non-success status.
+constants:
+- name: TYPE
+  path: cuprum/cli/errors/system-command-failure/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: command
+  read: true
+  write: false
+  path: cuprum/cli/errors/system-command-failure/i-command
+  slug: command
+  inherited: false
+- name: details
+  read: true
+  write: false
+  path: cuprum/cli/errors/system-command-failure/i-details
+  slug: details
+  inherited: false
+- name: exit_status
+  read: true
+  write: false
+  path: cuprum/cli/errors/system-command-failure/i-exit-status
+  slug: exit-status
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/errors/system-command-failure/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/errors/system-command-failure
+constructor: true
+inherited_classes:
+- name: Cuprum::Error
+  slug: error
+version: "*"

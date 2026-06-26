@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Integrations
+slug: integrations
+type: module
+files:
+- lib/cuprum/cli/integrations.rb
+- lib/cuprum/cli/integrations/thor.rb
+parent_path: cuprum/cli
+short_description: Namespace for integrations with other command-line tools.
+defined_modules:
+- name: Thor
+  slug: thor
+data_path: cuprum/cli/integrations
+version: "*"

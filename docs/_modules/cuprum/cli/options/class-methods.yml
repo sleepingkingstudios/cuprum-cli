@@ -1,0 +1,35 @@
+---
+name: Cuprum::Cli::Options::ClassMethods
+slug: class-methods
+type: module
+files:
+- lib/cuprum/cli/options/class_methods.rb
+parent_path: cuprum/cli/options
+short_description: Methods used to extend command class functionality for defining
+  options.
+defined_classes:
+- name: Builder
+  slug: builder
+instance_methods:
+- name: option
+  path: cuprum/cli/options/class-methods/i-option
+  slug: option
+  inherited: false
+- name: option_value
+  path: cuprum/cli/options/class-methods/i-option-value
+  slug: option-value
+  inherited: false
+- name: option_values
+  path: cuprum/cli/options/class-methods/i-option-values
+  slug: option-values
+  inherited: false
+- name: options
+  path: cuprum/cli/options/class-methods/i-options
+  slug: options
+  inherited: false
+- name: resolve_options
+  path: cuprum/cli/options/class-methods/i-resolve-options
+  slug: resolve-options
+  inherited: false
+data_path: cuprum/cli/options/class-methods
+version: "*"

@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo::Helpers::TRUTHY_VALUES
+parent_path: cuprum/cli/dependencies/standard-io/helpers
+slug: truthy-values
+short_description: String input values that will be mapped to a boolean true.
+value: Set.new(%w[t true y yes]).freeze
+data_path: cuprum/cli/dependencies/standard-io/helpers/truthy-values
+version: "*"

@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Commands::File::Templates
+slug: templates
+type: module
+files:
+- lib/cuprum/cli/commands/file/templates.rb
+parent_path: cuprum/cli/commands/file
+short_description: Namespace for defining templates for generated files.
+constants:
+- name: DEFAULT_TEMPLATES
+  path: cuprum/cli/commands/file/templates/default-templates
+  slug: default-templates
+  inherited: false
+data_path: cuprum/cli/commands/file/templates
+version: "*"

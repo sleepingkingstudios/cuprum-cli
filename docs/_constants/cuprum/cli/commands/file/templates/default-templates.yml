@@ -1,0 +1,37 @@
+---
+name: Cuprum::Cli::Commands::File::Templates::DEFAULT_TEMPLATES
+parent_path: cuprum/cli/commands/file/templates
+slug: default-templates
+short_description: Default templates used to generate Ruby and RSpec files.
+value: |-
+  [
+    {
+      name:      'RSpec File',
+      pattern:   RSPEC_PATTERN,
+      templates: {
+        file_path: '%<root_path>s%<relative_path>s%<base_name>s_spec.rb',
+        template:  File.join(TEMPLATES_PATH, 'rspec.rb.erb'),
+        types:     %i[ruby rspec spec test]
+      }
+    },
+    {
+      name:      'Ruby File (With Spec)',
+      pattern:   RUBY_PATTERN,
+      templates: [
+        {
+          file_path: '%<root_path>s%<relative_path>s%<base_name>s.rb',
+          template:  File.join(TEMPLATES_PATH, 'ruby.rb.erb'),
+          type:      :ruby
+        },
+        {
+          file_path: 'spec/%<relative_path>s%<base_name>s_spec.rb',
+          template:  File.join(TEMPLATES_PATH, 'rspec.rb.erb'),
+          types:     %i[ruby rspec spec test]
+        }
+      ]
+    }
+  ].then do |ary|
+    SleepingKingStudios::Tools::Toolbelt.instance.array_tools.deep_freeze(ary)
+  end
+data_path: cuprum/cli/commands/file/templates/default-templates
+version: "*"

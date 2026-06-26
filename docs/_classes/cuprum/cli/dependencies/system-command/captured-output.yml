@@ -1,0 +1,38 @@
+---
+name: Cuprum::Cli::Dependencies::SystemCommand::CapturedOutput
+slug: captured-output
+type: class
+files:
+- lib/cuprum/cli/dependencies/system_command.rb
+parent_path: cuprum/cli/dependencies/system-command
+short_description: Data object representing the captured output and status of a process.
+instance_attributes:
+- name: error
+  read: true
+  write: false
+  path: cuprum/cli/dependencies/system-command/captured-output/i-error
+  slug: error
+  inherited: false
+- name: output
+  read: true
+  write: false
+  path: cuprum/cli/dependencies/system-command/captured-output/i-output
+  slug: output
+  inherited: false
+- name: status
+  read: true
+  write: false
+  path: cuprum/cli/dependencies/system-command/captured-output/i-status
+  slug: status
+  inherited: false
+instance_methods:
+- name: success?
+  path: cuprum/cli/dependencies/system-command/captured-output/i-success?
+  slug: success?
+  inherited: false
+data_path: cuprum/cli/dependencies/system-command/captured-output
+constructor: false
+inherited_classes:
+- name: Data
+  slug: data
+version: "*"

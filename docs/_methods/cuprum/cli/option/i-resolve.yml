@@ -1,0 +1,37 @@
+---
+name: Cuprum::Cli::Option#resolve
+parent_path: cuprum/cli/option
+signature: resolve(original_value)
+slug: resolve
+constructor: false
+data_path: cuprum/cli/option/i-resolve
+overloads:
+- name: Cuprum::Cli::Option#resolve
+  parent_path: cuprum/cli/option
+  signature: resolve(value)
+  slug: resolve
+  constructor: false
+  description: If the value is nil, applies the option default (if any).
+  params:
+  - description: the value to validate.
+    name: value
+    type:
+    - name: Object
+  raises:
+  - description: |-
+      if the value is
+      missing (for a required option) or invalid.
+    type:
+    - name: Cuprum::Cli::Options::InvalidOptionError
+      path: cuprum/cli/options/invalid-option-error
+  returns:
+  - description: the validated option value.
+    type:
+    - name: Object
+  short_description: Validates the value for the current option.
+raises:
+- description: ''
+  type:
+  - name: Cuprum::Cli::Options::InvalidOptionError
+    path: cuprum/cli/options/invalid-option-error
+version: "*"

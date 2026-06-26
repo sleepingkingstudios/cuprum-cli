@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Integrations::Thor::Task.exit_on_failure?
+parent_path: cuprum/cli/integrations/thor/task
+signature: exit_on_failure?
+slug: exit-on-failure?
+constructor: false
+data_path: cuprum/cli/integrations/thor/task/c-exit-on-failure?
+returns:
+- description: ''
+  type:
+  - name: 'true'
+short_description: Ensures that the task exists with a non-zero status code on a failure.
+version: "*"

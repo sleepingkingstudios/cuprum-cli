@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#namespace?
+parent_path: cuprum/cli/metadata/class-methods
+signature: namespace?
+slug: namespace?
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-namespace?
+returns:
+- description: |-
+    true if the command defines a namespace; otherwise
+    false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

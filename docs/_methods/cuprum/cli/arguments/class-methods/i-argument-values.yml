@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods#argument_values
+parent_path: cuprum/cli/arguments/class-methods
+signature: argument_values
+slug: argument-values
+constructor: false
+data_path: cuprum/cli/arguments/class-methods/i-argument-values
+returns:
+- description: predefined argument values for the command.
+  type:
+  - name: Array
+    items:
+    - name: Object
+version: "*"

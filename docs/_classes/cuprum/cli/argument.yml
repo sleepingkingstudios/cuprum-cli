@@ -1,0 +1,67 @@
+---
+name: Cuprum::Cli::Argument
+slug: argument
+type: class
+files:
+- lib/cuprum/cli/argument.rb
+parent_path: cuprum/cli
+short_description: Data object representing a positional command argument.
+instance_attributes:
+- name: default
+  read: true
+  write: false
+  path: cuprum/cli/argument/i-default
+  slug: default
+  inherited: false
+- name: description
+  read: true
+  write: false
+  path: cuprum/cli/argument/i-description
+  slug: description
+  inherited: false
+- name: name
+  read: true
+  write: false
+  path: cuprum/cli/argument/i-name
+  slug: name
+  inherited: false
+- name: parameter_name
+  read: true
+  write: false
+  path: cuprum/cli/argument/i-parameter-name
+  slug: parameter-name
+  inherited: false
+- name: required
+  read: true
+  write: false
+  path: cuprum/cli/argument/i-required
+  slug: required
+  inherited: false
+- name: type
+  read: true
+  write: false
+  path: cuprum/cli/argument/i-type
+  slug: type
+  inherited: false
+- name: variadic
+  read: true
+  write: false
+  path: cuprum/cli/argument/i-variadic
+  slug: variadic
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/argument/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: resolve
+  path: cuprum/cli/argument/i-resolve
+  slug: resolve
+  inherited: false
+data_path: cuprum/cli/argument
+constructor: true
+inherited_classes:
+- name: Data
+  slug: data
+version: "*"

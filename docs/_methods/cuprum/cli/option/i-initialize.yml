@@ -1,0 +1,78 @@
+---
+name: Cuprum::Cli::Option#initialize
+parent_path: cuprum/cli/option
+signature: 'initialize(name:, aliases: [], default: nil, description: nil, parameter_name:
+  nil, required: false, type: :string, variadic: false)'
+slug: initialize
+constructor: true
+data_path: cuprum/cli/option/i-initialize
+params:
+- description: the name of the option.
+  name: name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    aliases for the option when parsing
+    options from the command line.
+  name: aliases
+  type:
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+  default: "[]"
+- description: |-
+    the default value for the option. If given
+    and the value of the option is nil, sets the option value to the default
+    value.
+  name: default
+  type:
+  - name: Object
+  - name: Proc
+  default: nil
+- description: |-
+    a short, human-readable description of the
+    option.
+  name: description
+  type:
+  - name: String
+  default: nil
+- description: |-
+    a representation of the possible values for
+    the option.
+  name: parameter_name
+  type:
+  - name: String
+  default: nil
+- description: |-
+    if true, raises an exception if the option
+    is not provided to the command.
+  name: required
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    the expected type of the option value
+    as a Class or class name. If given, raises an exception if the option
+    value is not an instance of the type. Defaults to :string.
+  name: type
+  type:
+  - name: Class
+  - name: String
+  - name: Symbol
+- description: |-
+    if true, the option is variadic and
+    represents an hash of options provided to the command. Defaults to
+    false.
+  name: variadic
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+returns:
+- description: a new instance of Option
+  type:
+  - name: Option
+version: "*"
