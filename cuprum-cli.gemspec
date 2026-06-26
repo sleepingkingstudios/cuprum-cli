@@ -35,5 +35,6 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'cuprum', '~> 1.3', '>= 1.3.1'
   gem.add_dependency 'herb', '~> 0.9.7'
-  gem.add_dependency 'plumbum'
+  gem.add_dependency 'plumbum', '~> 0.1'
+  gem.add_dependency 'sleeping_king_studios-tools', '~> 1.3'
 end
