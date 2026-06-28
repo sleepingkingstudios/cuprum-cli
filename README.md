@@ -1,8 +1,13 @@
 # Cuprum::Cli
 
-A command-line utility powered by Cuprum.
+A command-line utility powered by [Cuprum](https://www.sleepingkingstudios.com/cuprum/) that provides tools and utilities for defining command-line tools.
 
-Provides tools and utilities for defining command-line tools.
+<blockquote>
+  Read The
+  <a href="https://www.sleepingkingstudios.com/plumbum" target="_blank">
+    Documentation
+  </a>
+</blockquote>
 
 ## About
 

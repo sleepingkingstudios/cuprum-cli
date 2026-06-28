@@ -50,7 +50,7 @@ params:
   default: nil
 - description: |-
     if true, raises an exception if the
-    argument is not provided to the command.
+    argument is not provided to the command. Defaults to false.
   name: required
   type:
   - name: 'true'

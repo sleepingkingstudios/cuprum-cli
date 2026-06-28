@@ -125,7 +125,7 @@ module Cuprum::Cli::Arguments
     #   @param description [String] a short, human-readable description of the
     #     argument.
     #   @param required [true, false] if true, raises an exception if the
-    #     argument is not provided to the command.
+    #     argument is not provided to the command. Defaults to false.
     #   @param type [Class, String, Symbol] the expected type of the argument
     #     value as a Class or class name. If given, raises an exception if the
     #     argument value is not an instance of the type. Defaults to :string.
