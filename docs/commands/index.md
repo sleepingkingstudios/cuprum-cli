@@ -23,9 +23,9 @@ Internally, a `Cuprum::Cli::Command` leverages <a href="https://www.sleepingking
 ### See Also
 
 - [Command Dependencies]({{site.baseurl}}/commands/dependencies)
-  - [FileSystem]({{site.baseurl}}/commands/dependencies#file-system)
-  - [StandardIo]({{site.baseurl}}/commands/dependencies#standard-io)
-  - [SystemCommand]({{site.baseurl}}/commands/dependencies#system-command)
+  - [FileSystem]({{site.baseurl}}/commands/dependencies#filesystem)
+  - [StandardIo]({{site.baseurl}}/commands/dependencies#standardio)
+  - [SystemCommand]({{site.baseurl}}/commands/dependencies#systemcommand)
 - [Command Registries]({{site.baseurl}}/commands/registries)
 
 ## Defining Commands
@@ -333,7 +333,7 @@ default
 
 Our `PingCommand` is now pretty flexible. It is not, however, very readable - that magic <code>Kernel#&grave;</code> call is an eyesore. The command is also going to be hard to test.
 
-To make developing and testing commands easier, `Cuprum::Cli` defines [Command Dependencies]({{site.baseurl}}/commands/dependencies), modules which wrap external behavior. We can make the `PingCommand` much more readable by using the [SystemCommand dependency]({{site.baseurl}}/commands/dependencies#system-command).
+To make developing and testing commands easier, `Cuprum::Cli` defines [Command Dependencies]({{site.baseurl}}/commands/dependencies), modules which wrap external behavior. We can make the `PingCommand` much more readable by using the [SystemCommand dependency]({{site.baseurl}}/commands/dependencies#systemcommand).
 
 To add a dependency to a `Cuprum::Cli::Command`, we use the `.dependency` class method.
 

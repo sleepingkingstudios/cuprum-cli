@@ -72,6 +72,12 @@ The core component in `Cuprum::Cli` is the `Command`.
       </li>
     </ul>
   </li>
+
+  <li>
+    <a href="{{site.baseurl}}/commands/dependencies">Command Dependencies</a>
+    <br>
+    <code>Cuprum::Cli</code> commands use dependencies to interact with external functions in a consistent and testable fashion. Defined dependencies include <a href="{{site.baseurl}}/commands/dependencies#file-system">reading from and writing to the file system</a>, <a href="{{site.baseurl}}/commands/dependencies#standard-io">interacting with the standard IO streams</a>, and <a href="{{site.baseurl}}/commands/dependencies#system-command">calling system commands</a>.
+  </li>
 </ul>
 For a full list of defined classes and objects, see [Reference](./reference).
 
