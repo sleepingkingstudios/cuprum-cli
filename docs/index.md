@@ -31,6 +31,8 @@ Set up a [CLI integration]({{site.baseurl}}/integrations) and register your comm
 # In tasks.thor:
 require 'cuprum/cli/integrations/thor/registry'
 
+registry = Cuprum::Cli::Integrations::Thor::Registry.new
+
 registry.register Cuprum::Cli::Commands::Ci::RSpecCommand
 registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
   full_name:   'ci:rspec:sinatra4',
@@ -76,9 +78,30 @@ The core component in `Cuprum::Cli` is the `Command`.
   <li>
     <a href="{{site.baseurl}}/commands/dependencies">Command Dependencies</a>
     <br>
-    <code>Cuprum::Cli</code> commands use dependencies to interact with external functions in a consistent and testable fashion. Defined dependencies include <a href="{{site.baseurl}}/commands/dependencies#file-system">reading from and writing to the file system</a>, <a href="{{site.baseurl}}/commands/dependencies#standard-io">interacting with the standard IO streams</a>, and <a href="{{site.baseurl}}/commands/dependencies#system-command">calling system commands</a>.
+    <code>Cuprum::Cli</code> commands use dependencies to interact with external functions in a consistent and testable fashion. Defined dependencies include <a href="{{site.baseurl}}/commands/dependencies#filesystem">reading from and writing to the file system</a>, <a href="{{site.baseurl}}/commands/dependencies#standardio">interacting with the standard IO streams</a>, and <a href="{{site.baseurl}}/commands/dependencies#systemcommand">calling system commands</a>.
   </li>
 </ul>
+### Integrations
+
+
+Once a command is defined, `Cuprum::Cli` integrates with an external CLI provider to call the command from the command line.
+
+<ul>
+  <li>
+    <a href="{{site.baseurl}}/integrations">Integrations</a>
+    <br>
+    Third-party tools that <code>Cuprum::Cli</code> can use to call commands from the command line.
+    <ul>
+      <li>
+        <a href="{{site.baseurl}}/integrations#thor">Thor</a>
+        <br>
+        Using <code>Cuprum::Cli</code> commands with the <a href="https://github.com/rails/thor" target="_blank">Thor</a> toolkit.
+      </li>
+    </ul>
+  </li>
+</ul>
+
+
 For a full list of defined classes and objects, see [Reference](./reference).
 
 [Back to Top](#)
