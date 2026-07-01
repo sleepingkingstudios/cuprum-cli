@@ -4,7 +4,7 @@ A command-line utility powered by [Cuprum](https://www.sleepingkingstudios.com/c
 
 <blockquote>
   Read The
-  <a href="https://www.sleepingkingstudios.com/plumbum" target="_blank">
+  <a href="https://www.sleepingkingstudios.com/cuprum-cli" target="_blank">
     Documentation
   </a>
 </blockquote>
@@ -54,3 +54,94 @@ To run the [RuboCop](https://rubocop.org/) linter:
 ```bash
 bundle exec rubocop
 ```
+
+## Getting Started
+
+Add the gem to your Gemfile or gemspec:
+
+```ruby
+group :development, :test do
+  gem 'cuprum-cli'
+end
+```
+
+Set up a <a href="https://www.sleepingkingstudios.com/cuprum-cli/integrations" target="_blank">CLI integration</a> and register your commands:
+
+```ruby
+# In tasks.thor:
+require 'cuprum/cli/integrations/thor/registry'
+
+registry = Cuprum::Cli::Integrations::Thor::Registry.new
+
+registry.register Cuprum::Cli::Commands::Ci::RSpecCommand
+registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
+  full_name:   'ci:rspec:sinatra4',
+  description: 'Runs the RSpec tests against Sinatra 4.X',
+  options:     { gemfile: 'gemfiles/sinatra_4.gemfile' }
+```
+
+Finally, you can call the commands from your CLI tool:
+
+```
+% bundle exec thor list
+ci
+--
+thor ci:rspec ...FILE_PATTERNS       # Runs an RSpec command.
+thor ci:rspec:sinatra4 ...FILE_PATTERNS  # Runs the RSpec tests against Sinatra 4.X
+```
+
+### Defining Commands
+
+You can also define custom CLI commands using the `Cuprum::Cli::Command` class. `Cuprum::Cli` defines a powerful DSL for quickly defining and configuring commands.
+
+```ruby
+class PingCommand < Cuprum::Cli::Command
+  dependency :system_command
+
+  argument :service_url,
+    default:     'www.example.com',
+    description: 'The URL of the remote service',
+    type:        String
+
+  option :interval,
+    aliases:     'i',
+    default:     0.1,
+    description: 'The interval between pings',
+    type:        Float
+
+  option :max_count,
+    aliases:     %w[c],
+    default:     5,
+    description: 'The total number of pings sent to the server',
+    type:        Integer
+
+  private
+
+  def format_options
+    # The ping command uses a non-standard options format.
+    options = +''
+
+    options << "-c#{max_count}"
+    options << "-i#{interval}"
+    options << '-q' # Only display the summary line.
+  end
+
+  def process
+    system_command.capture(
+      'ping',
+      arguments: [format_options, service_url]
+    )
+  end
+end
+```
+
+Now that we've defined a custom command, we can register it in our CLI integration:
+
+```ruby
+registry.register PingCommand
+registry.register PingCommand,
+  full_name: 'ping:github',
+  options:   { service_url: 'github.com' }
+```
+
+For more information on defining commands, see the <a href="https://www.sleepingkingstudios.com/cuprum-cli/commands" target="_blank">commands documentation</a>.

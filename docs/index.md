@@ -50,6 +50,62 @@ thor ci:rspec ...FILE_PATTERNS       # Runs an RSpec command.
 thor ci:rspec:sinatra4 ...FILE_PATTERNS  # Runs the RSpec tests against Sinatra 4.X
 ```
 
+### Defining Commands
+
+You can also define [custom CLI commands]({{site.baseurl/commands}}) using the `Cuprum::Cli::Command` class. `Cuprum::Cli` defines a powerful DSL for quickly defining and configuring commands.
+
+```ruby
+class PingCommand < Cuprum::Cli::Command
+  dependency :system_command
+
+  argument :service_url,
+    default:     'www.example.com',
+    description: 'The URL of the remote service',
+    type:        String
+
+  option :interval,
+    aliases:     'i',
+    default:     0.1,
+    description: 'The interval between pings',
+    type:        Float
+
+  option :max_count,
+    aliases:     %w[c],
+    default:     5,
+    description: 'The total number of pings sent to the server',
+    type:        Integer
+
+  private
+
+  def format_options
+    # The ping command uses a non-standard options format.
+    options = +''
+
+    options << "-c#{max_count}"
+    options << "-i#{interval}"
+    options << '-q' # Only display the summary line.
+  end
+
+  def process
+    system_command.capture(
+      'ping',
+      arguments: [format_options, service_url]
+    )
+  end
+end
+```
+
+Now that we've defined a custom command, we can register it in our CLI integration:
+
+```ruby
+registry.register PingCommand
+registry.register PingCommand,
+  full_name: 'ping:github',
+  options:   { service_url: 'github.com' }
+```
+
+For more information on defining commands, see the [commands documentation]({{site.baseurl/commands}}).
+
 [Back to Top](#)
 
 ## Reference
