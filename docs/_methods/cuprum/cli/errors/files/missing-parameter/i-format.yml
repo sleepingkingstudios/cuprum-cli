@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Errors::Files::MissingParameter#format
+parent_path: cuprum/cli/errors/files/missing-parameter
+signature: format
+slug: format
+constructor: false
+data_path: cuprum/cli/errors/files/missing-parameter/i-format
+returns:
+- description: the content format.
+  type:
+  - name: String
+version: "*"

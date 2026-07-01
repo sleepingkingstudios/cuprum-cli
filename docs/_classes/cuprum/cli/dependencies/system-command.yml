@@ -1,0 +1,29 @@
+---
+name: Cuprum::Cli::Dependencies::SystemCommand
+slug: system-command
+type: class
+files:
+- lib/cuprum/cli/dependencies/system_command.rb
+parent_path: cuprum/cli/dependencies
+short_description: Utility wrapper for running system command and capturing output.
+defined_classes:
+- name: CapturedOutput
+  slug: captured-output
+- name: Mock
+  slug: mock
+instance_methods:
+- name: capture
+  path: cuprum/cli/dependencies/system-command/i-capture
+  slug: capture
+  inherited: false
+- name: spawn
+  path: cuprum/cli/dependencies/system-command/i-spawn
+  slug: spawn
+  inherited: false
+data_path: cuprum/cli/dependencies/system-command
+constructor: false
+direct_subclasses:
+- name: Cuprum::Cli::Dependencies::SystemCommand::Mock
+  slug: mock
+  path: cuprum/cli/dependencies/system-command/mock
+version: "*"

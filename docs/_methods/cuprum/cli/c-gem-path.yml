@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli.gem_path
+parent_path: cuprum/cli
+signature: gem_path
+slug: gem-path
+constructor: false
+data_path: cuprum/cli/c-gem-path
+returns:
+- description: the absolute path to the gem directory.
+  type:
+  - name: String
+version: "*"

@@ -1,0 +1,18 @@
+---
+name: Cuprum::Cli::Options::ClassMethods#options
+parent_path: cuprum/cli/options/class-methods
+signature: options
+slug: options
+constructor: false
+data_path: cuprum/cli/options/class-methods/i-options
+returns:
+- description: the defined options.
+  type:
+  - name: Hash
+    keys:
+    - name: Symbol
+    values:
+    - name: Cuprum::Cli::Option
+      path: cuprum/cli/option
+short_description: The defined options, including options defined on ancestor classes.
+version: "*"

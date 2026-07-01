@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::RSpec
+slug: r-spec
+type: module
+files:
+- lib/cuprum/cli/rspec.rb
+- lib/cuprum/cli/rspec/deferred.rb
+parent_path: cuprum/cli
+short_description: Namespace for tooling to support testing Cuprum::Cli.
+defined_modules:
+- name: Deferred
+  slug: deferred
+data_path: cuprum/cli/r-spec
+version: "*"

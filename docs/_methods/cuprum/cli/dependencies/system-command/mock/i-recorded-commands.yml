@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Dependencies::SystemCommand::Mock#recorded_commands
+parent_path: cuprum/cli/dependencies/system-command/mock
+signature: recorded_commands
+slug: recorded-commands
+constructor: false
+data_path: cuprum/cli/dependencies/system-command/mock/i-recorded-commands
+returns:
+- description: the commands recorded by the mock service.
+  type:
+  - name: Array
+    items:
+    - name: String
+version: "*"

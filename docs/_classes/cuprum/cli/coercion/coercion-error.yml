@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Coercion::CoercionError
+slug: coercion-error
+type: class
+files:
+- lib/cuprum/cli/coercion.rb
+parent_path: cuprum/cli/coercion
+short_description: Exception raised when trying to coerce an invalid value.
+data_path: cuprum/cli/coercion/coercion-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

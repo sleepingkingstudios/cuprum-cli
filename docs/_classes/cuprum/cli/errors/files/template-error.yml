@@ -1,0 +1,45 @@
+---
+name: Cuprum::Cli::Errors::Files::TemplateError
+slug: template-error
+type: class
+files:
+- lib/cuprum/cli/errors/files/template_error.rb
+parent_path: cuprum/cli/errors/files
+short_description: Error returned when an error occurs when generating templated content.
+constants:
+- name: TYPE
+  path: cuprum/cli/errors/files/template-error/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: details
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/template-error/i-details
+  slug: details
+  inherited: false
+- name: template_name
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/template-error/i-template-name
+  slug: template-name
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/errors/files/template-error/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/errors/files/template-error
+constructor: true
+direct_subclasses:
+- name: Cuprum::Cli::Errors::Files::MissingParameter
+  slug: missing-parameter
+  path: cuprum/cli/errors/files/missing-parameter
+- name: Cuprum::Cli::Errors::Files::TemplateNotResolved
+  slug: template-not-resolved
+  path: cuprum/cli/errors/files/template-not-resolved
+inherited_classes:
+- name: Cuprum::Error
+  slug: error
+version: "*"

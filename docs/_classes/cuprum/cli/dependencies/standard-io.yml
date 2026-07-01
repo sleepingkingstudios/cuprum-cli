@@ -1,0 +1,43 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo
+slug: standard-io
+type: class
+files:
+- lib/cuprum/cli/dependencies/standard_io.rb
+parent_path: cuprum/cli/dependencies
+short_description: Utility wrapping standard input, output, and error IO streams.
+defined_classes:
+- name: Mock
+  slug: mock
+defined_modules:
+- name: Helpers
+  slug: helpers
+instance_methods:
+- name: color
+  path: cuprum/cli/dependencies/standard-io/i-color
+  slug: color
+  inherited: false
+- name: initialize
+  path: cuprum/cli/dependencies/standard-io/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: read_input
+  path: cuprum/cli/dependencies/standard-io/i-read-input
+  slug: read-input
+  inherited: false
+- name: write_error
+  path: cuprum/cli/dependencies/standard-io/i-write-error
+  slug: write-error
+  inherited: false
+- name: write_output
+  path: cuprum/cli/dependencies/standard-io/i-write-output
+  slug: write-output
+  inherited: false
+data_path: cuprum/cli/dependencies/standard-io
+constructor: true
+direct_subclasses:
+- name: Cuprum::Cli::Dependencies::StandardIo::Mock
+  slug: mock
+  path: cuprum/cli/dependencies/standard-io/mock
+version: "*"

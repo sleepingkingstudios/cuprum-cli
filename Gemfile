@@ -5,12 +5,6 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in cuprum-cli.gemspec
 gemspec
 
-gem 'plumbum',
-  git: 'https://github.com/sleepingkingstudios/plumbum'
-
-gem 'sleeping_king_studios-tools',
-  git: 'https://github.com/sleepingkingstudios/sleeping_king_studios-tools'
-
 group :development, :test do
   gem 'appraisal', '~> 2.5'
 
@@ -27,4 +21,20 @@ group :development, :test do
   gem 'simplecov', '~> 0.22'
 
   gem 'thor', '~> 1.5'
+end
+
+group :docs do
+  gem 'jekyll', '~> 4.4'
+  gem 'jekyll-theme-dinky', '~> 0.2'
+  gem 'logger', '~> 1.7'
+
+  # Use Kramdown to parse GFM-dialect Markdown.
+  gem 'kramdown-parser-gfm', '~> 1.1'
+
+  gem 'sleeping_king_studios-docs', '~> 0.2', '>= 0.2.1'
+
+  # Use Webrick as local content server.
+  gem 'webrick', '~> 1.9'
+
+  gem 'yard', '~> 0.9', require: false
 end

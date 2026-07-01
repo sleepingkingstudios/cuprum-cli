@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Options::Quiet
+slug: quiet
+type: module
+files:
+- lib/cuprum/cli/options/quiet.rb
+parent_path: cuprum/cli/options
+short_description: Defines --quiet option, which silences non-essential output.
+instance_methods:
+- name: say
+  path: cuprum/cli/options/quiet/i-say
+  slug: say
+  inherited: false
+data_path: cuprum/cli/options/quiet
+version: "*"

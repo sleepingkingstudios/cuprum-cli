@@ -1,0 +1,10 @@
+---
+name: Cuprum::Cli::Version::PRERELEASE
+parent_path: cuprum/cli/version
+slug: prerelease
+short_description: Prerelease version.
+value: ":alpha"
+data_path: cuprum/cli/version/prerelease
+metadata:
+  api: private
+version: "*"

@@ -24,7 +24,7 @@ module Cuprum::Cli
     #
     # @param value [Object] the value to convert.
     #
-    # @param [nil, true, false, Integer, String] the coerced value.
+    # @return [nil, true, false, Integer, String] the coerced value.
     def self.coerce(value)
       skip_validation = true
 

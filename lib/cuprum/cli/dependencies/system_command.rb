@@ -28,7 +28,7 @@ module Cuprum::Cli::Dependencies
     #   @param options [Hash<String, Object>] command line options and values to
     #     pass to the command.
     #
-    #   @return [Cuprum::Result<Cuprum::Cli::Dependencies::SystemCommand::CapturedOutput]
+    #   @return [Cuprum::Result<Cuprum::Cli::Dependencies::SystemCommand::CapturedOutput>]
     #     a Result wrapping the process status and captured output. The Result
     #     will have a status of :success if the process ran successfully;
     #     otherwise, the Result will have a status of :failure

@@ -1,0 +1,69 @@
+---
+name: Cuprum::Cli::Dependencies::FileSystem
+slug: file-system
+type: class
+files:
+- lib/cuprum/cli/dependencies/file_system.rb
+parent_path: cuprum/cli/dependencies
+short_description: Utility wrapping filesystem operations.
+defined_classes:
+- name: DirectoryIsAFileError
+  slug: directory-is-a-file-error
+- name: DirectoryNotFoundError
+  slug: directory-not-found-error
+- name: FileError
+  slug: file-error
+- name: FileIsADirectoryError
+  slug: file-is-a-directory-error
+- name: FileNotFoundError
+  slug: file-not-found-error
+- name: Mock
+  slug: mock
+instance_attributes:
+- name: root_path
+  read: true
+  write: false
+  path: cuprum/cli/dependencies/file-system/i-root-path
+  slug: root-path
+  inherited: false
+instance_methods:
+- name: create_directory
+  path: cuprum/cli/dependencies/file-system/i-create-directory
+  slug: create-directory
+  inherited: false
+- name: directory?
+  path: cuprum/cli/dependencies/file-system/i-directory?
+  slug: directory?
+  inherited: false
+- name: each_file
+  path: cuprum/cli/dependencies/file-system/i-each-file
+  slug: each-file
+  inherited: false
+- name: file?
+  path: cuprum/cli/dependencies/file-system/i-file?
+  slug: file?
+  inherited: false
+- name: initialize
+  path: cuprum/cli/dependencies/file-system/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: read_file
+  path: cuprum/cli/dependencies/file-system/i-read-file
+  slug: read-file
+  inherited: false
+- name: with_tempfile
+  path: cuprum/cli/dependencies/file-system/i-with-tempfile
+  slug: with-tempfile
+  inherited: false
+- name: write_file
+  path: cuprum/cli/dependencies/file-system/i-write-file
+  slug: write-file
+  inherited: false
+data_path: cuprum/cli/dependencies/file-system
+constructor: true
+direct_subclasses:
+- name: Cuprum::Cli::Dependencies::FileSystem::Mock
+  slug: mock
+  path: cuprum/cli/dependencies/file-system/mock
+version: "*"

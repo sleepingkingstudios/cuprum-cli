@@ -1,0 +1,29 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#namespace
+parent_path: cuprum/cli/metadata/class-methods
+signature: namespace
+slug: namespace
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-namespace
+description: |-
+  A command's namespace is defined as the part of the full name prior to
+  the last segment.
+
+  - For a command with full name "custom", the namespace will be nil.
+  - For a command with full name "category:sub_category:do_something", the
+    namespace will be "category:sub_category".
+metadata:
+  see:
+  - label: "#short_name"
+    path: cuprum/cli/metadata/class-methods#instance-method-short-name
+    text:
+    type: reference
+returns:
+- description: |-
+    the namespace for the command, or nil if the
+    command's full name is unscoped.
+  type:
+  - name: String
+  - name: nil
+short_description: The namespace for the command.
+version: "*"

@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Metadata::AbstractCommandError
+slug: abstract-command-error
+type: class
+files:
+- lib/cuprum/cli/metadata.rb
+parent_path: cuprum/cli/metadata
+short_description: Raised when performing a protected operation on an abstract Command.
+data_path: cuprum/cli/metadata/abstract-command-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

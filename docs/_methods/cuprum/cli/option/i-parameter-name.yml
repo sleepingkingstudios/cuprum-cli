@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Option#parameter_name
+parent_path: cuprum/cli/option
+signature: parameter_name
+slug: parameter-name
+constructor: false
+data_path: cuprum/cli/option/i-parameter-name
+returns:
+- description: the current value of parameter_name
+  type:
+  - name: Object
+short_description: Returns the value of attribute parameter_name
+version: "*"

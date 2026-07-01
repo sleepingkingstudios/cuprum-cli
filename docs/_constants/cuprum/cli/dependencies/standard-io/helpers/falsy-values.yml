@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo::Helpers::FALSY_VALUES
+parent_path: cuprum/cli/dependencies/standard-io/helpers
+slug: falsy-values
+short_description: String input values that will be mapped to a boolean false.
+value: Set.new(%w[f false n no]).freeze
+data_path: cuprum/cli/dependencies/standard-io/helpers/falsy-values
+version: "*"

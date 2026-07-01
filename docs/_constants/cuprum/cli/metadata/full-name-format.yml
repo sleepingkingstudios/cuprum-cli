@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::Metadata::FULL_NAME_FORMAT
+parent_path: cuprum/cli/metadata
+slug: full-name-format
+short_description: Format used to validate command names.
+value: "/\\A[a-z_]+(:[a-z_]+)*\\z/"
+data_path: cuprum/cli/metadata/full-name-format
+version: "*"

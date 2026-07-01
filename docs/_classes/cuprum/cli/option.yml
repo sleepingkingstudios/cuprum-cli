@@ -1,0 +1,73 @@
+---
+name: Cuprum::Cli::Option
+slug: option
+type: class
+files:
+- lib/cuprum/cli/option.rb
+parent_path: cuprum/cli
+short_description: Data object representing a command option.
+instance_attributes:
+- name: aliases
+  read: true
+  write: false
+  path: cuprum/cli/option/i-aliases
+  slug: aliases
+  inherited: false
+- name: default
+  read: true
+  write: false
+  path: cuprum/cli/option/i-default
+  slug: default
+  inherited: false
+- name: description
+  read: true
+  write: false
+  path: cuprum/cli/option/i-description
+  slug: description
+  inherited: false
+- name: name
+  read: true
+  write: false
+  path: cuprum/cli/option/i-name
+  slug: name
+  inherited: false
+- name: parameter_name
+  read: true
+  write: false
+  path: cuprum/cli/option/i-parameter-name
+  slug: parameter-name
+  inherited: false
+- name: required
+  read: true
+  write: false
+  path: cuprum/cli/option/i-required
+  slug: required
+  inherited: false
+- name: type
+  read: true
+  write: false
+  path: cuprum/cli/option/i-type
+  slug: type
+  inherited: false
+- name: variadic
+  read: true
+  write: false
+  path: cuprum/cli/option/i-variadic
+  slug: variadic
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/option/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+- name: resolve
+  path: cuprum/cli/option/i-resolve
+  slug: resolve
+  inherited: false
+data_path: cuprum/cli/option
+constructor: true
+inherited_classes:
+- name: Data
+  slug: data
+version: "*"

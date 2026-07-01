@@ -1,0 +1,24 @@
+---
+name: Cuprum::Cli::Metadata
+slug: metadata
+type: module
+files:
+- lib/cuprum/cli/metadata.rb
+parent_path: cuprum/cli
+short_description: Class methods for describing commands.
+constants:
+- name: FULL_NAME_FORMAT
+  path: cuprum/cli/metadata/full-name-format
+  slug: full-name-format
+  inherited: false
+defined_classes:
+- name: AbstractCommandError
+  slug: abstract-command-error
+defined_modules:
+- name: ClassMethods
+  slug: class-methods
+data_path: cuprum/cli/metadata
+extended_modules:
+- name: SleepingKingStudios::Tools::Toolbox::Mixin
+  slug: mixin
+version: "*"

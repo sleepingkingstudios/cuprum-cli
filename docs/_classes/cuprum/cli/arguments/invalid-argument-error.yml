@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Arguments::InvalidArgumentError
+slug: invalid-argument-error
+type: class
+files:
+- lib/cuprum/cli/arguments.rb
+parent_path: cuprum/cli/arguments
+short_description: Exception raised when a command receives an invalid value for an
+  argument.
+data_path: cuprum/cli/arguments/invalid-argument-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

@@ -1,0 +1,17 @@
+---
+name: Cuprum::Cli::Integrations::Thor::Task::Builder#initialize
+parent_path: cuprum/cli/integrations/thor/task/builder
+signature: initialize(command_class)
+slug: initialize
+constructor: true
+data_path: cuprum/cli/integrations/thor/task/builder/i-initialize
+params:
+- description: the command to execute.
+  name: command_class
+  type:
+  - name: Class
+returns:
+- description: a new instance of Builder
+  type:
+  - name: Builder
+version: "*"

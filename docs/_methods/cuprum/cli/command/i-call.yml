@@ -1,0 +1,78 @@
+---
+name: Cuprum::Cli::Command#call
+parent_path: cuprum/cli/command
+signature: 'call(*, resolved_arguments: nil, resolved_options: nil, **)'
+slug: call
+constructor: false
+data_path: cuprum/cli/command/i-call
+overloads:
+- name: Cuprum::Cli::Command#call
+  parent_path: cuprum/cli/command
+  signature: call(*arguments, **options)
+  slug: call
+  constructor: false
+  params:
+  - description: arguments passed to the command.
+    name: arguments
+    type:
+    - name: Array
+  - description: options passed to the command.
+    name: options
+    type:
+    - name: Hash
+  raises:
+  - description: |-
+      when given too many
+      positional arguments.
+    type:
+    - name: Cuprum::Cli::Arguments::ExtraArgumentsError
+      path: cuprum/cli/arguments/extra-arguments-error
+  - description: |-
+      when given an
+      invalid value for an argument.
+    type:
+    - name: Cuprum::Cli::Arguments::InvalidArgumentError
+      path: cuprum/cli/arguments/invalid-argument-error
+  - description: |-
+      when given an invalid
+      value for an option.
+    type:
+    - name: Cuprum::Cli::Options::InvalidOptionError
+      path: cuprum/cli/options/invalid-option-error
+  - description: |-
+      when given a value for
+      an undefined option.
+    type:
+    - name: Cuprum::Cli::Options::UnknownOptionError
+      path: cuprum/cli/options/unknown-option-error
+  returns:
+  - description: the command result.
+    type:
+    - name: Cuprum::Result
+  short_description: Resolves the parameters and calls the command.
+- name: Cuprum::Cli::Command#call
+  parent_path: cuprum/cli/command
+  signature: call(resolved_arguments:, resolved_options:)
+  slug: call
+  constructor: false
+  description: |-
+    This variant assumes that the arguments and options have already been
+    parsed and validated against the command's expected parameters.
+  params:
+  - description: |-
+      the arguments passed to the command,
+      formatted as an Hash with the matching argument name as key and the
+      argument value as the corresponding value.
+    name: resolved_arguments
+    type:
+    - name: Hash
+  - description: the options passed to the command.
+    name: resolved_options
+    type:
+    - name: Hash
+  returns:
+  - description: the command result.
+    type:
+    - name: Cuprum::Result
+  short_description: Calls the command with the given arguments and options.
+version: "*"

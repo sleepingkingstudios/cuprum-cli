@@ -1,0 +1,88 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods#argument
+parent_path: cuprum/cli/arguments/class-methods
+signature: 'argument(name, default: nil, description: nil, required: false, type:
+  :string, variadic: false, **options)'
+slug: argument
+constructor: false
+data_path: cuprum/cli/arguments/class-methods/i-argument
+options:
+- name: options
+  opts:
+  - description: |-
+      if true, defines a reader
+      method for the argument. Defaults to false for boolean arguments and
+      true for all other arguments.
+    name: define_method
+    type:
+    - name: 'true'
+    - name: 'false'
+  - description: |-
+      if true, defines a
+      predicate method for the argument, which returns true if the argument
+      is not nil and not empty. Defaults to true for boolean arguments and
+      false for all other arguments.
+    name: define_predicate
+    type:
+    - name: 'true'
+    - name: 'false'
+params:
+- description: the name of the argument.
+  name: name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    the default value for the argument. If
+    given and the value of the argument is nil, sets the argument value to
+    the default value.
+  name: default
+  type:
+  - name: Object
+  - name: Proc
+  default: nil
+- description: |-
+    a short, human-readable description of the
+    argument.
+  name: description
+  type:
+  - name: String
+  default: nil
+- description: |-
+    if true, raises an exception if the
+    argument is not provided to the command. Defaults to false.
+  name: required
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    the expected type of the argument
+    value as a Class or class name. If given, raises an exception if the
+    argument value is not an instance of the type. Defaults to :string.
+  name: type
+  type:
+  - name: Class
+  - name: String
+  - name: Symbol
+- description: |-
+    if true, the argument is variadic and
+    represents an array of arguments provided to the command. Defaults to
+    false.
+  name: variadic
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: additional options for defining the argument.
+  name: options
+  type:
+  - name: Hash
+raises:
+- description: |-
+    if variadic is true and the command already
+    defines a variadic argument.
+  type:
+  - name: ArgumentError
+short_description: Defines an argument for the command class.
+version: "*"

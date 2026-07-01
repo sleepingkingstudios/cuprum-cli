@@ -1,0 +1,37 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo::Helpers
+slug: helpers
+type: module
+files:
+- lib/cuprum/cli/dependencies/standard_io/helpers.rb
+parent_path: cuprum/cli/dependencies/standard-io
+short_description: Helper methods for reading from and writing to standard inputs
+  and outputs.
+constants:
+- name: FALSY_VALUES
+  path: cuprum/cli/dependencies/standard-io/helpers/falsy-values
+  slug: falsy-values
+  inherited: false
+- name: INTEGER_PATTERN
+  path: cuprum/cli/dependencies/standard-io/helpers/integer-pattern
+  slug: integer-pattern
+  inherited: false
+- name: TRUTHY_VALUES
+  path: cuprum/cli/dependencies/standard-io/helpers/truthy-values
+  slug: truthy-values
+  inherited: false
+instance_methods:
+- name: ask
+  path: cuprum/cli/dependencies/standard-io/helpers/i-ask
+  slug: ask
+  inherited: false
+- name: say
+  path: cuprum/cli/dependencies/standard-io/helpers/i-say
+  slug: say
+  inherited: false
+- name: warn
+  path: cuprum/cli/dependencies/standard-io/helpers/i-warn
+  slug: warn
+  inherited: false
+data_path: cuprum/cli/dependencies/standard-io/helpers
+version: "*"

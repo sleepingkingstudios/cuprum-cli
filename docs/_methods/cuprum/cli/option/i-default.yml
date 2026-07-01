@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Option#default
+parent_path: cuprum/cli/option
+signature: default
+slug: default
+constructor: false
+data_path: cuprum/cli/option/i-default
+returns:
+- description: the current value of default
+  type:
+  - name: Object
+short_description: Returns the value of attribute default
+version: "*"

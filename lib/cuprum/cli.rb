@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 require 'cuprum'
+require 'sleeping_king_studios/tools'
 
 require_relative 'cli/version'
 
+# Toolkit for implementing business logic as function objects.
 module Cuprum
   # Command-line utility powered by Cuprum.
   module Cli

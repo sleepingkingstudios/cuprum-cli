@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Option#aliases
+parent_path: cuprum/cli/option
+signature: aliases
+slug: aliases
+constructor: false
+data_path: cuprum/cli/option/i-aliases
+returns:
+- description: the current value of aliases
+  type:
+  - name: Object
+short_description: Returns the value of attribute aliases
+version: "*"

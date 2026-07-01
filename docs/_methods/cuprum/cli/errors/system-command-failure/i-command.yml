@@ -1,0 +1,9 @@
+---
+name: Cuprum::Cli::Errors::SystemCommandFailure#command
+parent_path: cuprum/cli/errors/system-command-failure
+signature: command
+slug: command
+constructor: false
+data_path: cuprum/cli/errors/system-command-failure/i-command
+short_description: Returns the value of attribute command.
+version: "*"

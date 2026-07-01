@@ -1,0 +1,18 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods#argument_value
+parent_path: cuprum/cli/arguments/class-methods
+signature: argument_value(value)
+slug: argument-value
+constructor: false
+data_path: cuprum/cli/arguments/class-methods/i-argument-value
+params:
+- description: the argument value to append.
+  name: value
+  type:
+  - name: Object
+returns:
+- description: ''
+  type:
+  - name: void
+short_description: Appends a predefined argument value for the command.
+version: "*"

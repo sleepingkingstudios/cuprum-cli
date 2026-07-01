@@ -1,0 +1,16 @@
+---
+name: Cuprum::Cli::Options::ClassMethods#option_values
+parent_path: cuprum/cli/options/class-methods
+signature: option_values
+slug: option-values
+constructor: false
+data_path: cuprum/cli/options/class-methods/i-option-values
+returns:
+- description: predefined option values for the command.
+  type:
+  - name: Hash
+    keys:
+    - name: Symbol
+    values:
+    - name: Object
+version: "*"

@@ -1,0 +1,39 @@
+---
+plugins:
+  - sleeping_king_studios/docs/jekyll/plugins/required
+collections:
+  classes:
+    output: false
+  constants:
+    output: false
+  methods:
+    output: false
+  modules:
+    output: false
+  namespaces:
+    output: false
+defaults:
+- scope:
+    path: ''
+    type: 'pages'
+  values:
+    encoding: 'utf-8'
+    layout: 'page'
+    title: 'Cuprum::Cli'
+exclude:
+  - /vendor
+markdown: kramdown
+
+# Project Configuration
+project_metadata:
+  name:           Cuprum::Cli
+  repository_url: https://github.com/sleepingkingstudios/cuprum-cli
+  versions:       []
+
+# Theme Configuration
+theme: jekyll-theme-dinky
+description: |
+  A command-line utility powered by Cuprum that provides tools and utilities for defining command-line tools.
+github:
+  repository_url: https://github.com/sleepingkingstudios/cuprum-cli
+title: Cuprum::Cli

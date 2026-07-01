@@ -1,0 +1,68 @@
+---
+name: Cuprum::Cli
+slug: cli
+type: module
+files:
+- lib/cuprum/cli.rb
+- lib/cuprum/cli/rspec.rb
+- lib/cuprum/cli/errors.rb
+- lib/cuprum/cli/option.rb
+- lib/cuprum/cli/command.rb
+- lib/cuprum/cli/options.rb
+- lib/cuprum/cli/version.rb
+- lib/cuprum/cli/argument.rb
+- lib/cuprum/cli/coercion.rb
+- lib/cuprum/cli/commands.rb
+- lib/cuprum/cli/metadata.rb
+- lib/cuprum/cli/registry.rb
+- lib/cuprum/cli/arguments.rb
+- lib/cuprum/cli/dependencies.rb
+- lib/cuprum/cli/integrations.rb
+parent_path: cuprum
+short_description: rubocop:disable Metrics/ModuleLength
+class_methods:
+- name: gem_path
+  path: cuprum/cli/c-gem-path
+  slug: gem-path
+  inherited: false
+- name: version
+  path: cuprum/cli/c-version
+  slug: version
+  inherited: false
+constants:
+- name: VERSION
+  path: cuprum/cli/version
+  slug: version
+  inherited: false
+defined_classes:
+- name: Argument
+  slug: argument
+- name: Command
+  slug: command
+- name: Option
+  slug: option
+- name: Registry
+  slug: registry
+defined_modules:
+- name: Arguments
+  slug: arguments
+- name: Coercion
+  slug: coercion
+- name: Commands
+  slug: commands
+- name: Dependencies
+  slug: dependencies
+- name: Errors
+  slug: errors
+- name: Integrations
+  slug: integrations
+- name: Metadata
+  slug: metadata
+- name: Options
+  slug: options
+- name: RSpec
+  slug: r-spec
+- name: Version
+  slug: version
+data_path: cuprum/cli
+version: "*"

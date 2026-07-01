@@ -1,0 +1,10 @@
+---
+name: Cuprum::Cli::Version::PATCH
+parent_path: cuprum/cli/version
+slug: patch
+short_description: Patch version.
+value: '0'
+data_path: cuprum/cli/version/patch
+metadata:
+  api: private
+version: "*"

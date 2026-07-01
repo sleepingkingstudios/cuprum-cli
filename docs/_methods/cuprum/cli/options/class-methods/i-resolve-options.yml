@@ -1,0 +1,32 @@
+---
+name: Cuprum::Cli::Options::ClassMethods#resolve_options
+parent_path: cuprum/cli/options/class-methods
+signature: resolve_options(**values)
+slug: resolve-options
+constructor: false
+data_path: cuprum/cli/options/class-methods/i-resolve-options
+description: Also applies any default values from the defined options.
+params:
+- description: the option values to resolve.
+  name: values
+  type:
+  - name: Hash
+raises:
+- description: |-
+    if any value does not
+    have a corresponding defined option.
+  type:
+  - name: Cuprum::Cli::Options::UnknownOptionError
+    path: cuprum/cli/options/unknown-option-error
+- description: |-
+    if any value does not
+    match the expected option type, or any required value is missing.
+  type:
+  - name: Cuprum::Cli::Options::InvalidOptionError
+    path: cuprum/cli/options/invalid-option-error
+returns:
+- description: the option values with applied defaults.
+  type:
+  - name: Hash
+short_description: Validates the given option values against the defined class options.
+version: "*"

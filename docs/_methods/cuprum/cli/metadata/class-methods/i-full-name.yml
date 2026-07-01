@@ -1,0 +1,42 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#full_name
+parent_path: cuprum/cli/metadata/class-methods
+signature: full_name(value = UNDEFINED)
+slug: full-name
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-full-name
+overloads:
+- name: Cuprum::Cli::Metadata::ClassMethods#full_name
+  parent_path: cuprum/cli/metadata/class-methods
+  signature: full_name
+  slug: full-name
+  constructor: false
+  description: |-
+    Unless another value is set, defaults to the class name of the command
+    with the following format:
+
+    - Removes the "Commands" namespace and any prior namespace, if any.
+    - Removes a "Command" suffix, if any.
+    - Converts each remaining segment to snake_case and joins with ":".
+  returns:
+  - description: the scoped name for the command.
+    type:
+    - name: String
+  short_description: Returns the name of the command, used when calling from a CLI.
+- name: Cuprum::Cli::Metadata::ClassMethods#full_name
+  parent_path: cuprum/cli/metadata/class-methods
+  signature: full_name(value)
+  slug: full-name
+  constructor: false
+  description: The full name must be in snake_case format joined by ":".
+  params:
+  - description: the full name to set.
+    name: value
+    type:
+    - name: String
+  returns:
+  - description: the set full name.
+    type:
+    - name: String
+  short_description: Sets the full name for the command.
+version: "*"

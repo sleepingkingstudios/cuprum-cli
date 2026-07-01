@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Command.option
+parent_path: cuprum/cli/command
+signature: option(option_name, **)
+slug: option
+constructor: false
+data_path: cuprum/cli/command/c-option
+raises:
+- description: ''
+  type:
+  - name: Cuprum::Cli::Metadata::AbstractCommandError
+    path: cuprum/cli/metadata/abstract-command-error
+version: "*"

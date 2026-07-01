@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::VERSION
+parent_path: cuprum/cli
+slug: version
+short_description: ''
+value: Version.to_gem_version
+data_path: cuprum/cli/version
+version: "*"

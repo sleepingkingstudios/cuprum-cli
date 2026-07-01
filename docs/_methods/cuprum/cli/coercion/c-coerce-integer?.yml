@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Coercion.coerce_integer?
+parent_path: cuprum/cli/coercion
+signature: coerce_integer?(value)
+slug: coerce-integer?
+constructor: false
+data_path: cuprum/cli/coercion/c-coerce-integer?
+returns:
+- description: |-
+    true if the value can be safely coerced to an
+    Integer, otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

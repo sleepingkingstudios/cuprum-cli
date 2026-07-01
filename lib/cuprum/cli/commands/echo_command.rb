@@ -18,18 +18,6 @@ module Cuprum::Cli::Commands
     option :format, type: String
     option :out,    type: String
 
-    def process
-      formatted = format_parameters
-
-      if out
-        file_system.write(out, formatted)
-      else
-        standard_io.write_output(formatted)
-      end
-
-      nil
-    end
-
     private
 
     def format_arguments_as_text
@@ -71,6 +59,18 @@ module Cuprum::Cli::Commands
         "\n"
 
       buffer.freeze
+    end
+
+    def process
+      formatted = format_parameters
+
+      if out
+        file_system.write(out, formatted)
+      else
+        standard_io.write_output(formatted)
+      end
+
+      nil
     end
   end
 end

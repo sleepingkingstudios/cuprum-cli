@@ -1,0 +1,26 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods::Builder#initialize
+parent_path: cuprum/cli/arguments/class-methods/builder
+signature: initialize(command_class:, defined_arguments:)
+slug: initialize
+constructor: true
+data_path: cuprum/cli/arguments/class-methods/builder/i-initialize
+params:
+- description: the command class.
+  name: command_class
+  type:
+  - name: Class
+- description: |-
+    the arguments
+    defined for the command.
+  name: defined_arguments
+  type:
+  - name: Array
+    items:
+    - name: Cuprum::Cli::Argument
+      path: cuprum/cli/argument
+returns:
+- description: a new instance of Builder
+  type:
+  - name: Builder
+version: "*"

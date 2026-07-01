@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::Errors::Files::FileNotWriteable::TYPE
+parent_path: cuprum/cli/errors/files/file-not-writeable
+slug: type
+short_description: Short string used to identify the type of error.
+value: "'cuprum.cli.errors.files.file_not_writeable'"
+data_path: cuprum/cli/errors/files/file-not-writeable/type
+version: "*"

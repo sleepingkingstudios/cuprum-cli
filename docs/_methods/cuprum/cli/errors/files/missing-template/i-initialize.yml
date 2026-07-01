@@ -1,0 +1,22 @@
+---
+name: Cuprum::Cli::Errors::Files::MissingTemplate#initialize
+parent_path: cuprum/cli/errors/files/missing-template
+signature: 'initialize(template_path:, message: nil)'
+slug: initialize
+constructor: true
+data_path: cuprum/cli/errors/files/missing-template/i-initialize
+params:
+- description: the expected template path.
+  name: template_path
+  type:
+  - name: String
+- description: an optional message to display.
+  name: message
+  type:
+  - name: String
+  default: nil
+returns:
+- description: a new instance of MissingTemplate
+  type:
+  - name: MissingTemplate
+version: "*"

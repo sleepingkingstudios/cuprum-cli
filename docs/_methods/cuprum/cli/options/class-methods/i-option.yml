@@ -1,0 +1,83 @@
+---
+name: Cuprum::Cli::Options::ClassMethods#option
+parent_path: cuprum/cli/options/class-methods
+signature: 'option(name, aliases: [], default: nil, description: nil, required: false,
+  type: :string, **options)'
+slug: option
+constructor: false
+data_path: cuprum/cli/options/class-methods/i-option
+options:
+- name: options
+  opts:
+  - description: |-
+      if true, defines a reader
+      method for the option. Defaults to false for boolean options and true
+      for all other options.
+    name: define_method
+    type:
+    - name: 'true'
+    - name: 'false'
+  - description: |-
+      if true, defines a
+      predicate method for the option, which returns true if the option is
+      not nil and not empty. Defaults to true for boolean options and false
+      for all other options.
+    name: define_predicate
+    type:
+    - name: 'true'
+    - name: 'false'
+params:
+- description: the name of the option.
+  name: name
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    aliases for the option when
+    parsing options from the command line.
+  name: aliases
+  type:
+  - name: Array
+    items:
+    - name: String
+    - name: Symbol
+  default: "[]"
+- description: |-
+    the default value for the option. If given
+    and the value of the option is nil, sets the option value to the
+    default value.
+  name: default
+  type:
+  - name: Object
+  - name: Proc
+  default: nil
+- description: |-
+    a short, human-readable description of the
+    option.
+  name: description
+  type:
+  - name: String
+  default: nil
+- description: |-
+    if true, raises an exception if the option
+    is not provided to the command.
+  name: required
+  type:
+  - name: 'true'
+  - name: 'false'
+  default: 'false'
+- description: |-
+    the expected type of the option
+    value as a Class or class name. If given, raises an exception if the
+    option value is not an instance of the type. Defaults to :string.
+  name: type
+  type:
+  - name: Class
+  - name: String
+  - name: Symbol
+- description: additional options for defining the option.
+  name: options
+  type:
+  - name: Hash
+short_description: Defines an option for the command class.
+version: "*"

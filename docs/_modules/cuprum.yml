@@ -1,0 +1,14 @@
+---
+name: Cuprum
+slug: cuprum
+type: module
+files:
+- lib/cuprum/cli.rb
+- lib/cuprum/cli/version.rb
+parent_path: ''
+short_description: Toolkit for implementing business logic as function objects.
+defined_modules:
+- name: Cli
+  slug: cli
+data_path: cuprum
+version: "*"
