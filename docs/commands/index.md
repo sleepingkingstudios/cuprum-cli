@@ -26,6 +26,9 @@ Internally, a `Cuprum::Cli::Command` leverages <a href="https://www.sleepingking
   - [FileSystem]({{site.baseurl}}/commands/dependencies#filesystem)
   - [StandardIo]({{site.baseurl}}/commands/dependencies#standardio)
   - [SystemCommand]({{site.baseurl}}/commands/dependencies#systemcommand)
+- [Built-In Commands]({{site.baseurl}}/commands/built-in)
+  - [CI Commands]({{site.baseurl}}/commands/built-in#ci-commands)
+  - [File Commands]({{site.baseurl}}/commands/built-in#file-commands)
 
 ## Defining Commands
 

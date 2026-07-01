@@ -81,8 +81,45 @@ The core component in `Cuprum::Cli` is the `Command`.
     <code>Cuprum::Cli</code> commands use dependencies to interact with external functions in a consistent and testable fashion. Defined dependencies include <a href="{{site.baseurl}}/commands/dependencies#filesystem">reading from and writing to the file system</a>, <a href="{{site.baseurl}}/commands/dependencies#standardio">interacting with the standard IO streams</a>, and <a href="{{site.baseurl}}/commands/dependencies#systemcommand">calling system commands</a>.
   </li>
 </ul>
-### Integrations
 
+### Built-In Commands
+
+`Cuprum::Cli` provides some [pre-defined commands]({{site.baseurl}}/commands/built-in) for building CLI applications and tools.
+
+<ul>
+  <li>
+    <a href="{{site.baseurl}}/commands/built-in#ci-commands">CI Commands</a>
+    <br>
+    Commands for testing your application.
+    <ul>
+      <li>
+        <a href="{{site.baseurl}}/commands/built-in#rspec-command">RSpec Command</a>
+        <br>
+        A command for running <a href="https://rspec.info/" target="_blank">RSpec</a> tests, with configurable options including format, environment and custom gemfile.
+      </li>
+      <li>
+        <a href="{{site.baseurl}}/commands/built-in#rspec-each-command">RSpec Each Command</a>
+        <br>
+        A command for running each RSpec spec file as an isolated test. Useful for identifying missing <code>require</code> statements or other dependencies that would not be surfaced when running the entire test suite.
+      </li>
+    </ul>
+  </li>
+
+  <li>
+    <a href="{{site.baseurl}}/commands/built-in#file-commands">File Commands</a>
+    <br>
+    Commands for managing your application's files.
+    <ul>
+      <li>
+        <a href="{{site.baseurl}}/commands/built-in#new-file-command">New File Command</a>
+        <br>
+        A command for generating a new source file or files based on defined templates. Automatically handles intermediate directories and supports multiple file generation (such as spec files or view component templates).
+      </li>
+    </ul>
+  </li>
+</ul>
+
+### Integrations
 
 Once a command is defined, `Cuprum::Cli` integrates with an external CLI provider to call the command from the command line.
 
@@ -100,7 +137,6 @@ Once a command is defined, `Cuprum::Cli` integrates with an external CLI provide
     </ul>
   </li>
 </ul>
-
 
 For a full list of defined classes and objects, see [Reference](./reference).
 
