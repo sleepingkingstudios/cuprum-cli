@@ -68,7 +68,7 @@ thor ci:rspec:sinatra4 ...FILE_PATTERNS  # Runs the RSpec tests against Sinatra 
 
 ### Defining Commands
 
-You can also define [custom CLI commands]({{site.baseurl/commands}}) using the `Cuprum::Cli::Command` class. `Cuprum::Cli` defines a powerful DSL for quickly defining and configuring commands.
+You can also define [custom CLI commands]({{site.baseurl}}/commands) using the `Cuprum::Cli::Command` class. `Cuprum::Cli` defines a powerful DSL for quickly defining and configuring commands.
 
 ```ruby
 class PingCommand < Cuprum::Cli::Command
@@ -120,7 +120,7 @@ registry.register PingCommand,
   options:   { service_url: 'github.com' }
 ```
 
-For more information on defining commands, see the [commands documentation]({{site.baseurl/commands}}).
+For more information on defining commands, see the [commands documentation]({{site.baseurl}}/commands).
 
 [Back to Top](#)
 
