@@ -65,11 +65,27 @@ group :development, :test do
 end
 ```
 
+To ensure that dependent libraries are loaded, call the `Cuprum::Cli` initializer:
+
+- In the initializer for your project:
+
+  ```ruby
+  module Space
+    @initializer = SleepingKingStudios::Tools::Toolbox::Initializer.new do
+      Cuprum::Cli.initializer.call
+    end
+  end
+  ```
+
+- Or, in the entry points of your application (such as a `bin` script or `spec_helper.rb`).
+
 Set up a <a href="https://www.sleepingkingstudios.com/cuprum-cli/integrations" target="_blank">CLI integration</a> and register your commands:
 
 ```ruby
 # In tasks.thor:
 require 'cuprum/cli/integrations/thor/registry'
+
+Cuprum::Cli.initializer.call
 
 registry = Cuprum::Cli::Integrations::Thor::Registry.new
 
