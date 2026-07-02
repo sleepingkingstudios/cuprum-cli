@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::RSpec::Deferred::OptionsExamples
+slug: options-examples
+type: module
+files:
+- lib/cuprum/cli/rspec/deferred/options_examples.rb
+parent_path: cuprum/cli/r-spec/deferred
+short_description: Deferred examples for testing command options.
+data_path: cuprum/cli/r-spec/deferred/options-examples
+included_modules:
+- name: RSpec::SleepingKingStudios::Deferred::Provider
+  slug: provider
+version: '0.1'

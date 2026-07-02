@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Dependencies::SystemCommand::CapturedOutput#error
+parent_path: cuprum/cli/dependencies/system-command/captured-output
+signature: error
+slug: error
+constructor: false
+data_path: cuprum/cli/dependencies/system-command/captured-output/i-error
+returns:
+- description: the current value of error
+  type:
+  - name: Object
+short_description: Returns the value of attribute error
+version: '0.1'

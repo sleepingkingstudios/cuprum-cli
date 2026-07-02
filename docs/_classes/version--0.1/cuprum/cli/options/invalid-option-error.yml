@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Options::InvalidOptionError
+slug: invalid-option-error
+type: class
+files:
+- lib/cuprum/cli/options.rb
+parent_path: cuprum/cli/options
+short_description: Exception raised when a command receives an invalid value for an
+  option.
+data_path: cuprum/cli/options/invalid-option-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: '0.1'

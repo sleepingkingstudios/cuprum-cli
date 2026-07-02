@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Dependencies::FileSystem::Mock::MockTempfile#path
+parent_path: cuprum/cli/dependencies/file-system/mock/mock-tempfile
+signature: path
+slug: path
+constructor: false
+data_path: cuprum/cli/dependencies/file-system/mock/mock-tempfile/i-path
+returns:
+- description: the qualified path to the tempfile.
+  type:
+  - name: String
+version: '0.1'

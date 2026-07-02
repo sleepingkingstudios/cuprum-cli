@@ -1,0 +1,27 @@
+---
+name: Cuprum::Cli::Commands::File::ResolveTemplate
+slug: resolve-template
+type: class
+files:
+- lib/cuprum/cli/commands/file/resolve_template.rb
+parent_path: cuprum/cli/commands/file
+short_description: Utility command for resolving a template and parameterized values.
+instance_attributes:
+- name: templates
+  read: true
+  write: false
+  path: cuprum/cli/commands/file/resolve-template/i-templates
+  slug: templates
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/commands/file/resolve-template/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/commands/file/resolve-template
+constructor: true
+inherited_classes:
+- name: Cuprum::Command
+  slug: command
+version: '0.1'

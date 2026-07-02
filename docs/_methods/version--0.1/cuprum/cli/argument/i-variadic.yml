@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Argument#variadic
+parent_path: cuprum/cli/argument
+signature: variadic
+slug: variadic
+aliases:
+- variadic?
+constructor: false
+data_path: cuprum/cli/argument/i-variadic
+returns:
+- description: the current value of variadic
+  type:
+  - name: Object
+short_description: Returns the value of attribute variadic
+version: '0.1'

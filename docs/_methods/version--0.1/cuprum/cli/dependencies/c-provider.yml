@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Dependencies.provider
+parent_path: cuprum/cli/dependencies
+signature: provider
+slug: provider
+constructor: false
+data_path: cuprum/cli/dependencies/c-provider
+returns:
+- description: the provider for the standard dependencies.
+  type:
+  - name: Plumbum::Provider
+version: '0.1'

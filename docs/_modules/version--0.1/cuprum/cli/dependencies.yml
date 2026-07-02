@@ -1,0 +1,29 @@
+---
+name: Cuprum::Cli::Dependencies
+slug: dependencies
+type: module
+files:
+- lib/cuprum/cli/dependencies.rb
+- lib/cuprum/cli/dependencies/file_system.rb
+- lib/cuprum/cli/dependencies/standard_io.rb
+- lib/cuprum/cli/dependencies/system_command.rb
+- lib/cuprum/cli/dependencies/file_system/mock.rb
+- lib/cuprum/cli/dependencies/standard_io/mock.rb
+- lib/cuprum/cli/dependencies/standard_io/helpers.rb
+- lib/cuprum/cli/dependencies/system_command/mock.rb
+parent_path: cuprum/cli
+short_description: Dependencies provide standard functionality to commands.
+class_methods:
+- name: provider
+  path: cuprum/cli/dependencies/c-provider
+  slug: provider
+  inherited: false
+defined_classes:
+- name: FileSystem
+  slug: file-system
+- name: StandardIo
+  slug: standard-io
+- name: SystemCommand
+  slug: system-command
+data_path: cuprum/cli/dependencies
+version: '0.1'

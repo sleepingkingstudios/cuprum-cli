@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Errors::Files::TemplateError#details
+parent_path: cuprum/cli/errors/files/template-error
+signature: details
+slug: details
+constructor: false
+data_path: cuprum/cli/errors/files/template-error/i-details
+returns:
+- description: additional information about the error.
+  type:
+  - name: String
+version: '0.1'

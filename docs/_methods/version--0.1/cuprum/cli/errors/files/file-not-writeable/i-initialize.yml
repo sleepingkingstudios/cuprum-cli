@@ -1,0 +1,27 @@
+---
+name: Cuprum::Cli::Errors::Files::FileNotWriteable#initialize
+parent_path: cuprum/cli/errors/files/file-not-writeable
+signature: 'initialize(file_path:, message: nil, reason: nil)'
+slug: initialize
+constructor: true
+data_path: cuprum/cli/errors/files/file-not-writeable/i-initialize
+params:
+- description: the path to the expected file.
+  name: file_path
+  type:
+  - name: String
+- description: message describing the nature of the error.
+  name: message
+  type:
+  - name: String
+  default: nil
+- description: additional details on the error.
+  name: reason
+  type:
+  - name: String
+  default: nil
+returns:
+- description: a new instance of FileNotWriteable
+  type:
+  - name: FileNotWriteable
+version: '0.1'

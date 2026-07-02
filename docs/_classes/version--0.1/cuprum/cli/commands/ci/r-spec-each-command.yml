@@ -1,0 +1,108 @@
+---
+name: Cuprum::Cli::Commands::Ci::RSpecEachCommand
+slug: r-spec-each-command
+type: class
+files:
+- lib/cuprum/cli/commands/ci/rspec_each_command.rb
+parent_path: cuprum/cli/commands/ci
+short_description: Command for running each RSpec file in its own process.
+class_methods:
+- name: argument
+  path: cuprum/cli/command/c-argument
+  slug: argument
+  inherited: true
+- name: argument_value
+  path: cuprum/cli/arguments/class-methods/i-argument-value
+  slug: argument-value
+  inherited: true
+- name: argument_values
+  path: cuprum/cli/arguments/class-methods/i-argument-values
+  slug: argument-values
+  inherited: true
+- name: arguments
+  path: cuprum/cli/arguments/class-methods/i-arguments
+  slug: arguments
+  inherited: true
+- name: dependency
+  path: cuprum/cli/command/c-dependency
+  slug: dependency
+  inherited: true
+- name: option
+  path: cuprum/cli/command/c-option
+  slug: option
+  inherited: true
+- name: option_value
+  path: cuprum/cli/options/class-methods/i-option-value
+  slug: option-value
+  inherited: true
+- name: option_values
+  path: cuprum/cli/options/class-methods/i-option-values
+  slug: option-values
+  inherited: true
+- name: options
+  path: cuprum/cli/options/class-methods/i-options
+  slug: options
+  inherited: true
+- name: resolve_arguments
+  path: cuprum/cli/arguments/class-methods/i-resolve-arguments
+  slug: resolve-arguments
+  inherited: true
+- name: resolve_options
+  path: cuprum/cli/options/class-methods/i-resolve-options
+  slug: resolve-options
+  inherited: true
+constants:
+- name: FALSY_VALUES
+  path: cuprum/cli/dependencies/standard-io/helpers/falsy-values
+  slug: falsy-values
+  inherited: true
+- name: FULL_NAME_FORMAT
+  path: cuprum/cli/metadata/full-name-format
+  slug: full-name-format
+  inherited: true
+- name: INTEGER_PATTERN
+  path: cuprum/cli/dependencies/standard-io/helpers/integer-pattern
+  slug: integer-pattern
+  inherited: true
+- name: TRUTHY_VALUES
+  path: cuprum/cli/dependencies/standard-io/helpers/truthy-values
+  slug: truthy-values
+  inherited: true
+instance_methods:
+- name: ask
+  path: cuprum/cli/dependencies/standard-io/helpers/i-ask
+  slug: ask
+  inherited: true
+- name: call
+  path: cuprum/cli/command/i-call
+  slug: call
+  inherited: true
+- name: initialize
+  path: cuprum/cli/command/i-initialize
+  slug: initialize
+  inherited: true
+  constructor: true
+- name: say
+  path: cuprum/cli/options/quiet/i-say
+  slug: say
+  inherited: true
+- name: warn
+  path: cuprum/cli/dependencies/standard-io/helpers/i-warn
+  slug: warn
+  inherited: true
+data_path: cuprum/cli/commands/ci/r-spec-each-command
+included_modules:
+- name: Cuprum::Cli::Dependencies::StandardIo::Helpers
+  slug: helpers
+  path: cuprum/cli/dependencies/standard-io/helpers
+- name: Cuprum::Cli::Options::Quiet
+  slug: quiet
+  path: cuprum/cli/options/quiet
+constructor: true
+inherited_classes:
+- name: Cuprum::Cli::Command
+  slug: command
+  path: cuprum/cli/command
+- name: Cuprum::Command
+  slug: command
+version: '0.1'

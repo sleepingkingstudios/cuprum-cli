@@ -1,0 +1,28 @@
+---
+name: Cuprum::Cli::Integrations::Thor::Registry
+slug: registry
+type: class
+files:
+- lib/cuprum/cli/integrations/thor/registry.rb
+parent_path: cuprum/cli/integrations/thor
+short_description: Registers CLI commands by name and adds as Thor tasks.
+instance_methods:
+- name: "[]"
+  path: cuprum/cli/registry/i-[]
+  slug: "[]"
+  inherited: true
+- name: commands
+  path: cuprum/cli/registry/i-commands
+  slug: commands
+  inherited: true
+- name: register
+  path: cuprum/cli/integrations/thor/registry/i-register
+  slug: register
+  inherited: false
+data_path: cuprum/cli/integrations/thor/registry
+constructor: false
+inherited_classes:
+- name: Cuprum::Cli::Registry
+  slug: registry
+  path: cuprum/cli/registry
+version: '0.1'

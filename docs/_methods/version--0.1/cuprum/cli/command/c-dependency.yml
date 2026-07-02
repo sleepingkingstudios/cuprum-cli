@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Command.dependency
+parent_path: cuprum/cli/command
+signature: dependency(dependency_name, **)
+slug: dependency
+constructor: false
+data_path: cuprum/cli/command/c-dependency
+raises:
+- description: ''
+  type:
+  - name: Cuprum::Cli::Metadata::AbstractCommandError
+    path: cuprum/cli/metadata/abstract-command-error
+version: '0.1'

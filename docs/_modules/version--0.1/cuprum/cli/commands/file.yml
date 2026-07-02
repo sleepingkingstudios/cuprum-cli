@@ -1,0 +1,27 @@
+---
+name: Cuprum::Cli::Commands::File
+slug: file
+type: module
+files:
+- lib/cuprum/cli/commands/file.rb
+- lib/cuprum/cli/commands/file/templates.rb
+- lib/cuprum/cli/commands/file/render_erb.rb
+- lib/cuprum/cli/commands/file/new_command.rb
+- lib/cuprum/cli/commands/file/generate_file.rb
+- lib/cuprum/cli/commands/file/resolve_template.rb
+parent_path: cuprum/cli/commands
+short_description: Namespace for commands that create or manage files.
+defined_classes:
+- name: GenerateFile
+  slug: generate-file
+- name: NewCommand
+  slug: new-command
+- name: RenderErb
+  slug: render-erb
+- name: ResolveTemplate
+  slug: resolve-template
+defined_modules:
+- name: Templates
+  slug: templates
+data_path: cuprum/cli/commands/file
+version: '0.1'

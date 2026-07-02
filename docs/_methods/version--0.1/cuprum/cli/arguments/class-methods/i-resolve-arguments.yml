@@ -1,0 +1,32 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods#resolve_arguments
+parent_path: cuprum/cli/arguments/class-methods
+signature: resolve_arguments(*values)
+slug: resolve-arguments
+constructor: false
+data_path: cuprum/cli/arguments/class-methods/i-resolve-arguments
+description: Also applies any default values from the defined arguments.
+params:
+- description: the arguments values to resolve.
+  name: values
+  type:
+  - name: Array
+raises:
+- description: |-
+    if provided more
+    arguments than the command class defines arguments.
+  type:
+  - name: Cuprum::Cli::Arguments::ExtraArgumentsError
+    path: cuprum/cli/arguments/extra-arguments-error
+- description: |-
+    if any value does
+    not match the expected argument type, or any required value is missing.
+  type:
+  - name: Cuprum::Cli::Arguments::InvalidArgumentError
+    path: cuprum/cli/arguments/invalid-argument-error
+returns:
+- description: the arguments values with applied defaults.
+  type:
+  - name: Array
+short_description: Validates the given argument values against the defined class arguments.
+version: '0.1'

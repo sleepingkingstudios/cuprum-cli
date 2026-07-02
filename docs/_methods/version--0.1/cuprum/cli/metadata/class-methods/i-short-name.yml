@@ -1,0 +1,20 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#short_name
+parent_path: cuprum/cli/metadata/class-methods
+signature: short_name
+slug: short-name
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-short-name
+description: |-
+  A command's short_name is the last segment of the full name.
+
+  - For a command with full name "custom", the short_name will be
+    "custom".
+  - For a command with full name "category:sub_category:do_something", the
+    short_name will be "do_something".
+returns:
+- description: the short name for the command.
+  type:
+  - name: String
+short_description: The short name for the command.
+version: '0.1'

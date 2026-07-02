@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo::Mock#error_stream
+parent_path: cuprum/cli/dependencies/standard-io/mock
+signature: error_stream
+slug: error-stream
+constructor: false
+data_path: cuprum/cli/dependencies/standard-io/mock/i-error-stream
+returns:
+- description: the error stream
+  type:
+  - name: IO
+version: '0.1'

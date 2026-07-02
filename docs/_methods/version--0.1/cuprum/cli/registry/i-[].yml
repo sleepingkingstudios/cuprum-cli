@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Registry#[]
+parent_path: cuprum/cli/registry
+signature: "[](name)"
+slug: "[]"
+constructor: false
+data_path: cuprum/cli/registry/i-[]
+returns:
+- description: the command registered with the given name, if any.
+  type:
+  - name: Class
+  - name: nil
+version: '0.1'

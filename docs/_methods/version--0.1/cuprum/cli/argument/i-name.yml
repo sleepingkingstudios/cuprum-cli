@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Argument#name
+parent_path: cuprum/cli/argument
+signature: name
+slug: name
+constructor: false
+data_path: cuprum/cli/argument/i-name
+returns:
+- description: the current value of name
+  type:
+  - name: Object
+short_description: Returns the value of attribute name
+version: '0.1'

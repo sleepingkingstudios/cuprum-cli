@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Coercion.coerce_boolean?
+parent_path: cuprum/cli/coercion
+signature: coerce_boolean?(value)
+slug: coerce-boolean?
+constructor: false
+data_path: cuprum/cli/coercion/c-coerce-boolean?
+returns:
+- description: |-
+    true if the value can be safely coerced to either
+    true or false, otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.1'

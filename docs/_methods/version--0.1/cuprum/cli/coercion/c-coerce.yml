@@ -1,0 +1,22 @@
+---
+name: Cuprum::Cli::Coercion.coerce
+parent_path: cuprum/cli/coercion
+signature: coerce(value)
+slug: coerce
+constructor: false
+data_path: cuprum/cli/coercion/c-coerce
+params:
+- description: the value to convert.
+  name: value
+  type:
+  - name: Object
+returns:
+- description: the coerced value.
+  type:
+  - name: nil
+  - name: 'true'
+  - name: 'false'
+  - name: Integer
+  - name: String
+short_description: Converts the value to a predicted type based on the value format.
+version: '0.1'

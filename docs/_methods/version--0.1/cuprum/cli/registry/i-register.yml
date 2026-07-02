@@ -1,0 +1,59 @@
+---
+name: Cuprum::Cli::Registry#register
+parent_path: cuprum/cli/registry
+signature: register(command, **config)
+slug: register
+aliases:
+- add
+constructor: false
+data_path: cuprum/cli/registry/i-register
+options:
+- name: config
+  opts:
+  - description: |-
+      arguments to pass to the command on
+      initialization.
+    name: arguments
+    type:
+    - name: Array
+  - description: the description for the command.
+    name: description
+    type:
+    - name: String
+  - description: |-
+      the full description for the
+      command.
+    name: full_description
+    type:
+    - name: String
+  - description: |-
+      the name under which to register the
+      command. Defaults to the value of command.full_name.
+    name: full_name
+    type:
+    - name: String
+  - description: |-
+      options to pass to the command on
+      initialization.
+    name: options
+    type:
+    - name: Hash
+params:
+- description: the command class to register.
+  name: command
+  type:
+  - name: Class
+- description: options for configuring the command.
+  name: config
+  type:
+  - name: Hash
+raises:
+- description: if a command is already registered with that name.
+  type:
+  - name: NameError
+returns:
+- description: ''
+  type:
+  - name: self
+short_description: Registers the command with the registry.
+version: '0.1'

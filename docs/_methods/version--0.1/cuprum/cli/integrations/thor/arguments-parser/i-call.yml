@@ -1,0 +1,31 @@
+---
+name: Cuprum::Cli::Integrations::Thor::ArgumentsParser#call
+parent_path: cuprum/cli/integrations/thor/arguments-parser
+signature: call(*inputs)
+slug: call
+constructor: false
+data_path: cuprum/cli/integrations/thor/arguments-parser/i-call
+params:
+- description: the arguments captured by Thor.
+  name: inputs
+  type:
+  - name: Array
+    items:
+    - name: String
+returns:
+- description: |-
+    the parsed arguments
+    and options.
+  type:
+  - name: Array
+    items:
+    - name: Array
+      items:
+      - name: String
+    - name: Hash
+      keys:
+      - name: Symbol
+      values:
+      - name: Object
+short_description: Parses the given argument inputs into arguments and options.
+version: '0.1'

@@ -1,0 +1,19 @@
+---
+name: Cuprum::Cli::Options::ClassMethods::Builder#defined_options
+parent_path: cuprum/cli/options/class-methods/builder
+signature: defined_options
+slug: defined-options
+constructor: false
+data_path: cuprum/cli/options/class-methods/builder/i-defined-options
+returns:
+- description: |-
+    the options
+    defined for the command.
+  type:
+  - name: Hash
+    keys:
+    - name: Symbol
+    values:
+    - name: Cuprum::Cli::Option
+      path: cuprum/cli/option
+version: '0.1'

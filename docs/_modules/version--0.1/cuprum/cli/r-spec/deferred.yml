@@ -1,0 +1,29 @@
+---
+name: Cuprum::Cli::RSpec::Deferred
+slug: deferred
+type: module
+files:
+- lib/cuprum/cli/rspec/deferred.rb
+- lib/cuprum/cli/rspec/deferred/ci.rb
+- lib/cuprum/cli/rspec/deferred/dependencies.rb
+- lib/cuprum/cli/rspec/deferred/options_examples.rb
+- lib/cuprum/cli/rspec/deferred/metadata_examples.rb
+- lib/cuprum/cli/rspec/deferred/registry_examples.rb
+- lib/cuprum/cli/rspec/deferred/arguments_examples.rb
+parent_path: cuprum/cli/r-spec
+short_description: Namespace for deferred examples used to test Cuprum::Cli functionality.
+defined_modules:
+- name: ArgumentsExamples
+  slug: arguments-examples
+- name: Ci
+  slug: ci
+- name: Dependencies
+  slug: dependencies
+- name: MetadataExamples
+  slug: metadata-examples
+- name: OptionsExamples
+  slug: options-examples
+- name: RegistryExamples
+  slug: registry-examples
+data_path: cuprum/cli/r-spec/deferred
+version: '0.1'

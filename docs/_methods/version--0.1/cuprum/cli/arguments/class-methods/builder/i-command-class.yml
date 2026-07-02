@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods::Builder#command_class
+parent_path: cuprum/cli/arguments/class-methods/builder
+signature: command_class
+slug: command-class
+constructor: false
+data_path: cuprum/cli/arguments/class-methods/builder/i-command-class
+returns:
+- description: the command class.
+  type:
+  - name: Class
+version: '0.1'
