@@ -37,5 +37,6 @@ module Cuprum::Cli::Integrations::Thor
           .build(full_name: name)
       end
     end
+    alias add register
   end
 end

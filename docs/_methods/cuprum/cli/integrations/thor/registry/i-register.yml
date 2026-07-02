@@ -3,6 +3,8 @@ name: Cuprum::Cli::Integrations::Thor::Registry#register
 parent_path: cuprum/cli/integrations/thor/registry
 signature: register(command, **config)
 slug: register
+aliases:
+- add
 constructor: false
 data_path: cuprum/cli/integrations/thor/registry/i-register
 description: Also registers a Thor task with compatible parameters and metadata.

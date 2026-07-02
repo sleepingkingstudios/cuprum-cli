@@ -3,6 +3,8 @@ name: Cuprum::Cli::Registry#register
 parent_path: cuprum/cli/registry
 signature: register(command, **config)
 slug: register
+aliases:
+- add
 constructor: false
 data_path: cuprum/cli/registry/i-register
 options:
