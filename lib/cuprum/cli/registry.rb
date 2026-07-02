@@ -50,6 +50,7 @@ module Cuprum::Cli
 
       self
     end
+    alias add register
 
     private
 

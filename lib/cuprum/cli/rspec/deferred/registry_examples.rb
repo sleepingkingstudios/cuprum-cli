@@ -176,6 +176,12 @@ module Cuprum::Cli::RSpec::Deferred
             .and_keywords(*expected_keywords)
         end
 
+        it 'should alias the method as #add' do
+          expect(subject)
+            .to have_aliased_method(:register)
+            .as(:add)
+        end
+
         describe 'with command: nil' do
           let(:error_message) do
             tools.assertions.error_message_for('class', as: 'command')
