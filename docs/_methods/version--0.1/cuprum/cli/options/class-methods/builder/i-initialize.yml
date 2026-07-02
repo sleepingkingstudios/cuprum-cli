@@ -1,0 +1,28 @@
+---
+name: Cuprum::Cli::Options::ClassMethods::Builder#initialize
+parent_path: cuprum/cli/options/class-methods/builder
+signature: initialize(command_class:, defined_options:)
+slug: initialize
+constructor: true
+data_path: cuprum/cli/options/class-methods/builder/i-initialize
+params:
+- description: the command class.
+  name: command_class
+  type:
+  - name: Class
+- description: |-
+    the options
+    defined for the command.
+  name: defined_options
+  type:
+  - name: Hash
+    keys:
+    - name: Symbol
+    values:
+    - name: Cuprum::Cli::Option
+      path: cuprum/cli/option
+returns:
+- description: a new instance of Builder
+  type:
+  - name: Builder
+version: '0.1'

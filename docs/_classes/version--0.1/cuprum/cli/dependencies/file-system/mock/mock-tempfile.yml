@@ -1,0 +1,27 @@
+---
+name: Cuprum::Cli::Dependencies::FileSystem::Mock::MockTempfile
+slug: mock-tempfile
+type: class
+files:
+- lib/cuprum/cli/dependencies/file_system/mock.rb
+parent_path: cuprum/cli/dependencies/file-system/mock
+short_description: Utility class used to simulate tempfile behavior.
+instance_attributes:
+- name: path
+  read: true
+  write: false
+  path: cuprum/cli/dependencies/file-system/mock/mock-tempfile/i-path
+  slug: path
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/dependencies/file-system/mock/mock-tempfile/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/dependencies/file-system/mock/mock-tempfile
+constructor: true
+inherited_classes:
+- name: SimpleDelegator
+  slug: simple-delegator
+version: '0.1'

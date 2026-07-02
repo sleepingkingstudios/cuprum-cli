@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Argument#required
+parent_path: cuprum/cli/argument
+signature: required
+slug: required
+aliases:
+- required?
+constructor: false
+data_path: cuprum/cli/argument/i-required
+returns:
+- description: the current value of required
+  type:
+  - name: Object
+short_description: Returns the value of attribute required
+version: '0.1'

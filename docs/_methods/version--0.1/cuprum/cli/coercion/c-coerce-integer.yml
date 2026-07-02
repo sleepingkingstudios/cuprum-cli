@@ -1,0 +1,22 @@
+---
+name: Cuprum::Cli::Coercion.coerce_integer
+parent_path: cuprum/cli/coercion
+signature: coerce_integer(value)
+slug: coerce-integer
+constructor: false
+data_path: cuprum/cli/coercion/c-coerce-integer
+params:
+- description: the value to convert.
+  name: value
+  type:
+  - name: Object
+raises:
+- description: if the value cannot be coerced to an Integer.
+  type:
+  - name: CoercionError
+returns:
+- description: the coerced value.
+  type:
+  - name: Integer
+short_description: Converts the value to an Integer.
+version: '0.1'

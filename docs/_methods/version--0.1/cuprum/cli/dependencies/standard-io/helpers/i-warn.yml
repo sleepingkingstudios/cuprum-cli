@@ -1,0 +1,32 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo::Helpers#warn
+parent_path: cuprum/cli/dependencies/standard-io/helpers
+signature: warn(message, **options)
+slug: warn
+constructor: false
+data_path: cuprum/cli/dependencies/standard-io/helpers/i-warn
+options:
+- name: options
+  opts:
+  - description: |-
+      if true, appends a newline to the
+      message if the message does not end with a newline. Defaults to true.
+    name: newline
+    type:
+    - name: 'true'
+    - name: 'false'
+params:
+- description: the message to print.
+  name: message
+  type:
+  - name: String
+- description: options for printing the message.
+  name: options
+  type:
+  - name: Hash
+returns:
+- description: ''
+  type:
+  - name: nil
+short_description: Prints a message to the error stream.
+version: '0.1'

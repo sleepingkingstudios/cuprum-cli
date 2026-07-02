@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#abstract?
+parent_path: cuprum/cli/metadata/class-methods
+signature: abstract?
+slug: abstract?
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-abstract?
+returns:
+- description: |-
+    true if the command is abstract and should not be
+    instantiated directly or assigned metadata; otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.1'

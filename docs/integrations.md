@@ -6,7 +6,7 @@ breadcrumbs:
 
 # Integrations
 
-`Cuprum::Cli` integrates with third-party tools to call [commands]({{site.baseurl}}/commands) from the command line.
+`Cuprum::Cli` integrates with third-party tools to call [commands](./commands) from the command line.
 
 - [Thor](#thor)
 

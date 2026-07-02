@@ -1,0 +1,23 @@
+---
+name: Cuprum::Cli::Options::ClassMethods#option_value
+parent_path: cuprum/cli/options/class-methods
+signature: option_value(option, value)
+slug: option-value
+constructor: false
+data_path: cuprum/cli/options/class-methods/i-option-value
+params:
+- description: the option to set.
+  name: option
+  type:
+  - name: String
+  - name: Symbol
+- description: the option value to append.
+  name: value
+  type:
+  - name: Object
+returns:
+- description: ''
+  type:
+  - name: void
+short_description: Assigns a predefined option value for the command.
+version: '0.1'

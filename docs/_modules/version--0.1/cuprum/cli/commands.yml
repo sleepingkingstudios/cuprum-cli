@@ -1,0 +1,21 @@
+---
+name: Cuprum::Cli::Commands
+slug: commands
+type: module
+files:
+- lib/cuprum/cli/commands.rb
+- lib/cuprum/cli/commands/ci.rb
+- lib/cuprum/cli/commands/file.rb
+- lib/cuprum/cli/commands/echo_command.rb
+parent_path: cuprum/cli
+short_description: Namespace for predefined commands.
+defined_classes:
+- name: EchoCommand
+  slug: echo-command
+defined_modules:
+- name: Ci
+  slug: ci
+- name: File
+  slug: file
+data_path: cuprum/cli/commands
+version: '0.1'

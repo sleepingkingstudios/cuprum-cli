@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::Errors::SystemCommandFailure::TYPE
+parent_path: cuprum/cli/errors/system-command-failure
+slug: type
+short_description: Short string used to identify the type of error.
+value: "'cuprum.cli.errors.system_command_failure'"
+data_path: cuprum/cli/errors/system-command-failure/type
+version: '0.1'

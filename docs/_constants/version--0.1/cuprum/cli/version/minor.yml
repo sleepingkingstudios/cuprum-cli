@@ -1,0 +1,10 @@
+---
+name: Cuprum::Cli::Version::MINOR
+parent_path: cuprum/cli/version
+slug: minor
+short_description: Minor version.
+value: '1'
+data_path: cuprum/cli/version/minor
+metadata:
+  api: private
+version: '0.1'

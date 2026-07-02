@@ -39,7 +39,7 @@ To ensure that dependent libraries are loaded, call the `Cuprum::Cli` initialize
 
 - Or, in the entry points of your application (such as a `bin` script or `spec_helper.rb`).
 
-Set up a [CLI integration]({{site.baseurl}}/integrations) and register your commands:
+Set up a [CLI integration](./integrations) and register your commands:
 
 ```ruby
 # In tasks.thor:
@@ -130,17 +130,17 @@ The core component in `Cuprum::Cli` is the `Command`.
 
 <ul>
   <li>
-    <a href="{{site.baseurl}}/commands">Commands</a>
+    <a href="./commands">Commands</a>
     <br>
     A command defines an action or sequence of actions that can be called from the command line.
     <ul>
       <li>
-        <a href="{{site.baseurl}}/commands#command-arguments">Arguments</a>
+        <a href="./commands#command-arguments">Arguments</a>
         <br>
         Commands can accept positional arguments from the command line, such as file names.
       </li>
       <li>
-        <a href="{{site.baseurl}}/commands#command-options">Options</a>
+        <a href="./commands#command-options">Options</a>
         <br>
         Commands can accept flags or keyword options from the command line.
       </li>
@@ -148,29 +148,29 @@ The core component in `Cuprum::Cli` is the `Command`.
   </li>
 
   <li>
-    <a href="{{site.baseurl}}/commands/dependencies">Command Dependencies</a>
+    <a href="./commands/dependencies">Command Dependencies</a>
     <br>
-    <code>Cuprum::Cli</code> commands use dependencies to interact with external functions in a consistent and testable fashion. Defined dependencies include <a href="{{site.baseurl}}/commands/dependencies#filesystem">reading from and writing to the file system</a>, <a href="{{site.baseurl}}/commands/dependencies#standardio">interacting with the standard IO streams</a>, and <a href="{{site.baseurl}}/commands/dependencies#systemcommand">calling system commands</a>.
+    <code>Cuprum::Cli</code> commands use dependencies to interact with external functions in a consistent and testable fashion. Defined dependencies include <a href="./commands/dependencies#filesystem">reading from and writing to the file system</a>, <a href="./commands/dependencies#standardio">interacting with the standard IO streams</a>, and <a href="./commands/dependencies#systemcommand">calling system commands</a>.
   </li>
 </ul>
 
 ### Built-In Commands
 
-`Cuprum::Cli` provides some [pre-defined commands]({{site.baseurl}}/commands/built-in) for building CLI applications and tools.
+`Cuprum::Cli` provides some [pre-defined commands](./commands/built-in) for building CLI applications and tools.
 
 <ul>
   <li>
-    <a href="{{site.baseurl}}/commands/built-in#ci-commands">CI Commands</a>
+    <a href="./commands/built-in#ci-commands">CI Commands</a>
     <br>
     Commands for testing your application.
     <ul>
       <li>
-        <a href="{{site.baseurl}}/commands/built-in#rspec-command">RSpec Command</a>
+        <a href="./commands/built-in#rspec-command">RSpec Command</a>
         <br>
         A command for running <a href="https://rspec.info/" target="_blank">RSpec</a> tests, with configurable options including format, environment and custom gemfile.
       </li>
       <li>
-        <a href="{{site.baseurl}}/commands/built-in#rspec-each-command">RSpec Each Command</a>
+        <a href="./commands/built-in#rspec-each-command">RSpec Each Command</a>
         <br>
         A command for running each RSpec spec file as an isolated test. Useful for identifying missing <code>require</code> statements or other dependencies that would not be surfaced when running the entire test suite.
       </li>
@@ -178,12 +178,12 @@ The core component in `Cuprum::Cli` is the `Command`.
   </li>
 
   <li>
-    <a href="{{site.baseurl}}/commands/built-in#file-commands">File Commands</a>
+    <a href="./commands/built-in#file-commands">File Commands</a>
     <br>
     Commands for managing your application's files.
     <ul>
       <li>
-        <a href="{{site.baseurl}}/commands/built-in#new-file-command">New File Command</a>
+        <a href="./commands/built-in#new-file-command">New File Command</a>
         <br>
         A command for generating a new source file or files based on defined templates. Automatically handles intermediate directories and supports multiple file generation (such as spec files or view component templates).
       </li>
@@ -197,12 +197,12 @@ Once a command is defined, `Cuprum::Cli` integrates with an external CLI provide
 
 <ul>
   <li>
-    <a href="{{site.baseurl}}/integrations">Integrations</a>
+    <a href="./integrations">Integrations</a>
     <br>
     Third-party tools that <code>Cuprum::Cli</code> can use to call commands from the command line.
     <ul>
       <li>
-        <a href="{{site.baseurl}}/integrations#thor">Thor</a>
+        <a href="./integrations#thor">Thor</a>
         <br>
         Using <code>Cuprum::Cli</code> commands with the <a href="https://github.com/rails/thor" target="_blank">Thor</a> toolkit.
       </li>

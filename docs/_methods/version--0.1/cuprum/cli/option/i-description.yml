@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Option#description
+parent_path: cuprum/cli/option
+signature: description
+slug: description
+constructor: false
+data_path: cuprum/cli/option/i-description
+returns:
+- description: the current value of description
+  type:
+  - name: Object
+short_description: Returns the value of attribute description
+version: '0.1'

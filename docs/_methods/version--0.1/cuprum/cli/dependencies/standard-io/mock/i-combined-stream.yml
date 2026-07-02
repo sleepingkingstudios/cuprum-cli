@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo::Mock#combined_stream
+parent_path: cuprum/cli/dependencies/standard-io/mock
+signature: combined_stream
+slug: combined-stream
+constructor: false
+data_path: cuprum/cli/dependencies/standard-io/mock/i-combined-stream
+returns:
+- description: a combined input/output stream representing all IO activity.
+  type:
+  - name: IO
+version: '0.1'

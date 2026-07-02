@@ -1,0 +1,17 @@
+---
+name: Cuprum::Cli::Registry#commands
+parent_path: cuprum/cli/registry
+signature: commands
+slug: commands
+constructor: false
+data_path: cuprum/cli/registry/i-commands
+returns:
+- description: the registered commands.
+  type:
+  - name: Hash
+    keys:
+    - name: String
+    values:
+    - name: Class
+short_description: Returns a copy of the commands registered with the registry.
+version: '0.1'

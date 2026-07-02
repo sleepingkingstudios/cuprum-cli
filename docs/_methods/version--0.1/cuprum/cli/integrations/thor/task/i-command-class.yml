@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Integrations::Thor::Task#command_class
+parent_path: cuprum/cli/integrations/thor/task
+signature: command_class
+slug: command-class
+constructor: false
+data_path: cuprum/cli/integrations/thor/task/i-command-class
+returns:
+- description: the command to execute.
+  type:
+  - name: Class
+version: '0.1'

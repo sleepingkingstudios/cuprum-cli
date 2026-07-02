@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo::Mock#output_stream
+parent_path: cuprum/cli/dependencies/standard-io/mock
+signature: output_stream
+slug: output-stream
+constructor: false
+data_path: cuprum/cli/dependencies/standard-io/mock/i-output-stream
+returns:
+- description: the output stream.
+  type:
+  - name: IO
+version: '0.1'

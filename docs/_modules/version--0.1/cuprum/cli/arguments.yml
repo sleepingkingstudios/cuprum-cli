@@ -1,0 +1,20 @@
+---
+name: Cuprum::Cli::Arguments
+slug: arguments
+type: module
+files:
+- lib/cuprum/cli/arguments.rb
+- lib/cuprum/cli/arguments/class_methods.rb
+parent_path: cuprum/cli
+short_description: Namespace for functionality that implements command positional
+  arguments.
+defined_classes:
+- name: ExtraArgumentsError
+  slug: extra-arguments-error
+- name: InvalidArgumentError
+  slug: invalid-argument-error
+defined_modules:
+- name: ClassMethods
+  slug: class-methods
+data_path: cuprum/cli/arguments
+version: '0.1'

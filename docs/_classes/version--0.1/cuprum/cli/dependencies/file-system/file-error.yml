@@ -1,0 +1,27 @@
+---
+name: Cuprum::Cli::Dependencies::FileSystem::FileError
+slug: file-error
+type: class
+files:
+- lib/cuprum/cli/dependencies/file_system.rb
+parent_path: cuprum/cli/dependencies/file-system
+short_description: Abstract class for exceptions raised by failing file system operations.
+data_path: cuprum/cli/dependencies/file-system/file-error
+constructor: false
+direct_subclasses:
+- name: Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
+  slug: directory-is-a-file-error
+  path: cuprum/cli/dependencies/file-system/directory-is-a-file-error
+- name: Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+  slug: directory-not-found-error
+  path: cuprum/cli/dependencies/file-system/directory-not-found-error
+- name: Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+  slug: file-is-a-directory-error
+  path: cuprum/cli/dependencies/file-system/file-is-a-directory-error
+- name: Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
+  slug: file-not-found-error
+  path: cuprum/cli/dependencies/file-system/file-not-found-error
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: '0.1'

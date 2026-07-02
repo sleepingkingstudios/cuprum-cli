@@ -1,0 +1,31 @@
+---
+name: Cuprum::Cli::Integrations::Thor::Task::Builder
+slug: builder
+type: class
+files:
+- lib/cuprum/cli/integrations/thor/task.rb
+parent_path: cuprum/cli/integrations/thor/task
+short_description: Generates a Thor::Task wrapping a Cuprum::Cli command class.
+instance_attributes:
+- name: command_class
+  read: true
+  write: false
+  path: cuprum/cli/integrations/thor/task/builder/i-command-class
+  slug: command-class
+  inherited: false
+instance_methods:
+- name: build
+  path: cuprum/cli/integrations/thor/task/builder/i-build
+  slug: build
+  inherited: false
+- name: initialize
+  path: cuprum/cli/integrations/thor/task/builder/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/integrations/thor/task/builder
+extended_modules:
+- name: Forwardable
+  slug: forwardable
+constructor: true
+version: '0.1'

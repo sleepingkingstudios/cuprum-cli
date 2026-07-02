@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Commands::File::RenderErb#template_name
+parent_path: cuprum/cli/commands/file/render-erb
+signature: template_name
+slug: template-name
+constructor: false
+data_path: cuprum/cli/commands/file/render-erb/i-template-name
+returns:
+- description: the name of the rendered template.
+  type:
+  - name: String
+  - name: nil
+version: '0.1'

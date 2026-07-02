@@ -1,0 +1,9 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#abstract
+parent_path: cuprum/cli/metadata/class-methods
+signature: abstract
+slug: abstract
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-abstract
+short_description: Marks the command as abstract.
+version: '0.1'

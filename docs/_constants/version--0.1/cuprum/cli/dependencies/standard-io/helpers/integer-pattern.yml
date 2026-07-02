@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::Dependencies::StandardIo::Helpers::INTEGER_PATTERN
+parent_path: cuprum/cli/dependencies/standard-io/helpers
+slug: integer-pattern
+short_description: Pattern matching a valid integer input.
+value: "/\\A-?\\d+([\\d_,]+\\d)?\\z/"
+data_path: cuprum/cli/dependencies/standard-io/helpers/integer-pattern
+version: '0.1'

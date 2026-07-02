@@ -147,7 +147,7 @@ If multiple templates match a file name, the most recently added template will b
 
 #### File Templates
 
-`Cuprum::Cli` defines its own set of file templates for generating Ruby or RSpec files, but you can override or customize the templates by passing a `:templates` Array to the `file:new` command. The best way to do this is when [registering the command]({{site.baseurl}}/integrations#command-configuration).
+`Cuprum::Cli` defines its own set of file templates for generating Ruby or RSpec files, but you can override or customize the templates by passing a `:templates` Array to the `file:new` command. The best way to do this is when [registering the command](../integrations#command-configuration).
 
 Each template is a Hash with three properties:
 

@@ -1,0 +1,26 @@
+---
+name: Cuprum::Cli::Integrations::Thor
+slug: thor
+type: module
+files:
+- lib/cuprum/cli/integrations/thor.rb
+- lib/cuprum/cli/integrations/thor/task.rb
+- lib/cuprum/cli/integrations/thor/registry.rb
+- lib/cuprum/cli/integrations/thor/arguments_parser.rb
+parent_path: cuprum/cli/integrations
+short_description: Integration with the Thor CLI toolkit.
+defined_classes:
+- name: ArgumentsParser
+  slug: arguments-parser
+- name: Registry
+  slug: registry
+- name: Task
+  slug: task
+data_path: cuprum/cli/integrations/thor
+metadata:
+  see:
+  - label: http://whatisthor.com/
+    path: http://whatisthor.com/
+    text:
+    type: link
+version: '0.1'

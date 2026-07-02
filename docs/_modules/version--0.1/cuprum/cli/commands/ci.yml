@@ -1,0 +1,23 @@
+---
+name: Cuprum::Cli::Commands::Ci
+slug: ci
+type: module
+files:
+- lib/cuprum/cli/commands/ci.rb
+- lib/cuprum/cli/commands/ci/report.rb
+- lib/cuprum/cli/commands/ci/rspec_command.rb
+- lib/cuprum/cli/commands/ci/rspec_each_command.rb
+parent_path: cuprum/cli/commands
+short_description: Namespace for commands used in continuous integration.
+constants:
+- name: Report
+  path: cuprum/cli/commands/ci/report
+  slug: report
+  inherited: false
+defined_classes:
+- name: RSpecCommand
+  slug: r-spec-command
+- name: RSpecEachCommand
+  slug: r-spec-each-command
+data_path: cuprum/cli/commands/ci
+version: '0.1'

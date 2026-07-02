@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Dependencies::SystemCommand::Mock::MockStatus#exitstatus
+parent_path: cuprum/cli/dependencies/system-command/mock/mock-status
+signature: exitstatus
+slug: exitstatus
+constructor: false
+data_path: cuprum/cli/dependencies/system-command/mock/mock-status/i-exitstatus
+returns:
+- description: the current value of exitstatus
+  type:
+  - name: Object
+short_description: Returns the value of attribute exitstatus
+version: '0.1'

@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#description?
+parent_path: cuprum/cli/metadata/class-methods
+signature: description?
+slug: description?
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-description?
+returns:
+- description: |-
+    true if the command defines a description;
+    otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: '0.1'

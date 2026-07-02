@@ -1,0 +1,16 @@
+---
+name: Cuprum::Cli::Integrations::Thor::Task::Builder#build
+parent_path: cuprum/cli/integrations/thor/task/builder
+signature: 'build(full_name: nil)'
+slug: build
+constructor: false
+data_path: cuprum/cli/integrations/thor/task/builder/i-build
+description: |-
+  The generated task will be assigned Thor metadata automatically, based
+  on the configuration of the command class.
+returns:
+- description: the generated Task class.
+  type:
+  - name: Class
+short_description: Generates a Thor::Task wrapping the command class.
+version: '0.1'

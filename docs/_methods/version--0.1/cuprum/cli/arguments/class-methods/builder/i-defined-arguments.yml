@@ -1,0 +1,17 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods::Builder#defined_arguments
+parent_path: cuprum/cli/arguments/class-methods/builder
+signature: defined_arguments
+slug: defined-arguments
+constructor: false
+data_path: cuprum/cli/arguments/class-methods/builder/i-defined-arguments
+returns:
+- description: |-
+    the arguments defined for the
+    command.
+  type:
+  - name: Array
+    items:
+    - name: Cuprum::Cli::Argument
+      path: cuprum/cli/argument
+version: '0.1'

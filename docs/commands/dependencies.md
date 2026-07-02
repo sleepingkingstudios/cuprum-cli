@@ -95,7 +95,7 @@ The `FileSystem` dependency wraps the native file system and provides methods fo
 `write_file(file_or_path, data)`
 : Writes the given contents to the IO object, or the file at the given path.
 
-For more information, see the [FileSystem reference]({{site.baseurl}}/reference/cuprum/cli/dependencies/file-system/).
+For more information, see the [FileSystem reference](../reference/cuprum/cli/dependencies/file-system/).
 
 [Back to Top](#)
 
@@ -121,7 +121,7 @@ The `StandardIo` dependency wraps the standard input, output, and error streams.
 `#write_output(message = nil, newline: true)`
 : Writes the given message to the output stream.
 
-For more information, see the [StandardIo reference]({{site.baseurl}}/reference/cuprum/cli/dependencies/standard-io/).
+For more information, see the [StandardIo reference](../reference/cuprum/cli/dependencies/standard-io/).
 
 [Back to Top](#)
 
@@ -143,7 +143,7 @@ The `SystemCommand` dependency is used to execute shell commands and capture the
 
 Each above command returns a <a href="https://www.sleepingkingstudios.com/cuprum/results/" target="_blank">Cuprum result</a>, with a status of `:success` if the shell command exited with a passing status, or a result with a status of `:failure` if the shell command exited with a failing status.
 
-For more information, see the [SystemCommand reference]({{site.baseurl}}/reference/cuprum/cli/dependencies/system-command/).
+For more information, see the [SystemCommand reference](../reference/cuprum/cli/dependencies/system-command/).
 
 [Back to Top](#)
 

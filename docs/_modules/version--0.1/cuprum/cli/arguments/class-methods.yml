@@ -1,0 +1,35 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods
+slug: class-methods
+type: module
+files:
+- lib/cuprum/cli/arguments/class_methods.rb
+parent_path: cuprum/cli/arguments
+short_description: Methods used to extend command class functionality for defining
+  arguments.
+defined_classes:
+- name: Builder
+  slug: builder
+instance_methods:
+- name: argument
+  path: cuprum/cli/arguments/class-methods/i-argument
+  slug: argument
+  inherited: false
+- name: argument_value
+  path: cuprum/cli/arguments/class-methods/i-argument-value
+  slug: argument-value
+  inherited: false
+- name: argument_values
+  path: cuprum/cli/arguments/class-methods/i-argument-values
+  slug: argument-values
+  inherited: false
+- name: arguments
+  path: cuprum/cli/arguments/class-methods/i-arguments
+  slug: arguments
+  inherited: false
+- name: resolve_arguments
+  path: cuprum/cli/arguments/class-methods/i-resolve-arguments
+  slug: resolve-arguments
+  inherited: false
+data_path: cuprum/cli/arguments/class-methods
+version: '0.1'

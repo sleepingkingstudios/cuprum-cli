@@ -1,0 +1,102 @@
+---
+name: Cuprum::Cli::Command
+slug: command
+type: class
+files:
+- lib/cuprum/cli/command.rb
+parent_path: cuprum/cli
+short_description: Abstract base class for defining CLI commands.
+class_methods:
+- name: argument
+  path: cuprum/cli/command/c-argument
+  slug: argument
+  inherited: false
+- name: argument_value
+  path: cuprum/cli/arguments/class-methods/i-argument-value
+  slug: argument-value
+  inherited: true
+- name: argument_values
+  path: cuprum/cli/arguments/class-methods/i-argument-values
+  slug: argument-values
+  inherited: true
+- name: arguments
+  path: cuprum/cli/arguments/class-methods/i-arguments
+  slug: arguments
+  inherited: true
+- name: dependency
+  path: cuprum/cli/command/c-dependency
+  slug: dependency
+  inherited: false
+- name: option
+  path: cuprum/cli/command/c-option
+  slug: option
+  inherited: false
+- name: option_value
+  path: cuprum/cli/options/class-methods/i-option-value
+  slug: option-value
+  inherited: true
+- name: option_values
+  path: cuprum/cli/options/class-methods/i-option-values
+  slug: option-values
+  inherited: true
+- name: options
+  path: cuprum/cli/options/class-methods/i-options
+  slug: options
+  inherited: true
+- name: resolve_arguments
+  path: cuprum/cli/arguments/class-methods/i-resolve-arguments
+  slug: resolve-arguments
+  inherited: true
+- name: resolve_options
+  path: cuprum/cli/options/class-methods/i-resolve-options
+  slug: resolve-options
+  inherited: true
+constants:
+- name: FULL_NAME_FORMAT
+  path: cuprum/cli/metadata/full-name-format
+  slug: full-name-format
+  inherited: true
+instance_methods:
+- name: call
+  path: cuprum/cli/command/i-call
+  slug: call
+  inherited: false
+- name: initialize
+  path: cuprum/cli/command/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/command
+extended_modules:
+- name: Cuprum::Cli::Arguments::ClassMethods
+  slug: class-methods
+  path: cuprum/cli/arguments/class-methods
+- name: Cuprum::Cli::Options::ClassMethods
+  slug: class-methods
+  path: cuprum/cli/options/class-methods
+included_modules:
+- name: Cuprum::Cli::Metadata
+  slug: metadata
+  path: cuprum/cli/metadata
+- name: Plumbum::Consumer
+  slug: consumer
+- name: Plumbum::Parameters
+  slug: parameters
+constructor: true
+direct_subclasses:
+- name: Cuprum::Cli::Commands::Ci::RSpecCommand
+  slug: r-spec-command
+  path: cuprum/cli/commands/ci/r-spec-command
+- name: Cuprum::Cli::Commands::Ci::RSpecEachCommand
+  slug: r-spec-each-command
+  path: cuprum/cli/commands/ci/r-spec-each-command
+- name: Cuprum::Cli::Commands::EchoCommand
+  slug: echo-command
+  path: cuprum/cli/commands/echo-command
+- name: Cuprum::Cli::Commands::File::NewCommand
+  slug: new-command
+  path: cuprum/cli/commands/file/new-command
+inherited_classes:
+- name: Cuprum::Command
+  slug: command
+version: '0.1'

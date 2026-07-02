@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::Errors::Files::TemplateNotResolved::TYPE
+parent_path: cuprum/cli/errors/files/template-not-resolved
+slug: type
+short_description: Short string used to identify the type of error.
+value: "'cuprum.cli.errors.files.template_not_resolved'"
+data_path: cuprum/cli/errors/files/template-not-resolved/type
+version: '0.1'

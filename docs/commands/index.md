@@ -22,13 +22,13 @@ Internally, a `Cuprum::Cli::Command` leverages <a href="https://www.sleepingking
 
 ### See Also
 
-- [Command Dependencies]({{site.baseurl}}/commands/dependencies)
-  - [FileSystem]({{site.baseurl}}/commands/dependencies#filesystem)
-  - [StandardIo]({{site.baseurl}}/commands/dependencies#standardio)
-  - [SystemCommand]({{site.baseurl}}/commands/dependencies#systemcommand)
-- [Built-In Commands]({{site.baseurl}}/commands/built-in)
-  - [CI Commands]({{site.baseurl}}/commands/built-in#ci-commands)
-  - [File Commands]({{site.baseurl}}/commands/built-in#file-commands)
+- [Command Dependencies](./dependencies)
+  - [FileSystem](./dependencies#filesystem)
+  - [StandardIo](./dependencies#standardio)
+  - [SystemCommand](./dependencies#systemcommand)
+- [Built-In Commands](./built-in)
+  - [CI Commands](./built-in#ci-commands)
+  - [File Commands](./built-in#file-commands)
 
 ## Defining Commands
 
@@ -335,7 +335,7 @@ default
 
 Our `PingCommand` is now pretty flexible. It is not, however, very readable - that magic <code>Kernel#&grave;</code> call is an eyesore. The command is also going to be hard to test.
 
-To make developing and testing commands easier, `Cuprum::Cli` defines [Command Dependencies]({{site.baseurl}}/commands/dependencies), modules which wrap external behavior. We can make the `PingCommand` much more readable by using the [SystemCommand dependency]({{site.baseurl}}/commands/dependencies#systemcommand).
+To make developing and testing commands easier, `Cuprum::Cli` defines [Command Dependencies](./dependencies), modules which wrap external behavior. We can make the `PingCommand` much more readable by using the [SystemCommand dependency](./dependencies#systemcommand).
 
 To add a dependency to a `Cuprum::Cli::Command`, we use the `.dependency` class method.
 
@@ -380,8 +380,8 @@ class PingCommand < Cuprum::Cli::Command
 end
 ```
 
-Here, we can see that after declaring the `system_command` dependency, we can then access it inside our `#process` method. Using the `system_command` has simplified our logic considerably, even though we still have to manually generate our options (since the `ping` command uses a non-standard options format). It will also make testing our command much easier by using a [dependency mock]({{site.baseurl}}/commands/dependencies#mock-dependencies).
+Here, we can see that after declaring the `system_command` dependency, we can then access it inside our `#process` method. Using the `system_command` has simplified our logic considerably, even though we still have to manually generate our options (since the `ping` command uses a non-standard options format). It will also make testing our command much easier by using a [dependency mock](./dependencies#mock-dependencies).
 
-For more information on command dependencies, see the [dependency documentation]({{site.baseurl}}/commands/dependencies).
+For more information on command dependencies, see the [dependency documentation](./dependencies).
 
 [Back to Top](#)

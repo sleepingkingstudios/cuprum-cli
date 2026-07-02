@@ -1,0 +1,37 @@
+---
+name: Cuprum::Cli::Argument#resolve
+parent_path: cuprum/cli/argument
+signature: resolve(original_value)
+slug: resolve
+constructor: false
+data_path: cuprum/cli/argument/i-resolve
+overloads:
+- name: Cuprum::Cli::Argument#resolve
+  parent_path: cuprum/cli/argument
+  signature: resolve(value)
+  slug: resolve
+  constructor: false
+  description: If the value is nil, applies the argument default (if any).
+  params:
+  - description: the value to validate.
+    name: value
+    type:
+    - name: Object
+  raises:
+  - description: |-
+      if the value is
+      missing (for a required argument) or invalid.
+    type:
+    - name: Cuprum::Cli::Arguments::InvalidArgumentError
+      path: cuprum/cli/arguments/invalid-argument-error
+  returns:
+  - description: the validated argument value.
+    type:
+    - name: Object
+  short_description: Validates the value for the current argument.
+raises:
+- description: ''
+  type:
+  - name: Cuprum::Cli::Arguments::InvalidArgumentError
+    path: cuprum/cli/arguments/invalid-argument-error
+version: '0.1'

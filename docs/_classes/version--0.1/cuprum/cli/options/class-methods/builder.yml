@@ -1,0 +1,34 @@
+---
+name: Cuprum::Cli::Options::ClassMethods::Builder
+slug: builder
+type: class
+files:
+- lib/cuprum/cli/options/class_methods.rb
+parent_path: cuprum/cli/options/class-methods
+short_description: Helper class for defining command options.
+instance_attributes:
+- name: command_class
+  read: true
+  write: false
+  path: cuprum/cli/options/class-methods/builder/i-command-class
+  slug: command-class
+  inherited: false
+- name: defined_options
+  read: true
+  write: false
+  path: cuprum/cli/options/class-methods/builder/i-defined-options
+  slug: defined-options
+  inherited: false
+instance_methods:
+- name: call
+  path: cuprum/cli/options/class-methods/builder/i-call
+  slug: call
+  inherited: false
+- name: initialize
+  path: cuprum/cli/options/class-methods/builder/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/options/class-methods/builder
+constructor: true
+version: '0.1'

@@ -1,0 +1,25 @@
+---
+name: Cuprum::Cli::Options
+slug: options
+type: module
+files:
+- lib/cuprum/cli/options.rb
+- lib/cuprum/cli/options/quiet.rb
+- lib/cuprum/cli/options/verbose.rb
+- lib/cuprum/cli/options/class_methods.rb
+parent_path: cuprum/cli
+short_description: Namespace for functionality that implements command options.
+defined_classes:
+- name: InvalidOptionError
+  slug: invalid-option-error
+- name: UnknownOptionError
+  slug: unknown-option-error
+defined_modules:
+- name: ClassMethods
+  slug: class-methods
+- name: Quiet
+  slug: quiet
+- name: Verbose
+  slug: verbose
+data_path: cuprum/cli/options
+version: '0.1'

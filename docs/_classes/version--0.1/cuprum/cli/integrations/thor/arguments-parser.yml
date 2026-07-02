@@ -1,0 +1,38 @@
+---
+name: Cuprum::Cli::Integrations::Thor::ArgumentsParser
+slug: arguments-parser
+type: class
+files:
+- lib/cuprum/cli/integrations/thor/arguments_parser.rb
+parent_path: cuprum/cli/integrations/thor
+short_description: Utility for parsing command-line arguments captured by Thor tasks.
+instance_methods:
+- name: call
+  path: cuprum/cli/integrations/thor/arguments-parser/i-call
+  slug: call
+  inherited: false
+data_path: cuprum/cli/integrations/thor/arguments-parser
+description: |-
+  Any unrecognized command line flags or options are appended as-is to the
+  arguments array by Thor. Therefore, to handle cases such as variadic options
+  where flags or options cannot be pre-parsed by Thor, we need an additional
+  parsing step to pull any remaining flags or options out of the arguments.
+
+  This parser supports the following formats:
+
+  - `-a`, `--all`: Sets the `a` or `all` flag to `true`.
+  - `-abc`: Sets the `a`, `b`, and `c` flags to `true`.
+  - `--skip-all`, `--no-all`: Sets the `a` flag to `false`.
+  - `-a=value`, `--a=value`: Sets the `a` option to `"value"`.
+
+  The following formats are specifically *not* supported:
+
+  - `--foo bar`: `--foo` is assumed to be a flag, `bar` is assumed to be a
+    positional argument.
+  - `--str[]=foo --str[]=bar`: Array arguments are not supported.
+  - `--str[foo]=foo --str[bar]=bar`: Hash arguments are not supported.
+
+  In addition, parsed option values are coerced into their most likely
+  intended types.
+constructor: false
+version: '0.1'

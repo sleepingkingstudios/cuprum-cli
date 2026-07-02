@@ -1,0 +1,17 @@
+---
+name: Cuprum::Cli::Dependencies::FileSystem::Mock::MockTempfile#initialize
+parent_path: cuprum/cli/dependencies/file-system/mock/mock-tempfile
+signature: initialize(path)
+slug: initialize
+constructor: true
+data_path: cuprum/cli/dependencies/file-system/mock/mock-tempfile/i-initialize
+params:
+- description: the qualified path to the tempfile.
+  name: path
+  type:
+  - name: String
+returns:
+- description: a new instance of MockTempfile
+  type:
+  - name: MockTempfile
+version: '0.1'

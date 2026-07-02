@@ -1,0 +1,28 @@
+---
+name: Cuprum::Cli::Registry
+slug: registry
+type: class
+files:
+- lib/cuprum/cli/registry.rb
+parent_path: cuprum/cli
+short_description: Registers CLI commands by name.
+instance_methods:
+- name: "[]"
+  path: cuprum/cli/registry/i-[]
+  slug: "[]"
+  inherited: false
+- name: commands
+  path: cuprum/cli/registry/i-commands
+  slug: commands
+  inherited: false
+- name: register
+  path: cuprum/cli/registry/i-register
+  slug: register
+  inherited: false
+data_path: cuprum/cli/registry
+constructor: false
+direct_subclasses:
+- name: Cuprum::Cli::Integrations::Thor::Registry
+  slug: registry
+  path: cuprum/cli/integrations/thor/registry
+version: '0.1'
