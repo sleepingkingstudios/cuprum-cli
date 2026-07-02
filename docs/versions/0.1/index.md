@@ -1,4 +1,10 @@
 ---
+breadcrumbs:
+  - name: Documentation
+    path: '/'
+  - name: Versions
+    path: '/versions'
+version: '0.1'
 ---
 
 # {{ site.project_metadata.name }}
