@@ -21,12 +21,22 @@ module Cuprum
     autoload :Options,      'cuprum/cli/options'
     autoload :Registry,     'cuprum/cli/registry'
 
+    @initializer = SleepingKingStudios::Tools::Toolbox::Initializer.new do
+      SleepingKingStudios::Tools.initializer.call
+    end
+
     # @return [String] the absolute path to the gem directory.
     def self.gem_path
       sep     = File::SEPARATOR
       pattern = /#{sep}lib#{sep}cuprum#{sep}?\z/
 
       __dir__.sub(pattern, '')
+    end
+
+    # @return [SleepingKingStudios::Tools::Toolbox::Initializer] the initializer
+    #   for the module.
+    def self.initializer
+      @initializer
     end
 
     # @return [String] the current version of the gem.

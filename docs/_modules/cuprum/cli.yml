@@ -25,6 +25,10 @@ class_methods:
   path: cuprum/cli/c-gem-path
   slug: gem-path
   inherited: false
+- name: initializer
+  path: cuprum/cli/c-initializer
+  slug: initializer
+  inherited: false
 - name: version
   path: cuprum/cli/c-version
   slug: version

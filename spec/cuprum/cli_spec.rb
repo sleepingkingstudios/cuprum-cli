@@ -25,6 +25,12 @@ RSpec.describe Cuprum::Cli do
       -> { be == expected }
   end
 
+  describe '.initializer' do
+    include_examples 'should define class reader',
+      :initializer,
+      -> { be_a(SleepingKingStudios::Tools::Toolbox::Initializer) }
+  end
+
   describe '.version' do
     include_examples 'should have class reader',
       :version,
