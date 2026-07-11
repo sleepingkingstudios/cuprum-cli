@@ -12,6 +12,9 @@ module Cuprum::Cli::Commands::Ci
     include Cuprum::Cli::Dependencies::StandardIo::Helpers
     include Cuprum::Cli::Options::Quiet
 
+    FILE_PATTERN = /\.\w+\z/
+    private_constant :FILE_PATTERN
+
     arguments :file_patterns
 
     option :color, type: :boolean, default: true
@@ -55,10 +58,16 @@ module Cuprum::Cli::Commands::Ci
     def configured_file_patterns
       patterns = arguments.fetch(:file_patterns, [])
 
-      return patterns unless patterns.empty?
+      return ['spec/**{,/*/**}/*_spec.rb'] if patterns.empty?
 
-      ['spec/**{,/*/**}/*_spec.rb']
+      patterns.map do |pattern|
+        next pattern if wildcard_pattern?(pattern) || file_pattern?(pattern)
+
+        File.join(pattern, '**', '*')
+      end
     end
+
+    def file_pattern?(pattern) = pattern.match?(FILE_PATTERN)
 
     def format_status(result)
       if result.failure? || result.value.errored?
@@ -181,5 +190,7 @@ module Cuprum::Cli::Commands::Ci
     def trim_filename(filename)
       filename.sub(%r{\A#{file_system.root_path}/?}, '')
     end
+
+    def wildcard_pattern?(pattern) = pattern.include?('*')
   end
 end
