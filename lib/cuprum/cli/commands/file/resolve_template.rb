@@ -99,7 +99,7 @@ module Cuprum::Cli::Commands::File
       file_templates.reject do |template|
         types = template.fetch(:types, Array(template[:type])).map(&:to_s)
 
-        types.any? { |type| filters.include?(type) }
+        types.intersect?(filters)
       end
     end
 
@@ -123,7 +123,7 @@ module Cuprum::Cli::Commands::File
       file_templates.select do |template|
         types = template.fetch(:types, Array(template[:type])).map(&:to_s)
 
-        types.any? { |type| filters.include?(type) }
+        types.intersect?(filters)
       end
     end
 

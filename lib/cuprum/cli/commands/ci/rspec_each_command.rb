@@ -12,7 +12,7 @@ module Cuprum::Cli::Commands::Ci
     include Cuprum::Cli::Dependencies::StandardIo::Helpers
     include Cuprum::Cli::Options::Quiet
 
-    FILE_PATTERN = /\.\w+\z/.freeze
+    FILE_PATTERN = /\.\w+\z/
     private_constant :FILE_PATTERN
 
     arguments :file_patterns
