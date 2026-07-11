@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+## Commands
+
+- Fixed directory expansion for `Cuprum::Cli::Ci::RSpecEachCommand`.
+
 ## 0.1.0
 
 Initial version.

@@ -583,6 +583,20 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
         include_deferred 'should call the RSpec command for each file'
 
         include_deferred 'should output the results'
+
+        context 'when the file patterns include a bare directory' do
+          let(:file_patterns) { ['root_dir', '**/sibling_spec.rb'] }
+
+          it 'should return a passing result' do
+            expect(command.call(*arguments, **options))
+              .to be_a_passing_result
+              .with_value(expected_value)
+          end
+
+          include_deferred 'should call the RSpec command for each file'
+
+          include_deferred 'should output the results'
+        end
       end
     end
   end
