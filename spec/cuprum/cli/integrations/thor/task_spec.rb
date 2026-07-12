@@ -72,6 +72,9 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
 
       context 'when the command returns a failing result' do
         let(:command_class) { Spec::FailingCommand }
+        let(:expected_output) do
+          'Spec::FailingCommand failed but did not return an error message.'
+        end
 
         example_class 'Spec::FailingCommand', Cuprum::Cli::Command do |klass|
           klass.dependency :standard_io
@@ -94,12 +97,16 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
         it 'should exit with a non-zero status code' do
           task.call_command
 
-          expect(task).to have_received(:abort).with(false) # rubocop:disable RSpec/SubjectStub
+          expect(task).to have_received(:abort).with(expected_output) # rubocop:disable RSpec/SubjectStub
         end
       end
 
       context 'when the command returns a failing result with an error' do
         let(:command_class) { Spec::FailingCommand }
+        let(:expected_output) do
+          'Spec::FailingCommand failed with error Cuprum::Error: ' \
+            'Something went wrong.'
+        end
 
         example_class 'Spec::FailingCommand', Cuprum::Cli::Command do |klass|
           klass.dependency :standard_io
@@ -126,7 +133,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
 
           expect(task) # rubocop:disable RSpec/SubjectStub
             .to have_received(:abort)
-            .with('Cuprum::Error: Something went wrong.')
+            .with(expected_output)
         end
       end
     end
@@ -201,13 +208,20 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
         'unrecognized options :flag, :secret for Cuprum::Cli::Commands::' \
           'EchoCommand - valid options are :format, :out'
       end
+      let(:expected_output) do
+        message =
+          'Cuprum::Cli::Commands::EchoCommand failed with exception: ' \
+          "#{error_message} (Cuprum::Cli::Options::UnknownOptionError)"
+
+        be_a(String).and(start_with(message))
+      end
 
       before(:example) { allow(task).to receive(:abort) } # rubocop:disable RSpec/SubjectStub
 
       it 'should call the command' do
         task.call_command(*arguments)
 
-        expect(task).to have_received(:abort).with(error_message) # rubocop:disable RSpec/SubjectStub
+        expect(task).to have_received(:abort).with(expected_output) # rubocop:disable RSpec/SubjectStub
       end
 
       context 'when the command accepts variadic options' do

@@ -183,9 +183,10 @@ module Cuprum::Cli::Integrations::Thor
           command_class.new(**command_dependencies).call(*args, **opts)
 
         handle_failure(result) if result.failure?
-      rescue Cuprum::Cli::Options::UnknownOptionError,
-             Cuprum::Cli::Arguments::ExtraArgumentsError => exception
-        abort(exception.message)
+      rescue StandardError => exception
+        message = failure_message_for_exception(exception)
+
+        abort(message)
       end
     end
 
@@ -195,11 +196,36 @@ module Cuprum::Cli::Integrations::Thor
 
     def abort(*) = Kernel.abort(*)
 
+    def empty?(value)
+      value.nil? || (value.respond_to?(:empty?) && value.empty?)
+    end
+
+    def failure_message_for_error(error)
+      if error
+        message = "#{command_class} failed with error #{error.class}"
+
+        message << ": #{error.message}" unless empty?(error.message)
+        message << '.'                  unless message.end_with?('.')
+
+        return message
+      end
+
+      "#{command_class} failed but did not return an error message."
+    end
+
+    def failure_message_for_exception(exception)
+      message = "#{command_class} failed with exception: #{exception.message}"
+      message << " (#{exception.class})"
+
+      exception.backtrace.each do |line|
+        message << "\n\t" << line
+      end
+
+      message
+    end
+
     def handle_failure(result)
-      message =
-        result
-        .error
-        &.then { |err| "#{err.class.name}: #{err.message}" } || false
+      message = failure_message_for_error(result.error)
 
       abort(message)
     end

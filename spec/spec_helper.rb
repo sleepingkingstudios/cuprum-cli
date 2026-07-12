@@ -14,9 +14,11 @@ unless ENV['COVERAGE'] == 'false'
     if integration
       excluded_integrations.each do |integration|
         add_filter "cuprum/cli/integrations/#{integration}"
+        add_filter "features/integrations/#{integration}"
       end
     else
       add_filter 'cuprum/cli/integrations'
+      add_filter 'features/integrations'
     end
   end
 end
