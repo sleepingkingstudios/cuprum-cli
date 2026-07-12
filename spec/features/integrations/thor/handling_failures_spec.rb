@@ -19,9 +19,17 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Task, integration: :thor do
       TEXT
     end
     let(:expected_backtrace) do
-      <<~TEXT
-        \tspec/features/integrations/thor/handling_failures_spec.unhandled_exception_fixture.rb:23:in '<main>'
-      TEXT
+      # :nocov:
+      if RUBY_VERSION < '3.4'
+        <<~TEXT
+          \tspec/features/integrations/thor/handling_failures_spec.unhandled_exception_fixture.rb:23:in `<main>'
+        TEXT
+      else
+        <<~TEXT
+          \tspec/features/integrations/thor/handling_failures_spec.unhandled_exception_fixture.rb:23:in '<main>'
+        TEXT
+      end
+      # :nocov:
     end
 
     it 'should apply the deferred examples', :aggregate_failures do
