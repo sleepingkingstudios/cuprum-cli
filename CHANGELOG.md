@@ -6,6 +6,10 @@
 
 - Fixed directory expansion for `Cuprum::Cli::Ci::RSpecEachCommand`.
 
+## Integrations
+
+- Fixed error handling for `Thor` integration.
+
 ## 0.1.0
 
 Initial version.
