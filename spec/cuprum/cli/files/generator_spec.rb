@@ -17,6 +17,12 @@ RSpec.describe Cuprum::Cli::Files::Generator do
     example_class 'Spec::CustomGenerator', Cuprum::Cli::Files::Generator # rubocop:disable RSpec/DescribedClass
   end
 
+  describe '::AbstractGeneratorError' do
+    include_examples 'should define constant',
+      :AbstractGeneratorError,
+      -> { be_a(Class).and(be < StandardError) }
+  end
+
   include_deferred 'should define --quiet option'
 
   include_deferred 'should define --verbose option'
@@ -49,6 +55,199 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
     wrap_deferred 'with a generator subclass' do
       it { expect(described_class.abstract?).to be false }
+    end
+  end
+
+  describe '.match_file' do
+    let(:error_message) do
+      "unable to define matcher - #{described_class} is an abstract class"
+    end
+
+    define_method :defined_matchers do
+      described_class.send :matchers
+    end
+
+    define_method :handle_exception do |&block|
+      block.call
+    rescue StandardError
+      nil
+    end
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:match_file)
+        .with(1).argument
+        .and_a_block
+    end
+
+    it 'should raise an exception' do
+      expect { described_class.match_file('.md') }
+        .to raise_error described_class::AbstractGeneratorError, error_message
+    end
+
+    it 'should not add a matcher' do
+      expect { handle_exception { described_class.match_file('.md') } }
+        .not_to(change { defined_matchers })
+    end
+
+    wrap_deferred 'with a generator subclass' do
+      context 'when the generator is an abstract class' do
+        before(:example) { described_class.abstract }
+
+        it 'should define the class method' do
+          expect(described_class)
+            .to respond_to(:match_file)
+            .with(1).argument
+            .and_a_block
+        end
+
+        it 'should raise an exception' do
+          expect { described_class.match_file('.md') }.to raise_error(
+            described_class::AbstractGeneratorError,
+            error_message
+          )
+        end
+
+        it 'should not add a matcher' do
+          expect { handle_exception { described_class.match_file('.md') } }
+            .not_to(change { defined_matchers })
+        end
+      end
+
+      describe 'with a block' do
+        let(:block) { ->(*, **) { true } }
+
+        it 'should add the matcher' do
+          expect { described_class.match_file(&block) }.to(
+            change { defined_matchers }.to(include(block))
+          )
+        end
+      end
+
+      describe 'with a Regexp' do
+        let(:pattern) { /\.md\z/ }
+
+        it 'should add the matcher' do
+          expect { described_class.match_file(pattern) }.to(
+            change { defined_matchers }.to(include(pattern))
+          )
+        end
+      end
+
+      describe 'with a String' do
+        let(:pattern) { '.md' }
+
+        it 'should add the matcher' do
+          expect { described_class.match_file(pattern) }.to(
+            change { defined_matchers }.to(include(pattern))
+          )
+        end
+      end
+    end
+  end
+
+  describe '.matches?' do
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:matches?)
+        .with(1).argument
+        .and_any_keywords
+    end
+
+    it { expect(described_class).to have_aliased_method(:matches?).as(:match?) }
+
+    context 'when the generator is an abstract class' do
+      it 'should return false' do
+        expect(described_class.matches?(file_path, **constructor_options))
+          .to be false
+      end
+    end
+
+    wrap_deferred 'with a generator subclass' do
+      context 'when there are no defined matchers' do
+        it 'should return false' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be false
+        end
+      end
+
+      context 'when the generator has a non-matching block matcher' do
+        before(:example) do
+          described_class.match_file do |input_path, **|
+            input_path.start_with?('spec')
+          end
+        end
+
+        it 'should return false' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be false
+        end
+      end
+
+      context 'when the generator has a matching block matcher' do
+        before(:example) do
+          described_class.match_file do |input_path, **|
+            input_path.start_with?('lib')
+          end
+        end
+
+        it 'should return true' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be true
+        end
+      end
+
+      context 'when the generator has a non-matching Regexp matcher' do
+        let(:pattern) { /\.yml\z/ }
+
+        before(:example) do
+          described_class.match_file(pattern)
+        end
+
+        it 'should return false' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be false
+        end
+      end
+
+      context 'when the generator has a matching Regexp matcher' do
+        let(:pattern) { /\.md\z/ }
+
+        before(:example) do
+          described_class.match_file(pattern)
+        end
+
+        it 'should return true' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be true
+        end
+      end
+
+      context 'when the generator has a non-matching String matcher' do
+        let(:pattern) { '.yml' }
+
+        before(:example) do
+          described_class.match_file(pattern)
+        end
+
+        it 'should return false' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be false
+        end
+      end
+
+      context 'when the generator has a matching String matcher' do
+        let(:pattern) { '.md' }
+
+        before(:example) do
+          described_class.match_file(pattern)
+        end
+
+        it 'should return true' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be true
+        end
+      end
     end
   end
 
