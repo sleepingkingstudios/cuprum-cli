@@ -16,6 +16,7 @@ module Cuprum
     autoload :Commands,     'cuprum/cli/commands'
     autoload :Dependencies, 'cuprum/cli/dependencies'
     autoload :Errors,       'cuprum/cli/errors'
+    autoload :Files,        'cuprum/cli/files'
     autoload :Metadata,     'cuprum/cli/metadata'
     autoload :Option,       'cuprum/cli/option'
     autoload :Options,      'cuprum/cli/options'
