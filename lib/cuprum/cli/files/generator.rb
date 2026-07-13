@@ -12,6 +12,12 @@ module Cuprum::Cli::Files
     # Raised when performing a protected operation on an abstract Generator.
     class AbstractGeneratorError < StandardError; end
 
+    # Raised when performing a protected operation on an abstract Generator.
+    class OutputAlreadyExistsError < KeyError; end
+
+    # Data class representing a configured output file.
+    Output = Data.define(:key, :path, :template_path)
+
     class << self
       # Marks the generator as abstract.
       def abstract = @abstract = true
@@ -82,6 +88,60 @@ module Cuprum::Cli::Files
       end
       alias match? matches?
 
+      # Registers an output file for the generator.
+      #
+      # The output path parameter is a String that can include format strings,
+      # which will be resolved from the options passed to the generator. In
+      # addition, the format strings can reference the following parameters
+      # derived from the input file_path. The following examples use an input
+      # file path of "lib/path/to/file.rb":
+      #
+      # - base_name: The last segment of the file path, including the file
+      #   extension. Example: "file.rb".
+      # - dir_name: The directory path from the file path, relative to the
+      #   working directory. Example: "lib/path/to".
+      # - ext_name: The extension of the file path, including the leading
+      #   period character. Example: ".rb".
+      # - file_path: The full file path. Example: "lib/path/to/file.rb".
+      # - relative_path: The *second and later* segments of the directory path,
+      #   or an empty String if the path is too short. Example: "path/to".
+      # - root_path: The *first* segment of the directory path, or an empty
+      #   String if the path is too short. Example: "lib".
+      # - short_name: The last segment of the file path, excluding the file
+      #   extension. Example: "file".
+      #
+      # @param path [String] the file path for the generated file.
+      # @param key [String, Symbol] a unique key used to identify the output.
+      #   Defaults to :default.
+      # @param template_path [String] the path to the template file for the
+      #   output. If not provided, the user must provide a template for that output.
+      #
+      # @return [void]
+      def output(path, key: :default, template_path: nil)
+        key = key.to_sym
+
+        if abstract?
+          raise AbstractGeneratorError,
+            abstract_generator_message("define output #{key.inspect}")
+        end
+
+        if own_outputs.key?(key)
+          raise OutputAlreadyExistsError, output_already_exists_message(key)
+        end
+
+        own_outputs[key] = Output.new(key:, path:, template_path:)
+
+        nil
+      end
+
+      # @return [Hash{Symbol => Output}] the configured outputs for the
+      #   generator.
+      def outputs
+        return {} if abstract?
+
+        superclass.outputs.merge(own_outputs)
+      end
+
       protected
 
       def matchers
@@ -92,6 +152,8 @@ module Cuprum::Cli::Files
 
       def own_matchers = @own_matchers ||= []
 
+      def own_outputs = @own_outputs ||= {}
+
       private
 
       def abstract_generator_message(short_message)
@@ -101,6 +163,16 @@ module Cuprum::Cli::Files
           .name
 
         "unable to #{short_message} - #{class_name} is an abstract class"
+      end
+
+      def output_already_exists_message(key)
+        class_name =
+          ancestors
+          .find { |ancestor| ancestor.is_a?(Class) && ancestor.name }
+          .name
+
+        "unable to define output #{key.inspect} - #{class_name} already " \
+          "defines output #{key.inspect}"
       end
     end
 

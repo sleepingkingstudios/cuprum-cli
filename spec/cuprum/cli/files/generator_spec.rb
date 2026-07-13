@@ -11,16 +11,43 @@ RSpec.describe Cuprum::Cli::Files::Generator do
   let(:file_path)           { 'lib/path/to/file.md' }
   let(:constructor_options) { {} }
 
-  deferred_context 'with a generator subclass' do
+  deferred_context 'with a generator class' do
     let(:described_class) { Spec::CustomGenerator }
 
     example_class 'Spec::CustomGenerator', Cuprum::Cli::Files::Generator # rubocop:disable RSpec/DescribedClass
+  end
+
+  deferred_context 'with a generator subclass' do
+    let(:parent_class)    { Spec::CustomGenerator }
+    let(:described_class) { Spec::InheritedGenerator }
+
+    example_class 'Spec::CustomGenerator', Cuprum::Cli::Files::Generator # rubocop:disable RSpec/DescribedClass
+
+    example_class 'Spec::InheritedGenerator', 'Spec::CustomGenerator'
   end
 
   describe '::AbstractGeneratorError' do
     include_examples 'should define constant',
       :AbstractGeneratorError,
       -> { be_a(Class).and(be < StandardError) }
+  end
+
+  describe '::OutputAlreadyExistsError' do
+    include_examples 'should define constant',
+      :OutputAlreadyExistsError,
+      -> { be_a(Class).and(be < StandardError) }
+  end
+
+  describe '::Output' do
+    let(:expected_members) { %i[key path template_path] }
+
+    include_examples 'should define constant',
+      :Output,
+      lambda {
+        be_a(Class)
+          .and(be < Data)
+          .and(have_attributes(members: expected_members))
+      }
   end
 
   include_deferred 'should define --quiet option'
@@ -36,7 +63,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         .with(0).arguments
     end
 
-    wrap_deferred 'with a generator subclass' do
+    wrap_deferred 'with a generator class' do
       it 'should mark the generator as abstract' do
         expect { described_class.abstract }
           .to change(described_class, :abstract?)
@@ -53,7 +80,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
     it { expect(described_class.abstract?).to be true }
 
-    wrap_deferred 'with a generator subclass' do
+    wrap_deferred 'with a generator class' do
       it { expect(described_class.abstract?).to be false }
     end
   end
@@ -90,16 +117,9 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         .not_to(change { defined_matchers })
     end
 
-    wrap_deferred 'with a generator subclass' do
+    wrap_deferred 'with a generator class' do
       context 'when the generator is an abstract class' do
         before(:example) { described_class.abstract }
-
-        it 'should define the class method' do
-          expect(described_class)
-            .to respond_to(:match_file)
-            .with(1).argument
-            .and_a_block
-        end
 
         it 'should raise an exception' do
           expect { described_class.match_file('.md') }.to raise_error(
@@ -156,14 +176,12 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
     it { expect(described_class).to have_aliased_method(:matches?).as(:match?) }
 
-    context 'when the generator is an abstract class' do
-      it 'should return false' do
-        expect(described_class.matches?(file_path, **constructor_options))
-          .to be false
-      end
+    it 'should return false' do
+      expect(described_class.matches?(file_path, **constructor_options))
+        .to be false
     end
 
-    wrap_deferred 'with a generator subclass' do
+    wrap_deferred 'with a generator class' do
       context 'when there are no defined matchers' do
         it 'should return false' do
           expect(described_class.matches?(file_path, **constructor_options))
@@ -247,6 +265,341 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           expect(described_class.matches?(file_path, **constructor_options))
             .to be true
         end
+      end
+    end
+
+    wrap_deferred 'with a generator subclass' do
+      context 'when there are no defined matchers' do
+        it 'should return false' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be false
+        end
+      end
+
+      context 'when the parent class has a matching pattern' do
+        let(:pattern) { '.md' }
+
+        before(:example) do
+          parent_class.match_file(pattern)
+        end
+
+        it 'should return true' do
+          expect(described_class.matches?(file_path, **constructor_options))
+            .to be true
+        end
+      end
+    end
+  end
+
+  describe '.output' do
+    let(:output_path) { 'tmp/out.md' }
+    let(:key)         { :default }
+    let(:options)     { {} }
+    let(:error_message) do
+      "unable to define output #{key.inspect} - #{described_class} is an " \
+        'abstract class'
+    end
+
+    define_method :handle_exception do |&block|
+      block.call
+    rescue StandardError
+      nil
+    end
+
+    it 'should define the class method' do
+      expect(described_class)
+        .to respond_to(:output)
+        .with(1).argument
+        .and_keywords(:key, :template_path)
+    end
+
+    it 'should raise an exception' do
+      expect { described_class.output(file_path, **options) }
+        .to raise_error described_class::AbstractGeneratorError, error_message
+    end
+
+    it 'should not add a matcher' do
+      expect do
+        handle_exception { described_class.output(file_path, **options) }
+      end
+        .not_to change(described_class, :outputs)
+    end
+
+    describe 'with key: value' do
+      let(:key)     { :markdown }
+      let(:options) { super().merge(key:) }
+
+      it 'should raise an exception' do
+        expect { described_class.output(file_path, **options) }
+          .to raise_error described_class::AbstractGeneratorError, error_message
+      end
+
+      it 'should not add a matcher' do
+        expect do
+          handle_exception { described_class.output(file_path, **options) }
+        end
+          .not_to change(described_class, :outputs)
+      end
+    end
+
+    wrap_deferred 'with a generator class' do
+      let(:expected_properties) do
+        {
+          key:,
+          path:          output_path,
+          template_path: nil
+        }
+      end
+
+      it 'should set the output', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
+        expect { described_class.output(output_path, **options) }
+          .to change(described_class, :outputs)
+          .to have_key(key)
+
+        expect(described_class.outputs[key])
+          .to be_a(described_class::Output)
+          .and(have_attributes(**expected_properties))
+      end
+
+      describe 'with key: value' do
+        let(:key)     { :markdown }
+        let(:options) { super().merge(key:) }
+
+        it 'should set the output', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
+          expect { described_class.output(output_path, **options) }
+            .to change(described_class, :outputs)
+            .to have_key(key)
+
+          expect(described_class.outputs[key])
+            .to be_a(described_class::Output)
+            .and(have_attributes(**expected_properties))
+        end
+
+        context 'when the generator has an output with the same key' do
+          let(:error_message) do
+            "unable to define output #{key.inspect} - #{described_class} " \
+              "already defines output #{key.inspect}"
+          end
+
+          before(:example) { described_class.output 'duplicate.txt', key: }
+
+          it 'should raise an exception' do
+            expect { described_class.output(file_path, **options) }
+              .to raise_error(
+                described_class::OutputAlreadyExistsError,
+                error_message
+              )
+          end
+
+          it 'should not add a matcher' do
+            expect do
+              handle_exception { described_class.output(file_path, **options) }
+            end
+              .not_to change(described_class, :outputs)
+          end
+        end
+      end
+
+      describe 'with template_path: value' do
+        let(:template_path) { 'path/to/template.md' }
+        let(:options)       { super().merge(template_path:) }
+        let(:expected_properties) do
+          super().merge(template_path:)
+        end
+
+        it 'should set the output', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
+          expect { described_class.output(output_path, **options) }
+            .to change(described_class, :outputs)
+            .to have_key(key)
+
+          expect(described_class.outputs[key])
+            .to be_a(described_class::Output)
+            .and(have_attributes(**expected_properties))
+        end
+      end
+
+      context 'when the generator is an abstract class' do
+        before(:example) { described_class.abstract }
+
+        it 'should raise an exception' do
+          expect { described_class.output(file_path, **options) }
+            .to raise_error(
+              described_class::AbstractGeneratorError,
+              error_message
+            )
+        end
+
+        it 'should not add a matcher' do
+          expect do
+            handle_exception { described_class.output(file_path, **options) }
+          end
+            .not_to change(described_class, :outputs)
+        end
+      end
+
+      context 'when the generator has an output with the same key' do
+        let(:error_message) do
+          "unable to define output #{key.inspect} - #{described_class} " \
+            "already defines output #{key.inspect}"
+        end
+
+        before(:example) { described_class.output 'duplicate.txt', key: }
+
+        it 'should raise an exception' do
+          expect { described_class.output(file_path, **options) }
+            .to raise_error(
+              described_class::OutputAlreadyExistsError,
+              error_message
+            )
+        end
+
+        it 'should not add a matcher' do
+          expect do
+            handle_exception { described_class.output(file_path, **options) }
+          end
+            .not_to change(described_class, :outputs)
+        end
+      end
+    end
+
+    wrap_deferred 'with a generator subclass' do
+      context 'when the parent class has an output with the same key' do
+        let(:expected_properties) do
+          {
+            key:,
+            path:          output_path,
+            template_path: nil
+          }
+        end
+
+        before(:example) { parent_class.output 'duplicate.txt', key: }
+
+        it 'should update the output', :aggregate_failures do
+          expect { described_class.output(output_path, **options) }
+            .to change(described_class, :outputs)
+
+          expect(described_class.outputs[key])
+            .to be_a(described_class::Output)
+            .and(have_attributes(**expected_properties))
+        end
+      end
+    end
+  end
+
+  describe '.outputs' do
+    include_examples 'should define class reader', :outputs, {}
+
+    wrap_deferred 'with a generator class' do
+      it { expect(described_class.outputs).to be == {} }
+
+      context 'when the generator has one output' do
+        let(:expected_outputs) do
+          {
+            default: described_class::Output.new(
+              key:           :default,
+              path:          'docs/out.md',
+              template_path: nil
+            )
+          }
+        end
+
+        before(:example) do
+          described_class.output 'docs/out.md'
+        end
+
+        it { expect(described_class.outputs).to be == expected_outputs }
+      end
+
+      context 'when the generator has multiple outputs' do
+        let(:expected_outputs) do
+          {
+            default:    described_class::Output.new(
+              key:           :default,
+              path:          'docs/out.md',
+              template_path: nil
+            ),
+            plain_text: described_class::Output.new(
+              key:           :plain_text,
+              path:          'docs/out.txt',
+              template_path: 'templates/plain_text.txt'
+            )
+          }
+        end
+
+        before(:example) do
+          described_class.output 'docs/out.md'
+          described_class.output 'docs/out.txt',
+            key:           :plain_text,
+            template_path: 'templates/plain_text.txt'
+        end
+
+        it { expect(described_class.outputs).to be == expected_outputs }
+      end
+    end
+
+    wrap_deferred 'with a generator subclass' do
+      it { expect(described_class.outputs).to be == {} }
+
+      context 'when the parent class has multiple outputs' do
+        let(:expected_outputs) do
+          {
+            default:    described_class::Output.new(
+              key:           :default,
+              path:          'docs/out.md',
+              template_path: nil
+            ),
+            plain_text: described_class::Output.new(
+              key:           :plain_text,
+              path:          'docs/out.txt',
+              template_path: 'templates/plain_text.txt'
+            )
+          }
+        end
+
+        before(:example) do
+          parent_class.output 'docs/out.md'
+          parent_class.output 'docs/out.txt',
+            key:           :plain_text,
+            template_path: 'templates/plain_text.txt'
+        end
+
+        it { expect(described_class.outputs).to be == expected_outputs }
+      end
+
+      context 'when the parent class and generator have multiple outputs' do
+        let(:expected_outputs) do
+          {
+            default:    described_class::Output.new(
+              key:           :default,
+              path:          'docs/out/default.txt',
+              template_path: 'templates/default.txt'
+            ),
+            plain_text: described_class::Output.new(
+              key:           :plain_text,
+              path:          'docs/out.txt',
+              template_path: 'templates/plain_text.txt'
+            ),
+            signature:  described_class::Output.new(
+              key:           :signature,
+              path:          'docs/signature.txt',
+              template_path: nil
+            )
+          }
+        end
+
+        before(:example) do
+          parent_class.output 'docs/out.md'
+          parent_class.output 'docs/out.txt',
+            key:           :plain_text,
+            template_path: 'templates/plain_text.txt'
+
+          described_class.output 'docs/signature.txt', key: :signature
+          described_class.output 'docs/out/default.txt',
+            key:           :default,
+            template_path: 'templates/default.txt'
+        end
+
+        it { expect(described_class.outputs).to be == expected_outputs }
       end
     end
   end
