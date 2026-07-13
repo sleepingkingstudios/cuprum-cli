@@ -4,6 +4,10 @@
 
 ## Commands
 
+- Normalized option keys for variadic options.
+
+### Built-In Commands
+
 - Fixed directory expansion for `Cuprum::Cli::Ci::RSpecEachCommand`.
 
 ## Integrations

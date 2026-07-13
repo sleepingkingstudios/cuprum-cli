@@ -356,9 +356,16 @@ RSpec.describe Cuprum::Cli::Option do
       end
 
       describe 'with a Hash with valid values' do
-        let(:value) { { 'password' => 'letm3in', 'secret' => '12345' } }
+        let(:value) { { password: 'letm3in', secret: '12345' } }
 
         it { expect(option.resolve(value)).to be == value }
+      end
+
+      describe 'with a Hash with kebab-case keys' do
+        let(:value)    { { 'secret-key' => '12345' } }
+        let(:expected) { { secret_key: '12345' } }
+
+        it { expect(option.resolve(value)).to be == expected }
       end
 
       context 'when initialized with required: true' do
@@ -381,7 +388,7 @@ RSpec.describe Cuprum::Cli::Option do
         end
 
         describe 'with a Hash with valid values' do
-          let(:value) { { 'password' => 'letm3in', 'secret' => '12345' } }
+          let(:value) { { password: 'letm3in', secret: '12345' } }
 
           it { expect(option.resolve(value)).to be == value }
         end
@@ -677,7 +684,7 @@ RSpec.describe Cuprum::Cli::Option do
         end
 
         describe 'with a Hash with valid values' do
-          let(:value) { { 'red' => 184, 'green' => 0, 'blue' => 73 } }
+          let(:value) { { red: 184, green: 0, blue: 73 } }
 
           it { expect(option.resolve(value)).to be == value }
         end
@@ -702,7 +709,7 @@ RSpec.describe Cuprum::Cli::Option do
           end
 
           describe 'with a Hash with valid values' do # rubocop:disable RSpec/NestedGroups
-            let(:value) { { 'red' => 184, 'green' => 0, 'blue' => 73 } }
+            let(:value) { { red: 184, green: 0, blue: 73 } }
 
             it { expect(option.resolve(value)).to be == value }
           end

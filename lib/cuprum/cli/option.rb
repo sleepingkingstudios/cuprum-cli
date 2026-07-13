@@ -81,8 +81,8 @@ module Cuprum::Cli # rubocop:disable Metrics/ModuleLength
       value = default_value if blank?(value)
       value = value.to_s    if value.is_a?(Symbol)
 
-      return default_value_for_type if value.nil? && !required?
-      return value                  if valid_option?(value)
+      return default_value_for_type         if value.nil? && !required?
+      return normalize_variadic_keys(value) if valid_option?(value)
 
       raise Cuprum::Cli::Options::InvalidOptionError,
         invalid_option_message(original_value)
@@ -133,6 +133,12 @@ module Cuprum::Cli # rubocop:disable Metrics/ModuleLength
     def invalid_option_message(value)
       "invalid value for option :#{name} - expected #{expected_type}, " \
         "received #{value.inspect}"
+    end
+
+    def normalize_variadic_keys(value)
+      return value unless variadic?
+
+      value.transform_keys { |key| tools.string_tools.underscore(key).to_sym }
     end
 
     def tools
