@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+require 'cuprum'
+
 require 'cuprum/cli/files'
 
 module Cuprum::Cli::Files
   # Command for generating templated files.
-  class Generator
+  class Generator < Cuprum::Command # rubocop:disable Metrics/ClassLength
     extend  Cuprum::Cli::Options::ClassMethods
     include Cuprum::Cli::Options::Quiet
     include Cuprum::Cli::Options::Verbose
@@ -192,6 +194,8 @@ module Cuprum::Cli::Files
     #   @option options verbose [true, false] if true, prints the contents of
     #     generated files to STDOUT. Defaults to false.
     def initialize(file_path, **)
+      super()
+
       @file_path = file_path
       @options   = self.class.resolve_options(**)
     end
@@ -224,10 +228,90 @@ module Cuprum::Cli::Files
       }
     end
 
-    def resolve_output_path(output_path)
-      params = file_parameters.merge(options)
+    def filter_outputs # rubocop:disable Metrics/MethodLength
+      outputs = self.class.outputs
 
-      format(output_path, params).gsub(%r{//+}, '/')
+      if outputs.empty?
+        error = generator_error(
+          details: 'generator does not define any outputs'
+        )
+        return failure(error)
+      end
+
+      outputs = outputs.reject { |key, _| options[key] == false }
+
+      return outputs unless outputs.empty?
+
+      error = generator_error(details: 'all outputs have been disabled')
+      failure(error)
+    end
+
+    def generate_command
+      @generate_command ||=
+        Cuprum::Cli::Commands::File::GenerateFile
+        .new(dry_run: dry_run?, quiet: quiet?, verbose: verbose?)
+    end
+
+    def generate_file(file_path:, template_path:)
+      parameters = file_parameters.merge(options)
+
+      generate_command.call(file_path:, parameters:, template_path:)
+    end
+
+    def generator_error(details: nil, key: nil)
+      message = 'unable to generate output file'
+      message = "#{message}#{key ? " #{key.inspect}" : 's'}"
+      message = "#{message} - #{details}" if details
+
+      Cuprum::Cli::Errors::Files::GeneratorError.new(
+        details:,
+        file_path:,
+        message:,
+        options:
+      )
+    end
+
+    def process
+      outputs = step { filter_outputs }
+
+      outputs.each_value do |output|
+        file_path     = step { resolve_output_path(output) }
+        template_path = step { template_path_for(output) }
+
+        step { generate_file(file_path:, template_path:) }
+      end
+    end
+
+    def resolve_output_path(output) # rubocop:disable Metrics/MethodLength
+      params = file_parameters.merge(options).compact
+
+      format(output.path, params).gsub(%r{//+}, '/')
+    rescue KeyError => exception
+      details =
+        "missing parameter #{exception.key.inspect} for output path " \
+        "#{output.path}"
+      error = generator_error(
+        details:,
+        key:     output.key
+      )
+      failure(error)
+    end
+
+    def template_path_for(output) # rubocop:disable Metrics/MethodLength
+      template_path =
+        if output.key == :default && options[:template]
+          options[:template]
+        else
+          options[:"#{output.key}_template"] || output.template_path
+        end
+
+      return template_path unless template_path.nil? || template_path.empty?
+
+      error = generator_error(
+        details: 'output does not define a template path',
+        key:     output.key
+      )
+      failure(error)
     end
   end
 end
