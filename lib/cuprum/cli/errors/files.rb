@@ -15,7 +15,5 @@ module Cuprum::Cli::Errors
       'cuprum/cli/errors/files/missing_template'
     autoload :TemplateError,
       'cuprum/cli/errors/files/template_error'
-    autoload :TemplateNotResolved,
-      'cuprum/cli/errors/files/template_not_resolved'
   end
 end

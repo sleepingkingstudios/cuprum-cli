@@ -3,7 +3,6 @@
 require 'cuprum/cli/command'
 require 'cuprum/cli/commands/file'
 require 'cuprum/cli/commands/file/render_erb'
-require 'cuprum/cli/commands/file/resolve_template'
 
 module Cuprum::Cli::Commands::File
   # Command for generating a templated file or files.
