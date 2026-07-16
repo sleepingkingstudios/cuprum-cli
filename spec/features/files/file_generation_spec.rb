@@ -153,7 +153,7 @@ RSpec.describe Cuprum::Cli::Commands::File::NewCommand do
     end
 
     describe 'with spec: false' do
-      let(:options) { super().merge(extra_flags: { spec: false }) }
+      let(:options) { super().merge(params: { spec: false }) }
       let(:expected) do
         <<~TEXT
           Generating file vendor/file.rb...
