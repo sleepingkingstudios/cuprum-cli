@@ -5,7 +5,8 @@ require 'cuprum/cli/files'
 module Cuprum::Cli::Files
   # Namespace for pre-defined file generators.
   module Generators
-    autoload :RubyGenerator, 'cuprum/cli/files/generators/ruby_generator'
+    autoload :RSpecGenerator, 'cuprum/cli/files/generators/rspec_generator'
+    autoload :RubyGenerator,  'cuprum/cli/files/generators/ruby_generator'
 
     # The path for template files, used when defining generators.
     TEMPLATES_PATH =
