@@ -4,13 +4,13 @@ require 'cuprum/command'
 require 'plumbum'
 
 require 'cuprum/cli/commands/file'
-require 'cuprum/cli/commands/file/render_erb'
 require 'cuprum/cli/dependencies'
 require 'cuprum/cli/dependencies/file_system'
 require 'cuprum/cli/errors/files/missing_template'
+require 'cuprum/cli/files/render_erb'
 require 'cuprum/cli/options'
 
-module Cuprum::Cli::Commands::File
+module Cuprum::Cli::Files
   # Utility command for generating a file from a template.
   class GenerateFile < Cuprum::Command
     include Plumbum::Consumer
@@ -109,7 +109,8 @@ module Cuprum::Cli::Commands::File
     def render_template(parameters:, template:, template_path:)
       case File.extname(template_path)
       when '.erb'
-        RenderErb.new(template_name: template_path).call(template, **parameters)
+        Cuprum::Cli::Files::RenderErb
+          .new(template_name: template_path).call(template, **parameters)
       else
         template
       end

@@ -4,6 +4,7 @@ require 'cuprum'
 require 'plumbum'
 
 require 'cuprum/cli/files'
+require 'cuprum/cli/files/generate_file'
 
 module Cuprum::Cli::Files
   # Command for generating templated files.
@@ -257,7 +258,7 @@ module Cuprum::Cli::Files
 
     def generate_command
       @generate_command ||=
-        Cuprum::Cli::Commands::File::GenerateFile
+        Cuprum::Cli::Files::GenerateFile
         .new(
           directories: directories?,
           dry_run:     dry_run?,

@@ -16,8 +16,7 @@ module Cuprum::Cli::Files
         'lib',
         'cuprum',
         'cli',
-        'commands',
-        'file',
+        'files',
         'templates'
       )
       .freeze

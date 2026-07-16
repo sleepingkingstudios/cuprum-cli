@@ -694,7 +694,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         it 'should configure the generator' do
           generator.call
 
-          expect(Cuprum::Cli::Commands::File::GenerateFile)
+          expect(Cuprum::Cli::Files::GenerateFile)
             .to have_received(:new)
             .with(**expected_options)
         end
@@ -706,7 +706,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           it 'should configure the generator' do
             generator.call
 
-            expect(Cuprum::Cli::Commands::File::GenerateFile)
+            expect(Cuprum::Cli::Files::GenerateFile)
               .to have_received(:new)
               .with(**expected_options)
           end
@@ -719,7 +719,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           it 'should configure the generator' do
             generator.call
 
-            expect(Cuprum::Cli::Commands::File::GenerateFile)
+            expect(Cuprum::Cli::Files::GenerateFile)
               .to have_received(:new)
               .with(**expected_options)
           end
@@ -735,7 +735,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           it 'should configure the generator' do
             generator.call
 
-            expect(Cuprum::Cli::Commands::File::GenerateFile)
+            expect(Cuprum::Cli::Files::GenerateFile)
               .to have_received(:new)
               .with(**expected_options)
           end
@@ -748,7 +748,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           it 'should configure the generator' do
             generator.call
 
-            expect(Cuprum::Cli::Commands::File::GenerateFile)
+            expect(Cuprum::Cli::Files::GenerateFile)
               .to have_received(:new)
               .with(**expected_options)
           end
@@ -764,7 +764,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           it 'should configure the generator' do
             generator.call
 
-            expect(Cuprum::Cli::Commands::File::GenerateFile)
+            expect(Cuprum::Cli::Files::GenerateFile)
               .to have_received(:new)
               .with(**expected_options)
           end
@@ -777,7 +777,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           it 'should configure the generator' do
             generator.call
 
-            expect(Cuprum::Cli::Commands::File::GenerateFile)
+            expect(Cuprum::Cli::Files::GenerateFile)
               .to have_received(:new)
               .with(**expected_options)
           end
@@ -790,13 +790,13 @@ RSpec.describe Cuprum::Cli::Files::Generator do
       let(:generate_result) { Cuprum::Result.new }
       let(:generate_command) do
         instance_double(
-          Cuprum::Cli::Commands::File::GenerateFile,
+          Cuprum::Cli::Files::GenerateFile,
           call: nil
         )
       end
 
       before(:example) do
-        allow(Cuprum::Cli::Commands::File::GenerateFile)
+        allow(Cuprum::Cli::Files::GenerateFile)
           .to receive(:new)
           .and_return(generate_command)
 

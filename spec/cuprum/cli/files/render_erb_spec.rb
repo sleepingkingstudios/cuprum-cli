@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/commands/file/render_erb'
+require 'cuprum/cli/files/render_erb'
 
-RSpec.describe Cuprum::Cli::Commands::File::RenderErb do
+RSpec.describe Cuprum::Cli::Files::RenderErb do
   subject(:command) { described_class.new(**options) }
 
   let(:options) { {} }

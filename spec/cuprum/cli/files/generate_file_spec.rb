@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/commands/file/generate_file'
 require 'cuprum/cli/dependencies/file_system/mock'
 require 'cuprum/cli/dependencies/standard_io/mock'
+require 'cuprum/cli/files/generate_file'
 require 'cuprum/cli/rspec/deferred/options_examples'
 
-RSpec.describe Cuprum::Cli::Commands::File::GenerateFile do
+RSpec.describe Cuprum::Cli::Files::GenerateFile do
   include Cuprum::Cli::RSpec::Deferred::OptionsExamples
 
   subject(:command) do

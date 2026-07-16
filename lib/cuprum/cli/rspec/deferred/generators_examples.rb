@@ -18,7 +18,7 @@ module Cuprum::Cli::RSpec::Deferred
       describe(description) do
         let(:generate_command) do
           instance_double(
-            Cuprum::Cli::Commands::File::GenerateFile,
+            Cuprum::Cli::Files::GenerateFile,
             call: Cuprum::Result.new
           )
         end
@@ -51,7 +51,7 @@ module Cuprum::Cli::RSpec::Deferred
         end
 
         before(:example) do
-          allow(Cuprum::Cli::Commands::File::GenerateFile)
+          allow(Cuprum::Cli::Files::GenerateFile)
             .to receive(:new)
             .and_return(generate_command)
         end

@@ -5,9 +5,6 @@ require 'cuprum/cli/commands'
 module Cuprum::Cli::Commands
   # Namespace for commands that create or manage files.
   module File
-    autoload :GenerateFile, 'cuprum/cli/commands/file/generate_file'
-    autoload :NewCommand,   'cuprum/cli/commands/file/new_command'
-    autoload :RenderErb,    'cuprum/cli/commands/file/render_erb'
-    autoload :Templates,    'cuprum/cli/commands/file/templates'
+    autoload :NewCommand, 'cuprum/cli/commands/file/new_command'
   end
 end
