@@ -19,7 +19,8 @@ RSpec.describe Cuprum::Cli::Files::Generators::RubyGenerator do
   include_deferred 'should define option',
     :rspec,
     type:    :boolean,
-    default: true
+    default: true,
+    aliases: %i[spec]
 
   include_deferred 'should define option',
     :rspec_template,

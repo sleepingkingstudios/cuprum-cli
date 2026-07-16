@@ -10,7 +10,7 @@ module Cuprum::Cli::Files::Generators
     option :parent_class
 
     option :ruby,  type: :boolean, default: true
-    option :rspec, type: :boolean, default: true
+    option :rspec, type: :boolean, default: true, aliases: %i[spec]
 
     option :ruby_template
     option :rspec_template
