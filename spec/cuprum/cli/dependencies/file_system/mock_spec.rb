@@ -144,6 +144,78 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
     wrap_deferred 'when initialized with files' do
       it { expect(mock_fs.files).to be == files }
     end
+
+    context 'when initialized with files with flattened paths' do
+      let(:files) do
+        {
+          'root_dir/child_dir'      => {},
+          'root_dir/child_file.txt' => StringIO.new('Child File'),
+          'root_file.txt'           => StringIO.new('Root File')
+        }
+      end
+      let(:expected) do
+        {
+          'root_dir'      => {
+            'child_dir'      => {},
+            'child_file.txt' => files['root_dir/child_file.txt']
+          },
+          'root_file.txt' => files['root_file.txt']
+        }
+      end
+      let(:options) { super().merge(files:) }
+
+      it { expect(mock_fs.files).to be == expected }
+    end
+
+    context 'when initialized with files starting with "/"' do
+      let(:files) do
+        {
+          '/path/to/file' => StringIO.new('Nested File')
+        }
+      end
+      let(:expected) do
+        { 'path' => { 'to' => { 'file' => files['/path/to/file'] } } }
+      end
+      let(:options) { super().merge(files:) }
+
+      it { expect(mock_fs.files).to be == expected }
+    end
+
+    context 'when initialized with files starting with the root path' do
+      let(:files) do
+        {
+          "#{mock_fs.root_path}/path/to/file" => StringIO.new('Nested File')
+        }
+      end
+      let(:expected) do
+        {
+          'path' => {
+            'to' => {
+              'file' => files["#{mock_fs.root_path}/path/to/file"]
+            }
+          }
+        }
+      end
+      let(:options) { super().merge(files:) }
+
+      it { expect(mock_fs.files).to be == expected }
+    end
+
+    context 'when initialized with files with String values' do
+      let(:files) do
+        {
+          '/path/to/file' => 'Nested File'
+        }
+      end
+      let(:options) { super().merge(files:) }
+
+      it 'should convert the value to a StringIO', :aggregate_failures do
+        file = mock_fs.files.dig('path', 'to', 'file')
+
+        expect(file).to be_a(StringIO)
+        expect(file.string).to be == files['/path/to/file']
+      end
+    end
   end
 
   describe '#tempfiles' do
