@@ -1,0 +1,22 @@
+---
+name: Cuprum::Cli::Files::Generators
+slug: generators
+type: module
+files:
+- lib/cuprum/cli/files/generators.rb
+- lib/cuprum/cli/files/generators/ruby_generator.rb
+- lib/cuprum/cli/files/generators/rspec_generator.rb
+parent_path: cuprum/cli/files
+short_description: Namespace for pre-defined file generators.
+constants:
+- name: TEMPLATES_PATH
+  path: cuprum/cli/files/generators/templates-path
+  slug: templates-path
+  inherited: false
+defined_classes:
+- name: RSpecGenerator
+  slug: r-spec-generator
+- name: RubyGenerator
+  slug: ruby-generator
+data_path: cuprum/cli/files/generators
+version: "*"

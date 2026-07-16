@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Files::Generator::OutputAlreadyExistsError
+slug: output-already-exists-error
+type: class
+files:
+- lib/cuprum/cli/files/generator.rb
+parent_path: cuprum/cli/files/generator
+short_description: Raised when performing a protected operation on an abstract Generator.
+data_path: cuprum/cli/files/generator/output-already-exists-error
+constructor: false
+inherited_classes:
+- name: KeyError
+  slug: key-error
+version: "*"

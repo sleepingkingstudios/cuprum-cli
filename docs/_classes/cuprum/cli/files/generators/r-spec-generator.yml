@@ -1,0 +1,89 @@
+---
+name: Cuprum::Cli::Files::Generators::RSpecGenerator
+slug: r-spec-generator
+type: class
+files:
+- lib/cuprum/cli/files/generators/rspec_generator.rb
+parent_path: cuprum/cli/files/generators
+short_description: Generator for creating an RSpec source file.
+class_methods:
+- name: abstract
+  path: cuprum/cli/files/generator/c-abstract
+  slug: abstract
+  inherited: true
+- name: abstract?
+  path: cuprum/cli/files/generator/c-abstract?
+  slug: abstract?
+  inherited: true
+- name: match_file
+  path: cuprum/cli/files/generator/c-match-file
+  slug: match-file
+  inherited: true
+- name: matches?
+  path: cuprum/cli/files/generator/c-matches?
+  slug: matches?
+  inherited: true
+- name: option
+  path: cuprum/cli/options/class-methods/i-option
+  slug: option
+  inherited: true
+- name: option_value
+  path: cuprum/cli/options/class-methods/i-option-value
+  slug: option-value
+  inherited: true
+- name: option_values
+  path: cuprum/cli/options/class-methods/i-option-values
+  slug: option-values
+  inherited: true
+- name: options
+  path: cuprum/cli/options/class-methods/i-options
+  slug: options
+  inherited: true
+- name: output
+  path: cuprum/cli/files/generator/c-output
+  slug: output
+  inherited: true
+- name: outputs
+  path: cuprum/cli/files/generator/c-outputs
+  slug: outputs
+  inherited: true
+- name: resolve_options
+  path: cuprum/cli/options/class-methods/i-resolve-options
+  slug: resolve-options
+  inherited: true
+instance_attributes:
+- name: file_path
+  read: true
+  write: false
+  path: cuprum/cli/files/generator/i-file-path
+  slug: file-path
+  inherited: true
+- name: options
+  read: true
+  write: false
+  path: cuprum/cli/files/generator/i-options
+  slug: options
+  inherited: true
+instance_methods:
+- name: file_parameters
+  path: cuprum/cli/files/generator/i-file-parameters
+  slug: file-parameters
+  inherited: true
+- name: initialize
+  path: cuprum/cli/files/generator/i-initialize
+  slug: initialize
+  inherited: true
+  constructor: true
+- name: say
+  path: cuprum/cli/options/verbose/i-say
+  slug: say
+  inherited: true
+data_path: cuprum/cli/files/generators/r-spec-generator
+constructor: true
+inherited_classes:
+- name: Cuprum::Cli::Files::Generator
+  slug: generator
+  path: cuprum/cli/files/generator
+- name: Cuprum::Command
+  slug: command
+version: "*"

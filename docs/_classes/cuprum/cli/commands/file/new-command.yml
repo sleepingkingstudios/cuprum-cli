@@ -23,6 +23,10 @@ class_methods:
   path: cuprum/cli/arguments/class-methods/i-arguments
   slug: arguments
   inherited: true
+- name: default_generators
+  path: cuprum/cli/commands/file/new-command/c-default-generators
+  slug: default-generators
+  inherited: false
 - name: dependency
   path: cuprum/cli/command/c-dependency
   slug: dependency

@@ -1,0 +1,26 @@
+---
+name: Cuprum::Cli::Files::Generator.matches?
+parent_path: cuprum/cli/files/generator
+signature: matches?(file_path, **options)
+slug: matches?
+aliases:
+- match?
+constructor: false
+data_path: cuprum/cli/files/generator/c-matches?
+description: the given file type, path, and options; otherwise false.
+params:
+- description: the input file path provided by the user.
+  name: file_path
+  type:
+  - name: String
+- description: additional options for the generator.
+  name: options
+  type:
+  - name: Hash
+returns:
+- description: true if the generator can generate files with
+  type:
+  - name: 'true'
+  - name: 'false'
+short_description: Checks if the generator matches the given file path and options.
+version: "*"

@@ -1,0 +1,9 @@
+---
+name: Cuprum::Cli::Files::Generator.abstract
+parent_path: cuprum/cli/files/generator
+signature: abstract
+slug: abstract
+constructor: false
+data_path: cuprum/cli/files/generator/c-abstract
+short_description: Marks the generator as abstract.
+version: "*"

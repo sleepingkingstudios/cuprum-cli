@@ -1,0 +1,44 @@
+---
+name: Cuprum::Cli::Errors::Files::GeneratorError
+slug: generator-error
+type: class
+files:
+- lib/cuprum/cli/errors/files/generator_error.rb
+parent_path: cuprum/cli/errors/files
+short_description: Error returned when an error occurs when calling a generator.
+constants:
+- name: TYPE
+  path: cuprum/cli/errors/files/generator-error/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: details
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/generator-error/i-details
+  slug: details
+  inherited: false
+- name: file_path
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/generator-error/i-file-path
+  slug: file-path
+  inherited: false
+- name: options
+  read: true
+  write: false
+  path: cuprum/cli/errors/files/generator-error/i-options
+  slug: options
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/errors/files/generator-error/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/errors/files/generator-error
+constructor: true
+inherited_classes:
+- name: Cuprum::Error
+  slug: error
+version: "*"

@@ -1,0 +1,52 @@
+---
+name: Cuprum::Cli::Files::Generator.output
+parent_path: cuprum/cli/files/generator
+signature: 'output(path, key: :default, template_path: nil)'
+slug: output
+constructor: false
+data_path: cuprum/cli/files/generator/c-output
+description: |-
+  The output path parameter is a String that can include format strings,
+  which will be resolved from the options passed to the generator. In
+  addition, the format strings can reference the following parameters
+  derived from the input file_path. The following examples use an input
+  file path of "lib/path/to/file.rb":
+
+  - base_name: The last segment of the file path, including the file
+    extension. Example: "file.rb".
+  - dir_name: The directory path from the file path, relative to the
+    working directory. Example: "lib/path/to".
+  - ext_name: The extension of the file path, including the leading
+    period character. Example: ".rb".
+  - file_path: The full file path. Example: "lib/path/to/file.rb".
+  - relative_path: The *second and later* segments of the directory path,
+    or an empty String if the path is too short. Example: "path/to".
+  - root_path: The *first* segment of the directory path, or an empty
+    String if the path is too short. Example: "lib".
+  - short_name: The last segment of the file path, excluding the file
+    extension. Example: "file".
+params:
+- description: the file path for the generated file.
+  name: path
+  type:
+  - name: String
+- description: |-
+    a unique key used to identify the output.
+    Defaults to :default.
+  name: key
+  type:
+  - name: String
+  - name: Symbol
+- description: |-
+    the path to the template file for the
+    output. If not provided, the user must provide a template for that output.
+  name: template_path
+  type:
+  - name: String
+  default: nil
+returns:
+- description: ''
+  type:
+  - name: void
+short_description: Registers an output file for the generator.
+version: "*"

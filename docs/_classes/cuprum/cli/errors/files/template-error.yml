@@ -36,9 +36,6 @@ direct_subclasses:
 - name: Cuprum::Cli::Errors::Files::MissingParameter
   slug: missing-parameter
   path: cuprum/cli/errors/files/missing-parameter
-- name: Cuprum::Cli::Errors::Files::TemplateNotResolved
-  slug: template-not-resolved
-  path: cuprum/cli/errors/files/template-not-resolved
 inherited_classes:
 - name: Cuprum::Error
   slug: error

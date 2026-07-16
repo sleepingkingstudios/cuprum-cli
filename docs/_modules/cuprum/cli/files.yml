@@ -1,0 +1,24 @@
+---
+name: Cuprum::Cli::Files
+slug: files
+type: module
+files:
+- lib/cuprum/cli/files.rb
+- lib/cuprum/cli/files/generator.rb
+- lib/cuprum/cli/files/generators.rb
+- lib/cuprum/cli/files/render_erb.rb
+- lib/cuprum/cli/files/generate_file.rb
+parent_path: cuprum/cli
+short_description: Namespace for shared functionality for manipulating files.
+defined_classes:
+- name: GenerateFile
+  slug: generate-file
+- name: Generator
+  slug: generator
+- name: RenderErb
+  slug: render-erb
+defined_modules:
+- name: Generators
+  slug: generators
+data_path: cuprum/cli/files
+version: "*"

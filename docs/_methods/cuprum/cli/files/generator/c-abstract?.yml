@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Files::Generator.abstract?
+parent_path: cuprum/cli/files/generator
+signature: abstract?
+slug: abstract?
+constructor: false
+data_path: cuprum/cli/files/generator/c-abstract?
+returns:
+- description: |-
+    true if the generator is abstract and should not
+    be assigned matchers or outputs; otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"
