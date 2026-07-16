@@ -1,12 +1,15 @@
 # frozen_string_literal: true
 
 require 'cuprum'
+require 'plumbum'
 
 require 'cuprum/cli/files'
 
 module Cuprum::Cli::Files
   # Command for generating templated files.
   class Generator < Cuprum::Command # rubocop:disable Metrics/ClassLength
+    include Plumbum::Consumer
+    prepend Plumbum::Parameters
     extend  Cuprum::Cli::Options::ClassMethods
     include Cuprum::Cli::Options::Quiet
     include Cuprum::Cli::Options::Verbose
@@ -180,6 +183,11 @@ module Cuprum::Cli::Files
 
     abstract
 
+    provider Cuprum::Cli::Dependencies.provider
+
+    dependency :file_system
+    dependency :standard_io
+
     option :dry_run, type: :boolean
 
     # @overload initialize(file_path, **options)
@@ -249,7 +257,13 @@ module Cuprum::Cli::Files
     def generate_command
       @generate_command ||=
         Cuprum::Cli::Commands::File::GenerateFile
-        .new(dry_run: dry_run?, quiet: quiet?, verbose: verbose?)
+        .new(
+          dry_run:     dry_run?,
+          file_system:,
+          quiet:       quiet?,
+          standard_io:,
+          verbose:     verbose?
+        )
     end
 
     def generate_file(file_path:, template_path:)

@@ -609,6 +609,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
       expect(described_class)
         .to be_constructible
         .with(1).argument
+        .and_keywords(:file_system, :standard_io)
         .and_any_keywords
     end
 
@@ -672,10 +673,15 @@ RSpec.describe Cuprum::Cli::Files::Generator do
     wrap_deferred 'with a generator class' do
       deferred_examples 'should configure the generate command' do
         let(:expected_options) do
+          file_system = Cuprum::Cli::Dependencies.provider.get(:file_system)
+          standard_io = Cuprum::Cli::Dependencies.provider.get(:standard_io)
+
           {
-            dry_run: false,
-            quiet:   false,
-            verbose: false
+            dry_run:     false,
+            file_system:,
+            quiet:       false,
+            standard_io:,
+            verbose:     false
           }
         end
 
@@ -700,9 +706,41 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           end
         end
 
+        context 'when initialized with file_system: value' do
+          let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
+          let(:constructor_options) do
+            super().merge(file_system:)
+          end
+          let(:expected_options) { super().merge(file_system:) }
+
+          it 'should configure the generator' do
+            generator.call
+
+            expect(Cuprum::Cli::Commands::File::GenerateFile)
+              .to have_received(:new)
+              .with(**expected_options)
+          end
+        end
+
         context 'when initialized with quiet: true' do
           let(:constructor_options) { super().merge(quiet: true) }
           let(:expected_options)    { super().merge(quiet: true) }
+
+          it 'should configure the generator' do
+            generator.call
+
+            expect(Cuprum::Cli::Commands::File::GenerateFile)
+              .to have_received(:new)
+              .with(**expected_options)
+          end
+        end
+
+        context 'when initialized with standard_io: value' do
+          let(:standard_io) { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
+          let(:constructor_options) do
+            super().merge(standard_io:)
+          end
+          let(:expected_options) { super().merge(standard_io:) }
 
           it 'should configure the generator' do
             generator.call
@@ -1297,6 +1335,21 @@ RSpec.describe Cuprum::Cli::Files::Generator do
     include_examples 'should define reader', :file_path, -> { file_path }
   end
 
+  describe '#file_system' do
+    let(:expected) { Cuprum::Cli::Dependencies.provider.get(:file_system) }
+
+    include_examples 'should define reader', :file_system, -> { expected }
+
+    context 'when initialized with file_system: value' do
+      let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
+      let(:constructor_options) do
+        super().merge(file_system:)
+      end
+
+      it { expect(generator.file_system).to be file_system }
+    end
+  end
+
   describe '#options' do
     let(:expected) do
       {
@@ -1387,6 +1440,21 @@ RSpec.describe Cuprum::Cli::Files::Generator do
       let(:expected)    { 'docs/archived/file.md' }
 
       it { expect(resolved_path).to be == expected }
+    end
+  end
+
+  describe '#standard_io' do
+    let(:expected) { Cuprum::Cli::Dependencies.provider.get(:standard_io) }
+
+    include_examples 'should define reader', :standard_io, -> { expected }
+
+    context 'when initialized with standard_io: value' do
+      let(:standard_io) { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
+      let(:constructor_options) do
+        super().merge(standard_io:)
+      end
+
+      it { expect(generator.standard_io).to be standard_io }
     end
   end
 end
