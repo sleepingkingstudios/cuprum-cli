@@ -131,7 +131,7 @@ module Cuprum::Cli::Options
     # @raise [Cuprum::Cli::Options::InvalidOptionError] if any value does not
     #   match the expected option type, or any required value is missing.
     def resolve_options(**values)
-      values                  = option_values.merge(values)
+      values                  = option_values.merge(resolve_aliases(values))
       defined_options         = options
       values, unknown_options = resolve_variadic_values(values)
 
@@ -186,6 +186,24 @@ module Cuprum::Cli::Options
       )
       @arguments_builder.__getobj__
       # :nocov:
+    end
+
+    def resolve_aliases(values)
+      options.each do |key, option|
+        option.aliases.each do |item|
+          alias_key = item.to_sym
+
+          next unless values.key?(alias_key)
+
+          # Always remove the alias from the options.
+          alias_value = values.delete(alias_key)
+
+          # If the original value is present, it takes precedence.
+          values[key] ||= alias_value
+        end
+      end
+
+      values
     end
 
     def resolve_variadic_values(values) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength

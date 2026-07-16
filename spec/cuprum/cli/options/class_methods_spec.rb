@@ -17,7 +17,7 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
 
   deferred_context 'when the command has many options' do
     before(:example) do
-      described_class.option :color, type:     :integer
+      described_class.option :color, type:     :integer, aliases: %i[rgb]
       described_class.option :shape, required: true
     end
   end
@@ -658,6 +658,32 @@ RSpec.describe Cuprum::Cli::Options::ClassMethods do
               Cuprum::Cli::Options::UnknownOptionError,
               error_message
             )
+        end
+      end
+
+      describe 'with aliased values' do
+        let(:values) do
+          { shape: 'triangle', transparent: true, rgb: 0xff3366 }
+        end
+        let(:expected) do
+          values.except(:rgb).merge(color: 0xff3366, size: 'medium')
+        end
+
+        it 'should apply the option defaults' do
+          expect(described_class.resolve_options(**values)).to be == expected
+        end
+
+        describe 'with both aliased and original values' do
+          let(:values) do
+            super().merge(color: 0x0)
+          end
+          let(:expected) do
+            super().merge(color: 0x0)
+          end
+
+          it 'should apply the option defaults' do
+            expect(described_class.resolve_options(**values)).to be == expected
+          end
         end
       end
 
