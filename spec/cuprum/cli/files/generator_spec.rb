@@ -54,6 +54,11 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
   include_deferred 'should define --verbose option'
 
+  include_deferred 'should define option',
+    :directories,
+    type:    :boolean,
+    default: true
+
   include_deferred 'should define option', :dry_run, type: :boolean
 
   describe '.abstract' do
@@ -619,7 +624,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
       end
       let(:error_message) do
         'unrecognized option :extra_option for Cuprum::Cli::Files::Generator ' \
-          '- valid options are :dry_run, :quiet, :verbose'
+          '- valid options are :directories, :dry_run, :quiet, :verbose'
       end
 
       it 'should raise an exception' do
@@ -677,6 +682,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           standard_io = Cuprum::Cli::Dependencies.provider.get(:standard_io)
 
           {
+            directories: true,
             dry_run:     false,
             file_system:,
             quiet:       false,
@@ -691,6 +697,19 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           expect(Cuprum::Cli::Commands::File::GenerateFile)
             .to have_received(:new)
             .with(**expected_options)
+        end
+
+        context 'when initialized with directories: false' do
+          let(:constructor_options) { super().merge(directories: false) }
+          let(:expected_options)    { super().merge(directories: false) }
+
+          it 'should configure the generator' do
+            generator.call
+
+            expect(Cuprum::Cli::Commands::File::GenerateFile)
+              .to have_received(:new)
+              .with(**expected_options)
+          end
         end
 
         context 'when initialized with dry_run: true' do
@@ -772,7 +791,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
       let(:generate_command) do
         instance_double(
           Cuprum::Cli::Commands::File::GenerateFile,
-          call: generate_result
+          call: nil
         )
       end
 
@@ -780,6 +799,10 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         allow(Cuprum::Cli::Commands::File::GenerateFile)
           .to receive(:new)
           .and_return(generate_command)
+
+        allow(generate_command).to receive(:call) do |file_path:, **|
+          Cuprum::Result.new(value: file_path)
+        end
       end
 
       it 'should return a failing result' do
@@ -798,6 +821,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
       context 'when the generator has one output' do
         let(:output_path)    { 'docs/%<relative_path>s/%<short_name>s.md' }
         let(:output_options) { {} }
+        let(:expected_value) { %w[docs/path/to/file.md] }
         let(:expected_parameters) do
           parameters = generator.file_parameters.merge(generator.options)
 
@@ -981,6 +1005,12 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
           include_deferred 'should configure the generate command'
 
+          it 'should return a passing result' do
+            expect(generator.call)
+              .to be_a_passing_result
+              .with_value(expected_value)
+          end
+
           it 'should generate the file' do
             generator.call
 
@@ -1046,6 +1076,29 @@ RSpec.describe Cuprum::Cli::Files::Generator do
                   .to have_received(:call)
                   .with(**expected_parameters)
               end
+            end
+          end
+
+          context 'when the file generation fails' do
+            let(:generate_error) do
+              Cuprum::Error.new(message: 'Something went wrong')
+            end
+
+            before(:example) do
+              allow(generate_command)
+                .to receive(:call)
+                .with(
+                  file_path:     'docs/path/to/file.md',
+                  parameters:    an_instance_of(Hash),
+                  template_path: an_instance_of(String)
+                )
+                .and_return(Cuprum::Result.new(error: generate_error))
+            end
+
+            it 'should return a failing result' do
+              expect(generator.call)
+                .to be_a_failing_result
+                .with_error(generate_error)
             end
           end
         end
@@ -1123,6 +1176,12 @@ RSpec.describe Cuprum::Cli::Files::Generator do
             end
 
             include_deferred 'should configure the generate command'
+
+            it 'should return a passing result' do
+              expect(generator.call)
+                .to be_a_passing_result
+                .with_value(expected_value)
+            end
 
             it 'should generate the file' do
               generator.call
@@ -1242,6 +1301,13 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         end
 
         let(:file_path) { 'lib/path/to/file.rb' }
+        let(:expected_value) do
+          %w[
+            lib/path/to/file.rb
+            docs/path/to/file.md
+            spec/path/to/file_spec.rb
+          ]
+        end
         let(:expected_parameters) do
           parameters = generator.file_parameters.merge(generator.options)
 
@@ -1280,6 +1346,12 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
         include_deferred 'should generate the matching files'
 
+        it 'should return a passing result' do
+          expect(generator.call)
+            .to be_a_passing_result
+            .with_value(expected_value)
+        end
+
         context 'when the generator defines filtering options' do
           before(:example) do
             described_class.option :docs,  type: :boolean, default: true
@@ -1295,6 +1367,29 @@ RSpec.describe Cuprum::Cli::Files::Generator do
             end
 
             include_deferred 'should generate the matching files'
+          end
+        end
+
+        context 'when the file generation fails' do
+          let(:generate_error) do
+            Cuprum::Error.new(message: 'Something went wrong')
+          end
+
+          before(:example) do
+            allow(generate_command)
+              .to receive(:call)
+              .with(
+                file_path:     'docs/path/to/file.md',
+                parameters:    an_instance_of(Hash),
+                template_path: an_instance_of(String)
+              )
+              .and_return(Cuprum::Result.new(error: generate_error))
+          end
+
+          it 'should return a failing result' do
+            expect(generator.call)
+              .to be_a_failing_result
+              .with_error(generate_error)
           end
         end
       end
@@ -1353,9 +1448,10 @@ RSpec.describe Cuprum::Cli::Files::Generator do
   describe '#options' do
     let(:expected) do
       {
-        dry_run: false,
-        quiet:   false,
-        verbose: false
+        directories: true,
+        dry_run:     false,
+        quiet:       false,
+        verbose:     false
       }
     end
 

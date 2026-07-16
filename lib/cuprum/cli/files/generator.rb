@@ -188,7 +188,8 @@ module Cuprum::Cli::Files
     dependency :file_system
     dependency :standard_io
 
-    option :dry_run, type: :boolean
+    option :directories, type: :boolean, default: true
+    option :dry_run,     type: :boolean
 
     # @overload initialize(file_path, **options)
     #   @param file_path [String] the input file path provided by the user.
@@ -258,6 +259,7 @@ module Cuprum::Cli::Files
       @generate_command ||=
         Cuprum::Cli::Commands::File::GenerateFile
         .new(
+          directories: directories?,
           dry_run:     dry_run?,
           file_system:,
           quiet:       quiet?,
@@ -288,7 +290,7 @@ module Cuprum::Cli::Files
     def process
       outputs = step { filter_outputs }
 
-      outputs.each_value do |output|
+      outputs.each_value.map do |output|
         file_path     = step { resolve_output_path(output) }
         template_path = step { template_path_for(output) }
 
