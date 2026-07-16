@@ -110,6 +110,10 @@ module Cuprum::Cli::Integrations::Thor
 
         return :numeric if NUMERIC_TYPES.include?(type)
 
+        # Thor can't handle heterogenous parameters, but it *can* pass them
+        # through as Strings.
+        return :string  if type == 'object'
+
         type.to_sym
       end
 

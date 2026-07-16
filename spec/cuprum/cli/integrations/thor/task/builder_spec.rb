@@ -215,6 +215,82 @@ do
       end
     end
 
+    context 'when the command class defines variadic options' do
+      let(:expected_options) do
+        {
+          shape:      {
+            aliases:     [],
+            banner:      '<circle, square, triangle>',
+            description: nil,
+            name:        'shape',
+            required:    true,
+            type:        :string
+          },
+          properties: {
+            aliases:     [],
+            banner:      'PROPERTIES',
+            description: nil,
+            name:        'properties',
+            required:    false,
+            type:        :string
+          }
+        }
+      end
+
+      before(:example) do
+        command_class.option :shape,
+          required:       true,
+          parameter_name: '<circle, square, triangle>'
+        command_class.option :properties, type: :string, variadic: true
+      end
+
+      it 'should define the options', :aggregate_failures do
+        expect(thor_command.options.keys).to be == expected_options.keys
+
+        thor_command.options.each do |name, option|
+          expect(option).to have_attributes(**expected_options[name])
+        end
+      end
+    end
+
+    context 'when the command class defines variadic :object options' do
+      let(:expected_options) do
+        {
+          shape:      {
+            aliases:     [],
+            banner:      '<circle, square, triangle>',
+            description: nil,
+            name:        'shape',
+            required:    true,
+            type:        :string
+          },
+          properties: {
+            aliases:     [],
+            banner:      'PROPERTIES',
+            description: nil,
+            name:        'properties',
+            required:    false,
+            type:        :string
+          }
+        }
+      end
+
+      before(:example) do
+        command_class.option :shape,
+          required:       true,
+          parameter_name: '<circle, square, triangle>'
+        command_class.option :properties, type: :object, variadic: true
+      end
+
+      it 'should define the options', :aggregate_failures do
+        expect(thor_command.options.keys).to be == expected_options.keys
+
+        thor_command.options.each do |name, option|
+          expect(option).to have_attributes(**expected_options[name])
+        end
+      end
+    end
+
     context 'when the command class is an anonymous class' do
       let(:command_class) do
         Class.new(Cuprum::Cli::Command).tap do |klass|
