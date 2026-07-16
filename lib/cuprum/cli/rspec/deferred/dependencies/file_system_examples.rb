@@ -140,9 +140,21 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
           end
 
           context 'when the directory already exists' do
-            before(:example) { subject.create_directory(path) }
+            let(:inner_path) { File.join(path, 'inner_dir') }
+
+            before(:example) do
+              subject.create_directory(path)
+
+              subject.create_directory(inner_path)
+            end
 
             it { expect(subject.create_directory(path)).to be == path }
+
+            it 'should not change the directory contents' do
+              expect { subject.create_directory(path) }.not_to(
+                change { subject.directory?(inner_path) }
+              )
+            end
           end
 
           context 'when the path includes a file' do
@@ -240,9 +252,21 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
           end
 
           context 'when the directory already exists' do
-            before(:example) { subject.create_directory(path) }
+            let(:inner_path) { File.join(path, 'inner_dir') }
+
+            before(:example) do
+              subject.create_directory(path)
+
+              subject.create_directory(inner_path)
+            end
 
             it { expect(subject.create_directory(path)).to be == path }
+
+            it 'should not change the directory contents' do
+              expect { subject.create_directory(path) }.not_to(
+                change { subject.directory?(inner_path) }
+              )
+            end
           end
 
           context 'when the path includes a file' do
@@ -340,9 +364,21 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
           end
 
           context 'when the directory already exists' do
-            before(:example) { subject.create_directory(path) }
+            let(:inner_path) { File.join(path, 'inner_dir') }
+
+            before(:example) do
+              subject.create_directory(path)
+
+              subject.create_directory(inner_path)
+            end
 
             it { expect(subject.create_directory(path)).to be == path }
+
+            it 'should not change the directory contents' do
+              expect { subject.create_directory(path) }.not_to(
+                change { subject.directory?(inner_path) }
+              )
+            end
           end
 
           context 'when the path includes a file' do

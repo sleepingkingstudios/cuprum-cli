@@ -60,7 +60,7 @@ module Cuprum::Cli::Dependencies
           "unable to create directory #{path} - directory is a file"
       end
 
-      directory[dir_name] = {}
+      directory[dir_name] ||= {}
 
       path
     end
