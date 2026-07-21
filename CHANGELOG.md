@@ -4,15 +4,27 @@
 
 ## Commands
 
+- Implemented support for resolving aliased options.
 - Normalized option keys for variadic options.
 
 ### Built-In Commands
 
-- Fixed directory expansion for `Cuprum::Cli::Ci::RSpecEachCommand`.
+- Fixed directory expansion for `Ci::RSpecEachCommand`.
+- Updated `File::NewCommand` to use generators instead of raw templates.
+
+## Dependencies
+
+- Improved handling of file parameters for `FileSystem::Mock`.
+- Fixed a `FileSystem::Mock` bug that would wipe existing mock directories.
+
+## Files
+
+- Implemented file generators, a more robust solution for generating files or groups of files.
 
 ## Integrations
 
 - Fixed error handling for `Thor` integration.
+- Enabled passing variadic options through `Thor` tasks.
 
 ## 0.1.0
 
