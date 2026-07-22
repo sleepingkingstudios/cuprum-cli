@@ -633,10 +633,10 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
         end
 
         let(:pattern) { '**/*.rb' }
-        let(:matching_files) do
+        let(:matching_entries) do
           defined?(super()) ? super() : []
         end
-        let(:expected_files) { matching_files }
+        let(:expected_files) { matching_entries }
 
         it 'should define the method' do
           expect(subject)
@@ -649,8 +649,8 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
 
         wrap_deferred 'with valid file paths' do
           describe 'with a pattern that does not match any files' do
-            let(:pattern)        { '*.xml' }
-            let(:matching_files) { [] }
+            let(:pattern)          { '*.xml' }
+            let(:matching_entries) { [] }
 
             include_deferred 'should return or yield the matching file names'
           end
@@ -660,7 +660,7 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
             let(:expected_files) do
               rxp = /\A\w+\.txt\z/
 
-              matching_files.select do |str|
+              matching_entries.select do |str|
                 str[(1 + subject.root_path.size)..].match?(rxp)
               end
             end
@@ -673,7 +673,20 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
             let(:expected_files) do
               rxp = %r{\A#{files_directory}/\w+\.txt\z}
 
-              matching_files.select do |str|
+              matching_entries.select do |str|
+                str[(1 + subject.root_path.size)..].match?(rxp)
+              end
+            end
+
+            include_deferred 'should return or yield the matching file names'
+          end
+
+          describe 'with a globbed pattern without extension filter' do
+            let(:pattern) { '*' }
+            let(:expected_files) do
+              rxp = /\A\w+(\.\w+)?\z/
+
+              matching_entries.select do |str|
                 str[(1 + subject.root_path.size)..].match?(rxp)
               end
             end
@@ -686,7 +699,7 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
             let(:expected_files) do
               rxp = /\.txt\z/
 
-              matching_files.select do |str|
+              matching_entries.select do |str|
                 str[(1 + subject.root_path.size)..].match?(rxp)
               end
             end

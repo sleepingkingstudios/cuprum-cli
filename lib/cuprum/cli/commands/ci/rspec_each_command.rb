@@ -87,7 +87,9 @@ module Cuprum::Cli::Commands::Ci
       all_files = Set.new
 
       configured_file_patterns.each do |pattern|
-        file_system.each_file(pattern) { |filename| all_files << filename }
+        file_system.each_file(pattern) do |filename|
+          all_files << filename if file_system.file?(filename)
+        end
       end
 
       @matching_files = all_files.sort

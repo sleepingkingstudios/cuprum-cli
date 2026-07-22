@@ -13,9 +13,10 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
   subject(:file_system) { described_class.new(**options) }
 
   deferred_context 'with valid file paths' do # rubocop:disable RSpec/MultipleMemoizedHelpers
-    let(:matching_files) do
+    let(:matching_entries) do
       %w[
         LICENSE.txt
+        spec
         spec/examples.txt
         spec/spec_helper.rb
       ].map { |file_name| File.join(file_system.root_path, file_name) }
@@ -135,9 +136,9 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
     end
   end
 
-  let(:options)        { {} }
-  let(:matching_files) { [] }
-  let(:expected_files) { matching_files }
+  let(:options)          { {} }
+  let(:matching_entries) { [] }
+  let(:expected_files)   { matching_entries }
 
   before(:context) do # rubocop:disable RSpec/BeforeAfterAll
     # :nocov:
