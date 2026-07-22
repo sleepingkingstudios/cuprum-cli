@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Files::Generator::AbstractGeneratorError
+slug: abstract-generator-error
+type: class
+files:
+- lib/cuprum/cli/files/generator.rb
+parent_path: cuprum/cli/files/generator
+short_description: Raised when performing a protected operation on an abstract Generator.
+data_path: cuprum/cli/files/generator/abstract-generator-error
+constructor: false
+inherited_classes:
+- name: StandardError
+  slug: standard-error
+version: "*"

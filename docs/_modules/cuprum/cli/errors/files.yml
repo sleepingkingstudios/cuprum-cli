@@ -5,22 +5,22 @@ type: module
 files:
 - lib/cuprum/cli/errors/files.rb
 - lib/cuprum/cli/errors/files/template_error.rb
+- lib/cuprum/cli/errors/files/generator_error.rb
 - lib/cuprum/cli/errors/files/missing_template.rb
 - lib/cuprum/cli/errors/files/missing_parameter.rb
 - lib/cuprum/cli/errors/files/file_not_writeable.rb
-- lib/cuprum/cli/errors/files/template_not_resolved.rb
 parent_path: cuprum/cli/errors
 short_description: Namespace for errors returned when creating or managing files.
 defined_classes:
 - name: FileNotWriteable
   slug: file-not-writeable
+- name: GeneratorError
+  slug: generator-error
 - name: MissingParameter
   slug: missing-parameter
 - name: MissingTemplate
   slug: missing-template
 - name: TemplateError
   slug: template-error
-- name: TemplateNotResolved
-  slug: template-not-resolved
 data_path: cuprum/cli/errors/files
 version: "*"

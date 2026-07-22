@@ -32,7 +32,7 @@ module Cuprum::Cli::Dependencies
     def initialize(files: {}, root_path: Dir.pwd)
       super(root_path:)
 
-      @files     = files
+      @files     = split_files(files)
       @tempfiles = []
     end
 
@@ -60,7 +60,7 @@ module Cuprum::Cli::Dependencies
           "unable to create directory #{path} - directory is a file"
       end
 
-      directory[dir_name] = {}
+      directory[dir_name] ||= {}
 
       path
     end
@@ -254,6 +254,32 @@ module Cuprum::Cli::Dependencies
       end
 
       dir&.[](last)
+    end
+
+    def split_files(files) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      files.each.with_object({}) do |(key, value), hsh|
+        value = StringIO.new(value) if value.is_a?(String)
+
+        next hsh[key] = value unless key.include?('/')
+
+        # Normalize key, removing root path and leading slash.
+        key = key[root_path.length..] if key.start_with?(root_path)
+        key = key[1..]                if key.start_with?('/')
+
+        *dir, file = key.split('/')
+
+        # Ensure that each directory is represented by a Hash.
+        dir.each do |segment|
+          hsh[segment] = {} unless hsh.key?(segment)
+
+          raise "invalid file path #{key}" unless hsh[segment].is_a?(Hash)
+
+          hsh = hsh[segment]
+        end
+
+        # Assign the file or directory value.
+        hsh[file] = value
+      end
     end
 
     def split_path(path)

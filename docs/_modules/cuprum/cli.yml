@@ -4,6 +4,7 @@ slug: cli
 type: module
 files:
 - lib/cuprum/cli.rb
+- lib/cuprum/cli/files.rb
 - lib/cuprum/cli/rspec.rb
 - lib/cuprum/cli/errors.rb
 - lib/cuprum/cli/option.rb
@@ -58,6 +59,8 @@ defined_modules:
   slug: dependencies
 - name: Errors
   slug: errors
+- name: Files
+  slug: files
 - name: Integrations
   slug: integrations
 - name: Metadata

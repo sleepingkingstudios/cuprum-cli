@@ -1,0 +1,16 @@
+---
+name: Cuprum::Cli::Commands::File::NewCommand.default_generators
+parent_path: cuprum/cli/commands/file/new-command
+signature: default_generators
+slug: default-generators
+constructor: false
+data_path: cuprum/cli/commands/file/new-command/c-default-generators
+returns:
+- description: |-
+    the default generators configured for the
+    command.
+  type:
+  - name: Array
+    items:
+    - name: Class
+version: "*"

@@ -78,6 +78,9 @@ Similar to the `rspec` CLI utility, the takes an optional list of file patterns 
 The following commands are used to generate and manage local files.
 
 - [New File Command](#new-file-command)
+  - [Generators](#generators)
+  - [Generator Matching](#generator-matching)
+  - [Generator Outputs](#generator-outputs)
 
 ### New File Command
 
@@ -95,72 +98,82 @@ The `file:new` command takes one required argument, the path to the generate fil
 `:dry_run`
 : If `true`, does not generate the actual file, but outputs to the terminal as normal. Defaults to `false`.
 
-`:parent_class`
-: The name of the parent class when generating a Ruby class file.
+`:generators`
+: The generators used when matching and creating the files.
 
-`:templates`
-: The templates used when generating the files.
+`:quiet`
+: Suppresses non-error output to the terminal.
 
-Additionally, the command supports any number of additional boolean options, which are passed to the template when generating the file or files.
+`:verbose`
+: Displays the full contents of the generated files in the terminal. Very useful when combined with `--dry-run` to preview the file contents.
+
+Additionally, the command supports any number of additional options, which are passed to the generator when generating the file or files. Note that if the matching generator does not support a given option, it will respond with an error.
 
 [Back to Top](#)
 
-#### Generating Files
+#### Generators
 
-Once a file name and options have been set, the new file command matches the file to the [defined templates](#file-templates) to find a matching template. That template, in turn, will parse the file name and options and generate one or more files using that data.
+`Cuprum::Cli` uses [generator classes](./file-generators) to define the files created by the `file:new` command.
 
-For example, we could define a new Ruby file in `lib/commands/greet.rb`. We want to define a Ruby class that inherits from <a href="https://www.sleepingkingstudios.com/cuprum/commands/" target="_blank">Cuprum::Command</a>, so we pass that in as the parent class.
+Each generator defines a pattern or patterns that are used when determining which generator is called for a given request. It also defines a set of output files - these are the files generated when the generator is called. A generator can have multiple outputs, allowing `Cuprum::Cli` to create multiple files from a single command, such as a source file and the associated spec.
 
-```bash
-bundle exec thor file:new lib/commands/greet.rb "--parent-class=Cuprum::Command"
-```
+Finally, generators can define additional options that are used when building the contents of the generated files. For example, the Ruby generator allows specifying a `--parent-class` option, which changes the file contents from creating a new `Module` to creating a new `Class` with the specified parent.
 
-This matches to the built-in Ruby file template, and will automatically generate two files: the class file in `lib/commands/greeter.rb` and a test file in `spec/commands/greeter_spec.rb`.
+`Cuprum::Cli` defines two built-in generators:
+
+- The [Ruby](./file-generators#ruby-generator) generator creates a Ruby source file and corresponding RSpec spec file.
+- The [RSpec](./file-generators#rspec-generator) generator creates an RSpec spec file.
+
+[Back to Top](#)
+
+##### Generator Matching
+
+When the `file:new` command is called, the first step is to find the matching generator for that input path and options. Each generators defines a matching pattern or patterns.
+
+- `Proc` patterns match on both the input path and options. If the proc returns `true`, that generator is match.
+- `Regexp` patterns match on the input path. If the regex matches the path, that generator is a match.
+- `String` patterns match on the input path. If the path ends with the string, that generator is a match.
+
+If there is more than one generator that matches the file path and options, the last generator defined is used. This allows overriding default generators, or defining generators for more specific contexts, such as a web application's model files or controllers.
+
+If there are no matching generators, the `file:new` command returns with an error.
+
+[Back to Top](#)
+
+##### Generator Outputs
+
+Each generator defines one or more outputs. When that generator is called, it creates a new file for each of those outputs, using the file path and template defined for that output. For example, the [Ruby](./file-generators#ruby-generator) generator defines one output for the Ruby file and one output for the RSpec file.
+
+`Cuprum::Cli` automatically extracts a number of properties from the given input path, such as the file name, file extension, and directory path. These properties can be used to customize the output path or the contents of the generated file, along with the options passed by the user to `file:new`.
+
+For example, for the input path `lib/space/rocket.rb` and option `--parent-class=Vehicle`, the Ruby generator creates the following files.
+
+In `lib/space/rocket.rb`:
 
 ```ruby
 # frozen_string_literal: true
 
-require 'commands'
+require 'space'
 
-module Commands
-  class Greet < Cuprum::Command
+module Space
+  class Rocket < Vehicle
 
   end
 end
 ```
 
+In `spec/space/rocket_spec.rb`:
+
 ```ruby
 # frozen_string_literal: true
 
-require 'commands/greet'
+require 'space/rocket'
 
-RSpec.describe Commands::Greet do
+RSpec.describe Space::Rocket do
   pending
 end
 ```
 
-As you can see, the generated files combine the templates with data parsed from the file name and options to generate the file contents. For example, we can pass the `--no-spec` flag to the command to prevent generating an RSpec file.
-
-If multiple templates match a file name, the most recently added template will be used. This can be used to define specialized templates (such as model files that are checked before generic Ruby files).
-
-[Back to Top](#)
-
-#### File Templates
-
-`Cuprum::Cli` defines its own set of file templates for generating Ruby or RSpec files, but you can override or customize the templates by passing a `:templates` Array to the `file:new` command. The best way to do this is when [registering the command](../integrations#command-configuration).
-
-Each template is a Hash with three properties:
-
-- The `:name` property is a human-readable name for the template.
-- The `:pattern` property is a `Regexp` or a `Proc` that is used to match the file name. The pattern is also used to extract metadata from the file name, such as the name and path of the class when generating a Ruby file.
-- The `:templates` property is an Array of Hashes, each of which is the template for a generated file.
-
-The file templates must contain the following properties:
-
-- The `:file_path` property is the relative path to the generated file. It can include values parsed from the file name, using `Kernel#format` semantics.
-- The `:template` property is the path to the template file, which is used in generating the file contents.
-- The `:types` property is for controlling which files are generated. For example, if the `:types` for a given template are `%i[ruby rspec spec test]`, then passing any of `--no-ruby`, `--no-rspec`, `--no-spec`, or `--no-test` to the command will disable generating that file.
-
-You might decide to add a custom template for a number of reasons - a specialized file type (such as model files), using a loader such as `Zeitwerk` (removing the `require` statements), or if your application uses a different testing library such as `Minitest`.
+Some generators allow you to pass a custom template for a specific output, or even disable that output entirely. For example, if you pass the `--skip-rspec` option to the Ruby template, the generator will not create the RSpec file.
 
 [Back to Top](#)

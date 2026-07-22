@@ -187,6 +187,11 @@ The core component in `Cuprum::Cli` is the `Command`.
         <br>
         A command for generating a new source file or files based on defined templates. Automatically handles intermediate directories and supports multiple file generation (such as spec files or view component templates).
       </li>
+      <li>
+        <a href="./commands/file-generators">File Generators</a>
+        <br>
+        Generators are used by the <a href="./commands/built-in#new-file-command">New File command</a> to define the output files generated for a given input path and options.
+      </li>
     </ul>
   </li>
 </ul>

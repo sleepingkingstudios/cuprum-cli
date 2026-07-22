@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Errors::Files::GeneratorError#file_path
+parent_path: cuprum/cli/errors/files/generator-error
+signature: file_path
+slug: file-path
+constructor: false
+data_path: cuprum/cli/errors/files/generator-error/i-file-path
+returns:
+- description: the file path passed to the generator.
+  type:
+  - name: String
+version: "*"

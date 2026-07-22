@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Files::Generator::Output#key
+parent_path: cuprum/cli/files/generator/output
+signature: key
+slug: key
+constructor: false
+data_path: cuprum/cli/files/generator/output/i-key
+returns:
+- description: the current value of key
+  type:
+  - name: Object
+short_description: Returns the value of attribute key
+version: "*"

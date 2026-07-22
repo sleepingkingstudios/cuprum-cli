@@ -10,6 +10,8 @@ A `Cuprum::Cli::Command` defines an action or sequence of actions that can be ca
 
 Internally, a `Cuprum::Cli::Command` leverages <a href="https://www.sleepingkingstudios.com/cuprum/commands/" target="_blank">Cuprum commands</a>, which provides simple but powerful tools for managing success and failure cases.
 
+For a full list of available methods, see the [Reference documentation](../reference/cuprum/cli/command).
+
 ## Contents
 
 - [Defining Commands](#defining-commands)
@@ -22,13 +24,14 @@ Internally, a `Cuprum::Cli::Command` leverages <a href="https://www.sleepingking
 
 ### See Also
 
+- [Built-In Commands](./built-in)
+  - [CI Commands](./built-in#ci-commands)
+  - [File Commands](./built-in#file-commands)
 - [Command Dependencies](./dependencies)
   - [FileSystem](./dependencies#filesystem)
   - [StandardIo](./dependencies#standardio)
   - [SystemCommand](./dependencies#systemcommand)
-- [Built-In Commands](./built-in)
-  - [CI Commands](./built-in#ci-commands)
-  - [File Commands](./built-in#file-commands)
+- [File Generators](./file-generators)
 
 ## Defining Commands
 

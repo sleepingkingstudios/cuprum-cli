@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Files::Generator#file_path
+parent_path: cuprum/cli/files/generator
+signature: file_path
+slug: file-path
+constructor: false
+data_path: cuprum/cli/files/generator/i-file-path
+returns:
+- description: the input file path provided by the user.
+  type:
+  - name: String
+version: "*"

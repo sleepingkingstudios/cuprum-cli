@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Files::Generator::Output#path
+parent_path: cuprum/cli/files/generator/output
+signature: path
+slug: path
+constructor: false
+data_path: cuprum/cli/files/generator/output/i-path
+returns:
+- description: the current value of path
+  type:
+  - name: Object
+short_description: Returns the value of attribute path
+version: "*"

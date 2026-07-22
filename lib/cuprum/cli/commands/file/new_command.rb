@@ -2,8 +2,6 @@
 
 require 'cuprum/cli/command'
 require 'cuprum/cli/commands/file'
-require 'cuprum/cli/commands/file/render_erb'
-require 'cuprum/cli/commands/file/resolve_template'
 
 module Cuprum::Cli::Commands::File
   # Command for generating a templated file or files.
@@ -14,73 +12,68 @@ module Cuprum::Cli::Commands::File
     include Cuprum::Cli::Options::Quiet
     include Cuprum::Cli::Options::Verbose
 
+    class << self
+      # @return [Array<Class>] the default generators configured for the
+      #   command.
+      def default_generators
+        [
+          Cuprum::Cli::Files::Generators::RubyGenerator,
+          Cuprum::Cli::Files::Generators::RSpecGenerator
+        ]
+      end
+    end
+
     argument :file_path, type: String, required: true
 
-    option :directories,  type: :boolean, default: true
-    option :dry_run,      type: :boolean, default: false
-    option :parent_class, type: String
-    option :templates,
-      type:    Array,
-      default: Cuprum::Cli::Commands::File::Templates::DEFAULT_TEMPLATES
-    option :extra_flags,
-      type:     :boolean,
-      variadic: true
+    option :directories, type: :boolean, default: true
+    option :dry_run,     type: :boolean, default: false
+    option :generators,  type: :array,   default: default_generators
+    option :params,      type: :object,  variadic: true
 
     description 'Generates a new templated file or files.'
 
     private
 
-    def excluded_tags
-      excluded = []
-
-      extra_flags.each do |flag, value|
-        excluded << flag if value == false
+    def build_generator
+      generator = generators.reverse_each.find do |generator_class|
+        generator_class.match?(file_path, **params)
       end
 
-      excluded
+      if generator
+        return generator.new(file_path, **params, **generator_options)
+      end
+
+      details = 'no generator matches the file path and options'
+      failure(generator_error(details:))
     end
 
-    def generate_file(file_path:, parameters:, template_path:) # rubocop:disable Metrics/MethodLength
-      file_path = resolve_file_path(file_path, **parameters)
-      command   = GenerateFile.new(
-        file_system:,
-        standard_io:,
+    def generator_error(details: nil)
+      message = "unable to generate file #{file_path}"
+      message = "#{message} - #{details}" if details
+
+      Cuprum::Cli::Errors::Files::GeneratorError.new(
+        details:,
+        file_path:,
+        message:,
+        options:
+      )
+    end
+
+    def generator_options
+      {
         directories: directories?,
         dry_run:     dry_run?,
+        file_system:,
         quiet:       quiet?,
+        standard_io:,
         verbose:     verbose?
-      )
-
-      parameters = parameters.merge(parent_class:)
-
-      step { command.call(file_path:, parameters:, template_path:) }
-
-      file_path
+      }
     end
 
     def process
-      templates, parameters = step { resolve_template }
+      generator = step { build_generator }
 
-      templates.map do |template|
-        file_path     = template.fetch(:file_path, self.file_path)
-        template_path = template.fetch(:template)
-
-        step { generate_file(file_path:, parameters:, template_path:) }
-      end
+      generator.call
     end
-
-    def resolve_file_path(file_path, **params)
-      params = tools.hash_tools.convert_keys_to_symbols(params)
-
-      format(file_path, params)
-    end
-
-    def resolve_template
-      command = Cuprum::Cli::Commands::File::ResolveTemplate.new(templates:)
-
-      command.call(file_path, except: excluded_tags)
-    end
-
-    def tools = @tools ||= SleepingKingStudios::Tools::Toolbelt.instance
   end
 end

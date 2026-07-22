@@ -1,0 +1,52 @@
+---
+name: Cuprum::Cli::Files::Generator#initialize
+parent_path: cuprum/cli/files/generator
+signature: initialize(file_path, **)
+slug: initialize
+constructor: true
+data_path: cuprum/cli/files/generator/i-initialize
+overloads:
+- name: Cuprum::Cli::Files::Generator#initialize
+  parent_path: cuprum/cli/files/generator
+  signature: initialize(file_path, **options)
+  slug: initialize
+  constructor: true
+  options:
+  - name: options
+    opts:
+    - description: |-
+        if true, simulates file generation
+        but does not perform the actual file system operations. Defaults to
+        false.
+      name: dry_run
+      type:
+      - name: 'true'
+      - name: 'false'
+    - description: |-
+        if true, does not print generated
+        file names status to STDOUT. Defaults to false.
+      name: quiet
+      type:
+      - name: 'true'
+      - name: 'false'
+    - description: |-
+        if true, prints the contents of
+        generated files to STDOUT. Defaults to false.
+      name: verbose
+      type:
+      - name: 'true'
+      - name: 'false'
+  params:
+  - description: the input file path provided by the user.
+    name: file_path
+    type:
+    - name: String
+  - description: additional options for the generator.
+    name: options
+    type:
+    - name: Hash
+returns:
+- description: a new instance of Generator
+  type:
+  - name: Generator
+version: "*"

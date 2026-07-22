@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Files::Generator#file_parameters
+parent_path: cuprum/cli/files/generator
+signature: file_parameters
+slug: file-parameters
+constructor: false
+data_path: cuprum/cli/files/generator/i-file-parameters
+returns:
+- description: parameters extracted from the input file name.
+  type:
+  - name: Hash
+version: "*"

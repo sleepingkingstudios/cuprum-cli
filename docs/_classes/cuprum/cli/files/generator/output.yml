@@ -1,0 +1,33 @@
+---
+name: Cuprum::Cli::Files::Generator::Output
+slug: output
+type: class
+files:
+- lib/cuprum/cli/files/generator.rb
+parent_path: cuprum/cli/files/generator
+short_description: Data class representing a configured output file.
+instance_attributes:
+- name: key
+  read: true
+  write: false
+  path: cuprum/cli/files/generator/output/i-key
+  slug: key
+  inherited: false
+- name: path
+  read: true
+  write: false
+  path: cuprum/cli/files/generator/output/i-path
+  slug: path
+  inherited: false
+- name: template_path
+  read: true
+  write: false
+  path: cuprum/cli/files/generator/output/i-template-path
+  slug: template-path
+  inherited: false
+data_path: cuprum/cli/files/generator/output
+constructor: false
+inherited_classes:
+- name: Data
+  slug: data
+version: "*"

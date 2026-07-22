@@ -1,0 +1,18 @@
+---
+name: Cuprum::Cli::Files::Generators::TEMPLATES_PATH
+parent_path: cuprum/cli/files/generators
+slug: templates-path
+short_description: The path for template files, used when defining generators.
+value: |-
+  File
+  .join(
+    Cuprum::Cli.gem_path,
+    'lib',
+    'cuprum',
+    'cli',
+    'files',
+    'templates'
+  )
+  .freeze
+data_path: cuprum/cli/files/generators/templates-path
+version: "*"
