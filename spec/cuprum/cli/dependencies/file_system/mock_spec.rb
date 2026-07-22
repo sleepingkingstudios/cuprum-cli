@@ -204,16 +204,36 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
     context 'when initialized with files with String values' do
       let(:files) do
         {
-          '/path/to/file' => 'Nested File'
+          'file.txt'          => 'Top Level File',
+          '/path/to/file.txt' => 'Flattened File',
+          'directory'         => { 'file.txt' => 'Nested File' }
         }
       end
       let(:options) { super().merge(files:) }
 
-      it 'should convert the value to a StringIO', :aggregate_failures do
-        file = mock_fs.files.dig('path', 'to', 'file')
+      it 'should file contents to a StringIO', :aggregate_failures do
+        file = mock_fs.files['file.txt']
 
         expect(file).to be_a(StringIO)
-        expect(file.string).to be == files['/path/to/file']
+        expect(file.string).to be == 'Top Level File'
+      end
+
+      it 'should convert flattened file contents to a StringIO',
+        :aggregate_failures \
+      do
+        file = mock_fs.files.dig('path', 'to', 'file.txt')
+
+        expect(file).to be_a(StringIO)
+        expect(file.string).to be == 'Flattened File'
+      end
+
+      it 'should convert nested file contents to a StringIO',
+        :aggregate_failures \
+      do
+        file = mock_fs.files.dig('directory', 'file.txt')
+
+        expect(file).to be_a(StringIO)
+        expect(file.string).to be == 'Nested File'
       end
     end
   end
