@@ -1,0 +1,9 @@
+---
+name: Cuprum::Cli::Dependencies::Clock#measure
+parent_path: cuprum/cli/dependencies/clock
+signature: measure
+slug: measure
+constructor: false
+data_path: cuprum/cli/dependencies/clock/i-measure
+short_description: Measures the time elapsed while the block is run.
+version: "*"

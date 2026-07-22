@@ -14,6 +14,10 @@ RSpec.describe Cuprum::Cli::Dependencies do
       expect(provider).to be described_class.provider
     end
 
+    it 'should provide a Clock dependency' do
+      expect(provider.get(:clock)).to be_a described_class::Clock
+    end
+
     it 'should provide a FileSystem dependency' do
       expect(provider.get(:file_system)).to be_a described_class::FileSystem
     end

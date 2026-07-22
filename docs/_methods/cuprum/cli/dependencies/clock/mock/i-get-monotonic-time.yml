@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Dependencies::Clock::Mock#get_monotonic_time
+parent_path: cuprum/cli/dependencies/clock/mock
+signature: get_monotonic_time
+slug: get-monotonic-time
+constructor: false
+data_path: cuprum/cli/dependencies/clock/mock/i-get-monotonic-time
+returns:
+- description: the mocked monotonic time.
+  type:
+  - name: Numeric
+version: "*"

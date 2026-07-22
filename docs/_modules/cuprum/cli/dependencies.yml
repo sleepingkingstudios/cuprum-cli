@@ -4,6 +4,8 @@ slug: dependencies
 type: module
 files:
 - lib/cuprum/cli/dependencies.rb
+- lib/cuprum/cli/dependencies/clock.rb
+- lib/cuprum/cli/dependencies/clock/mock.rb
 - lib/cuprum/cli/dependencies/file_system.rb
 - lib/cuprum/cli/dependencies/standard_io.rb
 - lib/cuprum/cli/dependencies/system_command.rb
@@ -19,6 +21,8 @@ class_methods:
   slug: provider
   inherited: false
 defined_classes:
+- name: Clock
+  slug: clock
 - name: FileSystem
   slug: file-system
 - name: StandardIo

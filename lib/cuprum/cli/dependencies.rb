@@ -7,6 +7,7 @@ require 'cuprum/cli'
 module Cuprum::Cli
   # Dependencies provide standard functionality to commands.
   module Dependencies
+    autoload :Clock,         'cuprum/cli/dependencies/clock'
     autoload :FileSystem,    'cuprum/cli/dependencies/file_system'
     autoload :StandardIo,    'cuprum/cli/dependencies/standard_io'
     autoload :SystemCommand, 'cuprum/cli/dependencies/system_command'
@@ -15,6 +16,7 @@ module Cuprum::Cli
     def self.provider
       @provider ||= Plumbum::ManyProvider.new(
         values: {
+          clock:          Clock.new,
           file_system:    FileSystem.new,
           standard_io:    StandardIo.new,
           system_command: SystemCommand.new

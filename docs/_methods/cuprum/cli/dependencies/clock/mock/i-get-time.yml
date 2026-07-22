@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Dependencies::Clock::Mock#get_time
+parent_path: cuprum/cli/dependencies/clock/mock
+signature: get_time
+slug: get-time
+aliases:
+- current_time
+- now
+constructor: false
+data_path: cuprum/cli/dependencies/clock/mock/i-get-time
+returns:
+- description: the mocked current time.
+  type:
+  - name: Time
+version: "*"
