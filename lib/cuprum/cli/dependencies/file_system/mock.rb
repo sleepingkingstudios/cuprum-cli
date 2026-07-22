@@ -258,6 +258,7 @@ module Cuprum::Cli::Dependencies
 
     def split_files(files) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
       files.each.with_object({}) do |(key, value), hsh|
+        value = split_files(value)  if value.is_a?(Hash)
         value = StringIO.new(value) if value.is_a?(String)
 
         next hsh[key] = value unless key.include?('/')
