@@ -1,0 +1,31 @@
+---
+name: Cuprum::Cli::Dependencies::Clock
+slug: clock
+type: class
+files:
+- lib/cuprum/cli/dependencies/clock.rb
+parent_path: cuprum/cli/dependencies
+short_description: Utility wrapping the current time and time calculations.
+defined_classes:
+- name: Mock
+  slug: mock
+instance_methods:
+- name: get_monotonic_time
+  path: cuprum/cli/dependencies/clock/i-get-monotonic-time
+  slug: get-monotonic-time
+  inherited: false
+- name: get_time
+  path: cuprum/cli/dependencies/clock/i-get-time
+  slug: get-time
+  inherited: false
+- name: measure
+  path: cuprum/cli/dependencies/clock/i-measure
+  slug: measure
+  inherited: false
+data_path: cuprum/cli/dependencies/clock
+constructor: false
+direct_subclasses:
+- name: Cuprum::Cli::Dependencies::Clock::Mock
+  slug: mock
+  path: cuprum/cli/dependencies/clock/mock
+version: "*"

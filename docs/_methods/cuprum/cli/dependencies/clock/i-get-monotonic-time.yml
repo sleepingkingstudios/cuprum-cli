@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Dependencies::Clock#get_monotonic_time
+parent_path: cuprum/cli/dependencies/clock
+signature: get_monotonic_time
+slug: get-monotonic-time
+constructor: false
+data_path: cuprum/cli/dependencies/clock/i-get-monotonic-time
+returns:
+- description: a monotonically increasing system clock time.
+  type:
+  - name: Numeric
+version: "*"

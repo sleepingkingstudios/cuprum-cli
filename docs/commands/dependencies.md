@@ -16,6 +16,7 @@ Internally, Command Dependencies use the <a href="https://www.sleepingkingstudio
 
 - [Using Dependencies](#using-dependencies)
 - [Built-In Dependencies](#built-in-dependencies)
+  - [Clock](#clock)
   - [FileSystem](#filesystem)
   - [StandardIo](#standardio)
   - [SystemCommand](#systemcommand)
@@ -70,6 +71,33 @@ For more information on Plumbum dependencies, see the <a href="https://www.sleep
 
 `Cuprum::Cli` defines three built-in dependencies - [FileSystem](#filesystem), [StandardIo](#standardio), and [SystemCommand](#systemcommand). Each built-in dependency wraps an external interface.
 
+### Clock
+
+The `Clock` dependency wraps Ruby's native time functionality. It defines the following methods:
+
+`#get_monotonic_time`
+: Returns a monotonically-increasing timestamp in seconds. Useful for measuring time elapsed between timestamps.
+
+`#get_time` (also `#current_time`, `#now`)
+: Returns the current time as a Ruby `Time` instance in the UTC timezone.
+
+`#measure(&block)`
+: Calls the block and returns the time elapsed between the start and end of the block.
+
+[Back to Top](#)
+
+#### Clock::Mock
+
+A `Clock::Mock` allows setting the current time for testing purposes.
+
+```ruby
+clock = Cuprum::Cli::Clock::Mock.new(current_time: Time.parse('1982-07-09'))
+clock.get_time
+#=> => 1982-07-09 00:00:00
+```
+
+[Back to Top](#)
+
 ### FileSystem
 
 The `FileSystem` dependency wraps the native file system and provides methods for reading from and writing to files and directories. It defines the following methods:
@@ -103,6 +131,13 @@ For more information, see the [FileSystem reference](../reference/cuprum/cli/dep
 
 A `FileSystem::Mock` creates a simulated directory for testing commands. It defines the above methods as well as a `#files` accessor to view the current contents of the simulated directory. Directories are represented as nested `Hash`es, while files are represented as `StringIO` objects.
 
+```ruby
+files       = { 'tmp' => { 'file.txt' => 'This is a text file!' } }
+file_system = Cuprum::Cli::Dependencies::FileSystem::Mock.new(files:)
+file_system.read_file('tmp/file.txt')
+#=> 'This is a text file!'
+```
+
 [Back to Top](#)
 
 ### StandardIo
@@ -129,6 +164,19 @@ For more information, see the [StandardIo reference](../reference/cuprum/cli/dep
 
 A `StandardIo::Mock` simulates the input, output, and error streams as `StringIO` objects and exposes them as `#input_stream`, `#output_stream`, and `#error_stream`. In addition, it defines a `#combined_stream` that captures any data written to either the output or error streams.
 
+```ruby
+standard_io = Cuprum::Cli::Dependencies::StandardIo::Mock.new
+standard_io.write_output 'OK'
+standard_io.write_error  'Oh no!'
+
+standard_io.output_stream.string
+#=> "OK\n"
+standard_io.error_stream.string
+#=> "Oh no!"
+standard_io.combined_stream.string
+#=> "OK\nOh no!\n"
+```
+
 [Back to Top](#)
 
 ### SystemCommand
@@ -150,6 +198,23 @@ For more information, see the [SystemCommand reference](../reference/cuprum/cli/
 #### SystemCommand::Mock
 
 A `SystemCommand::Mock` simulates shell commands by intercepting and recording outgoing commands and returning preconfigured outputs and statuses.
+
+```ruby
+captures       = { 'echo "Greetings, programs!"' => ['Greetings, programs!', '', 0] }
+system_command = Cuprum::Cli::Dependencies::SystemCommand::Mock.new(captures:)
+
+result = system_command.spawn('echo "Greetings, programs!"')
+result.success?
+#=> true
+
+result = system_command.capture('echo "Greetings, programs!"')
+result.success?
+#=> true
+result.value.output
+#=> 'Greetings, programs!'
+result.value.status.exitstatus
+#=> 0
+```
 
 [Back to Top](#)
 

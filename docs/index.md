@@ -7,6 +7,10 @@
 
 - [Documentation](#documentation)
 - [Getting Started](#getting-started)
+- [Features](#features)
+  - [Commands](#commands)
+  - [Built-In Commands](#built-in-commands)
+  - [Integrations](#integrations)
 - [Reference](#reference)
 
 ## Documentation
@@ -124,7 +128,11 @@ For more information on defining commands, see the [commands documentation]({{si
 
 [Back to Top](#)
 
-## Reference
+## Features
+
+`Cuprum::Cli` defines the following features:
+
+### Commands
 
 The core component in `Cuprum::Cli` is the `Command`.
 
@@ -150,7 +158,7 @@ The core component in `Cuprum::Cli` is the `Command`.
   <li>
     <a href="./commands/dependencies">Command Dependencies</a>
     <br>
-    <code>Cuprum::Cli</code> commands use dependencies to interact with external functions in a consistent and testable fashion. Defined dependencies include <a href="./commands/dependencies#filesystem">reading from and writing to the file system</a>, <a href="./commands/dependencies#standardio">interacting with the standard IO streams</a>, and <a href="./commands/dependencies#systemcommand">calling system commands</a>.
+    <code>Cuprum::Cli</code> commands use dependencies to interact with external functions in a consistent and testable fashion. Defined dependencies include <a href="./commands/dependencies#clock">reading times</a>, <a href="./commands/dependencies#filesystem">reading from and writing to the file system</a>, <a href="./commands/dependencies#standardio">interacting with the standard IO streams</a>, and <a href="./commands/dependencies#systemcommand">calling system commands</a>.
   </li>
 </ul>
 
@@ -214,6 +222,10 @@ Once a command is defined, `Cuprum::Cli` integrates with an external CLI provide
     </ul>
   </li>
 </ul>
+
+[Back to Top](#)
+
+## Reference
 
 For a full list of defined classes and objects, see [Reference](./reference).
 

@@ -14,6 +14,7 @@
 
 ## Dependencies
 
+- Implemented `Clock` dependency.
 - Improved handling of file parameters for `FileSystem::Mock`.
 - Fixed a `FileSystem::Mock` bug that would wipe existing mock directories.
 
