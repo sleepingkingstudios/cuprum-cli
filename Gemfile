@@ -5,6 +5,8 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in cuprum-cli.gemspec
 gemspec
 
+gem 'thor', '~> 1.5'
+
 group :development, :test do
   gem 'appraisal', '~> 2.5'
 
@@ -19,8 +21,6 @@ group :development, :test do
   gem 'rubocop-rspec', '~> 3.10'
 
   gem 'simplecov', '~> 0.22'
-
-  gem 'thor', '~> 1.5'
 end
 
 group :docs do

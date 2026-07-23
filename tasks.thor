@@ -14,7 +14,10 @@ registry = Cuprum::Cli::Integrations::Thor::Registry.new
 # CI Commands
 ################################################################################
 
-registry.register Cuprum::Cli::Commands::Ci::RSpecCommand
+registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
+  options: {
+    gemfile: 'gemfiles/default.gemfile'
+  }
 registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
   description: 'Runs the RSpec tests including specs for the Thor integration.',
   full_name:   'ci:rspec:thor',
