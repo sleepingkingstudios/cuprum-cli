@@ -35,12 +35,12 @@ module Cuprum::Cli::Commands::Ci
 
     attr_reader :report
 
-    def aggregate_file_results(filename:, result:) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+    def aggregate_file_results(filename:, result:)
       if result.value.is_a?(Cuprum::Cli::Commands::Ci::Report)
         merge_report(result)
       end
 
-      if result.value&.errored? || result.failure?
+      if errored?(result)
         errored_files << filename
       elsif result.value&.failure?
         failing_files << filename
@@ -67,10 +67,16 @@ module Cuprum::Cli::Commands::Ci
       end
     end
 
+    def errored?(result)
+      return true unless result.value.is_a?(Cuprum::Cli::Commands::Ci::Report)
+
+      result.value.errored?
+    end
+
     def file_pattern?(pattern) = pattern.match?(FILE_PATTERN)
 
     def format_status(result)
-      if result.failure? || result.value.errored?
+      if errored?(result)
         color('Errored', 'red')
       elsif result.value.failure?
         color('Failing', 'red')
