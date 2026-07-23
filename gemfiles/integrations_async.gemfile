@@ -2,6 +2,8 @@
 
 source "https://rubygems.org"
 
+gem "async", "~> 2.37"
+
 group :development, :test do
   gem "appraisal", "~> 2.5"
   gem "byebug", "~> 12.0"

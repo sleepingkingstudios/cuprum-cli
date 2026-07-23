@@ -2,7 +2,7 @@
 
 integration = ENV.fetch('INTEGRATION', nil)
 
-excluded_integrations  = %w[thor]
+excluded_integrations  = %w[async thor]
 excluded_integrations -= [integration] if integration
 
 unless ENV['COVERAGE'] == 'false'
@@ -38,6 +38,7 @@ Cuprum::Cli.initializer.call
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   config.extend  RSpec::SleepingKingStudios::Concerns::ExampleConstants
+  config.include RSpec::SleepingKingStudios::Concerns::WrapEnv
   config.include RSpec::SleepingKingStudios::Deferred::Consumer
   config.include RSpec::SleepingKingStudios::Examples::PropertyExamples
   config.include RSpec::SleepingKingStudios::Concerns::Toolbelt

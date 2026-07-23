@@ -5,6 +5,8 @@ require 'cuprum/cli/dependencies'
 module Cuprum::Cli::Dependencies
   # Utility wrapping the current time and time calculations.
   class Clock
+    autoload :Mock, 'cuprum/cli/dependencies/clock/mock'
+
     # @return [Numeric] a monotonically increasing system clock time.
     def get_monotonic_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) # rubocop:disable Naming/AccessorMethodName
 

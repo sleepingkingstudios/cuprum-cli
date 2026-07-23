@@ -1,11 +1,11 @@
 ---
-name: Cuprum::Cli::Commands::Ci::RSpecEachCommand
+name: Cuprum::Cli::Integrations::Async::Commands::RSpecEachCommand
 slug: r-spec-each-command
 type: class
 files:
-- lib/cuprum/cli/commands/ci/rspec_each_command.rb
-parent_path: cuprum/cli/commands/ci
-short_description: Command for running each RSpec file in its own process.
+- lib/cuprum/cli/integrations/async/commands/rspec_each_command.rb
+parent_path: cuprum/cli/integrations/async/commands
+short_description: Command for running each RSpec file in its own process with parallelism.
 class_methods:
 - name: argument
   path: cuprum/cli/command/c-argument
@@ -90,20 +90,12 @@ instance_methods:
   path: cuprum/cli/dependencies/standard-io/helpers/i-warn
   slug: warn
   inherited: true
-data_path: cuprum/cli/commands/ci/r-spec-each-command
-included_modules:
-- name: Cuprum::Cli::Dependencies::StandardIo::Helpers
-  slug: helpers
-  path: cuprum/cli/dependencies/standard-io/helpers
-- name: Cuprum::Cli::Options::Quiet
-  slug: quiet
-  path: cuprum/cli/options/quiet
+data_path: cuprum/cli/integrations/async/commands/r-spec-each-command
 constructor: true
-direct_subclasses:
-- name: Cuprum::Cli::Integrations::Async::Commands::RSpecEachCommand
-  slug: r-spec-each-command
-  path: cuprum/cli/integrations/async/commands/r-spec-each-command
 inherited_classes:
+- name: Cuprum::Cli::Commands::Ci::RSpecEachCommand
+  slug: r-spec-each-command
+  path: cuprum/cli/commands/ci/r-spec-each-command
 - name: Cuprum::Cli::Command
   slug: command
   path: cuprum/cli/command

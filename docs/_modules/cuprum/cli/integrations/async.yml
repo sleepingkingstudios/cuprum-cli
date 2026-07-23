@@ -1,0 +1,25 @@
+---
+name: Cuprum::Cli::Integrations::Async
+slug: async
+type: module
+files:
+- lib/cuprum/cli/integrations/async.rb
+- lib/cuprum/cli/integrations/async/commands.rb
+parent_path: cuprum/cli/integrations
+short_description: Integration with the Async library.
+class_methods:
+- name: max_concurrent_tasks
+  path: cuprum/cli/integrations/async/c-max-concurrent-tasks
+  slug: max-concurrent-tasks
+  inherited: false
+defined_modules:
+- name: Commands
+  slug: commands
+data_path: cuprum/cli/integrations/async
+metadata:
+  see:
+  - label: https://socketry.github.io/async/
+    path: https://socketry.github.io/async/
+    text:
+    type: link
+version: "*"

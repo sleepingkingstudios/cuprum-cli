@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/commands/ci/rspec_each_command'
+require 'cuprum/cli/integrations/async/commands/rspec_each_command'
 require 'cuprum/cli/rspec/deferred/arguments_examples'
 require 'cuprum/cli/rspec/deferred/options_examples'
 
-RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable RSpec/SpecFilePathFormat
+RSpec.describe Cuprum::Cli::Integrations::Async::Commands::RSpecEachCommand, # rubocop:disable RSpec/SpecFilePathFormat
+  integration: :async \
+do
   include Cuprum::Cli::RSpec::Deferred::ArgumentsExamples
   include Cuprum::Cli::RSpec::Deferred::OptionsExamples
 
@@ -30,6 +32,10 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
     :gemfile,
     type:    :string,
     default: nil
+  include_deferred 'should define option',
+    :max_jobs,
+    type:    :integer,
+    default: Cuprum::Cli::Integrations::Async.max_concurrent_tasks
 
   include_deferred 'should define --quiet option'
 

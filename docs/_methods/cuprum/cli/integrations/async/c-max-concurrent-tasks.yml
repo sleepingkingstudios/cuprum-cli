@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Integrations::Async.max_concurrent_tasks
+parent_path: cuprum/cli/integrations/async
+signature: max_concurrent_tasks
+slug: max-concurrent-tasks
+constructor: false
+data_path: cuprum/cli/integrations/async/c-max-concurrent-tasks
+returns:
+- description: |-
+    The recommended maximum number of concurrent Async
+    tasks. This value can be configured by setting an
+    ASYNC_CONCURRENT_TASKS environment variable. The default value is 8.
+  type:
+  - name: Integer
+version: "*"

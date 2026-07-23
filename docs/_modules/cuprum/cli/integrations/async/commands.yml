@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Integrations::Async::Commands
+slug: commands
+type: module
+files:
+- lib/cuprum/cli/integrations/async/commands.rb
+- lib/cuprum/cli/integrations/async/commands/rspec_each_command.rb
+parent_path: cuprum/cli/integrations/async
+short_description: Namespace for commands that rely on the Async integration.
+defined_classes:
+- name: RSpecEachCommand
+  slug: r-spec-each-command
+data_path: cuprum/cli/integrations/async/commands
+version: "*"
