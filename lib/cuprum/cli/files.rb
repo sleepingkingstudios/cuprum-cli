@@ -11,5 +11,6 @@ module Cuprum::Cli
     autoload :Generators,   'cuprum/cli/files/generators'
     autoload :RenderErb,    'cuprum/cli/files/render_erb'
     autoload :Template,     'cuprum/cli/files/template'
+    autoload :Templates,    'cuprum/cli/files/templates'
   end
 end
