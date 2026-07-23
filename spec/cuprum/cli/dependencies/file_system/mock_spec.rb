@@ -139,6 +139,61 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
 
   include_deferred 'should implement the file_system dependency'
 
+  describe '#expanded_dirs' do
+    it { expect(mock_fs).to respond_to(:expanded_dirs).with(0).arguments }
+
+    it { expect(mock_fs.expanded_dirs).to be == [] }
+
+    context 'when a directory is added to the file system' do
+      let(:dir_path) { 'path/to/directory' }
+      let(:expected_dirs) do
+        %w[
+          path
+          path/to
+          path/to/directory
+        ]
+      end
+
+      before(:example) do
+        mock_fs.expanded_dirs
+
+        mock_fs.create_directory(dir_path, recursive: true)
+      end
+
+      it { expect(mock_fs.expanded_dirs).to be == expected_dirs }
+    end
+
+    wrap_deferred 'when initialized with files' do
+      let(:expected_dirs) do
+        %w[
+          root_dir
+          root_dir/child_dir
+        ]
+      end
+
+      it { expect(mock_fs.expanded_dirs).to be == expected_dirs }
+
+      context 'when a directory is added to the file system' do
+        let(:dir_path) { 'path/to/directory' }
+        let(:expected_dirs) do
+          %w[
+            path
+            path/to
+            path/to/directory
+          ].concat(super())
+        end
+
+        before(:example) do
+          mock_fs.expanded_dirs
+
+          mock_fs.create_directory(dir_path, recursive: true)
+        end
+
+        it { expect(mock_fs.expanded_dirs).to be == expected_dirs }
+      end
+    end
+  end
+
   describe '#files' do
     include_examples 'should define reader', :files, {}
 
@@ -235,6 +290,50 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
 
         expect(file).to be_a(StringIO)
         expect(file.string).to be == 'Nested File'
+      end
+    end
+  end
+
+  describe '#flattened_files' do
+    it { expect(mock_fs).to respond_to(:flattened_files).with(0).arguments }
+
+    it { expect(mock_fs.flattened_files).to be == [] }
+
+    context 'when a file is added to the file system' do
+      let(:file_path) { 'added_file.txt' }
+
+      before(:example) do
+        mock_fs.flattened_files
+
+        mock_fs.write_file(file_path, 'This file was added in the test.')
+      end
+
+      it { expect(mock_fs.flattened_files).to be == [file_path] }
+    end
+
+    wrap_deferred 'when initialized with files' do
+      let(:expected_files) do
+        %w[
+          root_dir/child_file.txt
+          root_file.txt
+        ]
+      end
+
+      it { expect(mock_fs.flattened_files).to be == expected_files }
+
+      context 'when a file is added to the file system' do
+        let(:file_path) { 'added_file.txt' }
+        let(:expected_files) do
+          super() << file_path
+        end
+
+        before(:example) do
+          mock_fs.flattened_files
+
+          mock_fs.write_file(file_path, 'This file was added in the test.')
+        end
+
+        it { expect(mock_fs.flattened_files).to be == expected_files }
       end
     end
   end
