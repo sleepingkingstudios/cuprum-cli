@@ -6,6 +6,7 @@ require 'cuprum/cli/commands/ci/rspec_command'
 module Cuprum::Cli::Commands::Ci
   # Command for running each RSpec file in its own process.
   class RSpecEachCommand < Cuprum::Cli::Command # rubocop:disable Metrics/ClassLength
+    dependency :clock
     dependency :file_system
     dependency :standard_io
 
@@ -34,6 +35,8 @@ module Cuprum::Cli::Commands::Ci
     attr_reader :pending_files
 
     attr_reader :report
+
+    attr_reader :total_time
 
     def aggregate_file_results(filename:, result:)
       if result.value.is_a?(Cuprum::Cli::Commands::Ci::Report)
@@ -109,7 +112,7 @@ module Cuprum::Cli::Commands::Ci
       say "Running #{matching_files.count} spec files...\n"
       say "\n" unless matching_files.none?
 
-      matching_files.each { |filename| run_file(filename) }
+      @total_time = clock.measure { run_matching_files }
 
       summarize_report
 
@@ -143,6 +146,10 @@ module Cuprum::Cli::Commands::Ci
       result
     end
 
+    def run_matching_files
+      matching_files.each { |filename| run_file(filename) }
+    end
+
     def say_errored
       return if errored_files.empty?
 
@@ -174,7 +181,7 @@ module Cuprum::Cli::Commands::Ci
     end
 
     def say_summary # rubocop:disable Metrics/AbcSize
-      say "\nFinished in #{report.duration.round(2)} seconds"
+      say "\nFinished in #{total_time.round(2)} seconds"
 
       summary_color =
         if report.errored? || report.failure? || errored_files.any?

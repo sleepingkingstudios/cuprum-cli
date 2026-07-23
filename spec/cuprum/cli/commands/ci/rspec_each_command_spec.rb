@@ -9,9 +9,10 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
   include Cuprum::Cli::RSpec::Deferred::OptionsExamples
 
   subject(:command) do
-    described_class.new(file_system:, standard_io:)
+    described_class.new(clock:, file_system:, standard_io:)
   end
 
+  let(:clock)       { Cuprum::Cli::Dependencies::Clock::Mock.new }
   let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
   let(:standard_io) { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
 
@@ -143,11 +144,18 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
         Cuprum::Result.new(value: rspec_report)
       ]
     end
+    let(:total_time) { 15.0 }
 
     before(:example) do
       allow(Cuprum::Cli::Commands::Ci::RSpecCommand)
         .to receive(:new)
         .and_return(rspec_command)
+
+      allow(clock).to receive(:measure) do |&block|
+        block.call
+
+        total_time
+      end
 
       allow(rspec_command).to receive(:call).and_return(*rspec_results)
     end
@@ -173,6 +181,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           \e[33m0 examples, 0 failures\e[0m
         RAW
       end
+      let(:total_time) { 0.0 }
 
       it 'should return a passing result' do
         expect(command.call)
@@ -246,7 +255,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
           \e[32mPassing\e[0m spec/root_dir/sibling_spec.rb
           \e[32mPassing\e[0m spec/root_spec.rb
 
-          Finished in 6.0 seconds
+          Finished in 15.0 seconds
           \e[32m30 examples, 0 failures\e[0m
         RAW
       end
@@ -289,7 +298,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
 
             \e[31m  spec/root_dir/sibling_spec.rb\e[0m
 
-            Finished in 4.0 seconds
+            Finished in 15.0 seconds
             \e[31m20 examples, 0 failures\e[0m
           RAW
         end
@@ -329,7 +338,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
 
             \e[31m  spec/root_dir/sibling_spec.rb\e[0m
 
-            Finished in 6.0 seconds
+            Finished in 15.0 seconds
             \e[31m30 examples, 0 failures, 1 errors\e[0m
           RAW
         end
@@ -369,7 +378,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
 
             \e[31m  spec/root_dir/sibling_spec.rb\e[0m
 
-            Finished in 6.0 seconds
+            Finished in 15.0 seconds
             \e[31m30 examples, 5 failures\e[0m
           RAW
         end
@@ -409,7 +418,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
 
             \e[33m  spec/root_dir/sibling_spec.rb\e[0m
 
-            Finished in 6.0 seconds
+            Finished in 15.0 seconds
             \e[33m30 examples, 0 failures, 5 pending\e[0m
           RAW
         end
@@ -458,7 +467,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
             \e[31m  spec/root_dir/child_spec.rb\e[0m
             \e[31m  spec/root_dir/sibling_spec.rb\e[0m
 
-            Finished in 6.0 seconds
+            Finished in 15.0 seconds
             \e[31m30 examples, 15 failures, 10 pending\e[0m
           RAW
         end
@@ -478,6 +487,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
       let(:arguments)     { [*super(), *file_patterns] }
 
       context 'when there are no matching spec files' do
+        let(:total_time) { 0.0 }
         let(:expected_value) do
           Cuprum::Cli::Commands::Ci::RSpecCommand::Report.new(
             label:         'ci:rspec_each',
@@ -569,7 +579,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
             \e[32mPassing\e[0m root_dir/sibling_spec.rb
             \e[32mPassing\e[0m sibling_spec.rb
 
-            Finished in 6.0 seconds
+            Finished in 15.0 seconds
             \e[32m30 examples, 0 failures\e[0m
           RAW
         end
