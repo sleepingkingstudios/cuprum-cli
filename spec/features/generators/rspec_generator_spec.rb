@@ -8,12 +8,12 @@ RSpec.describe Cuprum::Cli::Files::Generators::RSpecGenerator do
   subject(:generator) { described_class.new(file_path, **constructor_options) }
 
   let(:files) do
-    template_path = File.join(
+    rspec_template_path = File.join(
       Cuprum::Cli::Files::Generators::TEMPLATES_PATH,
       'rspec.rb.erb'
     )
 
-    { template_path => File.read(template_path) }
+    { rspec_template_path => File.read(rspec_template_path) }
   end
   let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new(files:) }
   let(:standard_io) { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
