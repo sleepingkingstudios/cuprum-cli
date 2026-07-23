@@ -3,10 +3,10 @@
 require 'cuprum/command'
 require 'plumbum'
 
-require 'cuprum/cli/commands/file'
 require 'cuprum/cli/dependencies'
 require 'cuprum/cli/dependencies/file_system'
 require 'cuprum/cli/errors/files/missing_template'
+require 'cuprum/cli/files'
 require 'cuprum/cli/files/render_erb'
 require 'cuprum/cli/options'
 
@@ -41,43 +41,15 @@ module Cuprum::Cli::Files
 
     attr_reader :options
 
-    def check_if_file_already_exists(file_path:)
-      return unless file_system.file?(file_path)
-      return if force?
-
-      error  =
-        file_not_writeable_error(file_path:, reason: 'file already exists')
-
-      failure(error)
-    end
-
-    def check_if_file_is_directory(file_path:)
-      return unless file_system.directory?(file_path)
-
-      error  =
-        file_not_writeable_error(file_path:, reason: 'file is a directory')
-
-      failure(error)
-    end
-
-    def create_directory(file_path:)
-      return unless directories?
-
-      return if dry_run?
-      return if file_system.directory?(file_path)
-
-      *dir_names, _ = file_path.split(File::SEPARATOR)
-
-      return if dir_names.empty?
-
-      file_system.create_directory(
-        dir_names.join(File::SEPARATOR),
-        recursive: true
-      )
-    end
-
-    def file_not_writeable_error(**)
-      Cuprum::Cli::Errors::Files::FileNotWriteable.new(**)
+    def create_file(contents:, file_path:)
+      Cuprum::Cli::Files::CreateFile
+        .new(
+          directories: directories?,
+          dry_run:     dry_run?,
+          force:       force?,
+          file_system:
+        )
+        .call(contents:, file_path:)
     end
 
     def load_template(file_path:, template_path:)
@@ -99,9 +71,7 @@ module Cuprum::Cli::Files
 
       report_file_contents(contents)
 
-      step { create_directory(file_path:) }
-
-      step { write_file(contents:, file_path:) }
+      step { create_file(contents:, file_path:) }
 
       file_path
     end
@@ -125,18 +95,6 @@ module Cuprum::Cli::Files
         verbose: true
       )
       say "\n", verbose: true
-    end
-
-    def write_file(contents:, file_path:)
-      step { check_if_file_is_directory(file_path:) }
-      step { check_if_file_already_exists(file_path:) }
-
-      file_system.write_file(file_path, contents) unless dry_run?
-    rescue Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
-      error =
-        file_not_writeable_error(file_path:, reason: 'directory not found')
-
-      failure(error)
     end
   end
 end
