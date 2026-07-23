@@ -36,8 +36,9 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
       }
     end
     let(:options) { super().merge(files:) }
-    let(:matching_files) do
+    let(:matching_entries) do
       %w[
+        root_dir
         root_dir/child_file.txt
         root_file.txt
       ].map { |file_name| File.join(mock_fs.root_path, file_name) }

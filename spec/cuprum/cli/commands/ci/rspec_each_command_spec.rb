@@ -236,7 +236,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecEachCommand do # rubocop:disable 
         )
       end
       let(:expected_files) do
-        file_system.each_file('spec/**/*').to_a
+        file_system.each_file('spec/**/*_spec.rb').to_a
       end
       let(:expected_output) do
         <<~RAW

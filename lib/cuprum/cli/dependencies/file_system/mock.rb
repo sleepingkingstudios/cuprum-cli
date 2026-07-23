@@ -81,7 +81,7 @@ module Cuprum::Cli::Dependencies
     def each_file(pattern, &)
       return enum_for(:each_file, pattern) unless block_given?
 
-      flattened_files.each do |file_path|
+      [*expanded_dirs, *flattened_files].each do |file_path|
         next unless matches_pattern?(file_path:, pattern:)
 
         yield File.join(root_path, file_path)
@@ -177,6 +177,24 @@ module Cuprum::Cli::Dependencies
 
     private
 
+    def expand_dirs(files:, flat: Set.new, path: '')
+      files.each do |name, value|
+        qualified_path = path.empty? ? name : File.join(path, name)
+
+        next unless value.is_a?(Hash)
+
+        flat << qualified_path
+
+        qualified_path.split('/').reduce do |memo, segment|
+          "#{memo}/#{segment}".tap { |str| flat << str }
+        end
+
+        expand_dirs(files: value, flat:, path: qualified_path)
+      end
+
+      flat
+    end
+
     def flatten_files(files:, flat: [], path: '')
       files.each do |name, value|
         qualified_path = path.empty? ? name : File.join(path, name)
@@ -189,8 +207,12 @@ module Cuprum::Cli::Dependencies
       flat
     end
 
+    def expanded_dirs
+      @expanded_dirs ||= expand_dirs(files:).to_a.sort
+    end
+
     def flattened_files
-      @flattened_files || flatten_files(files:)
+      @flattened_files ||= flatten_files(files:)
     end
 
     def io_stream?(file_or_path)

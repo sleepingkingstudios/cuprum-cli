@@ -10,6 +10,7 @@
 ### Built-In Commands
 
 - Fixed directory expansion for `Ci::RSpecEachCommand`.
+- Fixed `Ci::RSpecEachCommand` reporting failing specs as errored.
 - Updated `File::NewCommand` to use generators instead of raw templates.
 
 ## Dependencies
@@ -17,6 +18,7 @@
 - Implemented `Clock` dependency.
 - Improved handling of file parameters for `FileSystem::Mock`.
 - Fixed a `FileSystem::Mock` bug that would wipe existing mock directories.
+- Fixed a `FileSystem::Mock` bug that did not include directories in `each_file`.
 
 ## Files
 
