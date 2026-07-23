@@ -4,13 +4,13 @@ require 'cuprum'
 require 'plumbum'
 
 require 'cuprum/cli/files'
-require 'cuprum/cli/files/generate_file'
 
 module Cuprum::Cli::Files
   # Command for generating templated files.
   class Generator < Cuprum::Command # rubocop:disable Metrics/ClassLength
     include Plumbum::Consumer
     prepend Plumbum::Parameters
+    include Cuprum::Cli::Dependencies::StandardIo::Helpers
     extend  Cuprum::Cli::Options::ClassMethods
     include Cuprum::Cli::Options::Quiet
     include Cuprum::Cli::Options::Verbose
@@ -223,6 +223,20 @@ module Cuprum::Cli::Files
 
     private
 
+    def build_file_template(template_path)
+      Cuprum::Cli::Files::Templates::FileTemplate.build(template_path)
+    end
+
+    def create_file(contents:, file_path:)
+      Cuprum::Cli::Files::CreateFile
+        .new(
+          directories: directories?,
+          dry_run:     dry_run?,
+          file_system:
+        )
+        .call(contents:, file_path:)
+    end
+
     def extract_file_parameters(file_path) # rubocop:disable Metrics/MethodLength
       base_name = File.basename(file_path)
       segments  = file_path.split(File::SEPARATOR)
@@ -256,23 +270,14 @@ module Cuprum::Cli::Files
       failure(error)
     end
 
-    def generate_command
-      @generate_command ||=
-        Cuprum::Cli::Files::GenerateFile
-        .new(
-          directories: directories?,
-          dry_run:     dry_run?,
-          file_system:,
-          quiet:       quiet?,
-          standard_io:,
-          verbose:     verbose?
-        )
-    end
+    def generate_file(contents:, file_path:)
+      say "Generating file #{file_path}..."
 
-    def generate_file(file_path:, template_path:)
-      parameters = file_parameters.merge(options)
+      report_file_contents(contents)
 
-      generate_command.call(file_path:, parameters:, template_path:)
+      step { create_file(contents:, file_path:) }
+
+      file_path
     end
 
     def generator_error(details: nil, key: nil)
@@ -292,11 +297,31 @@ module Cuprum::Cli::Files
       outputs = step { filter_outputs }
 
       outputs.each_value.map do |output|
-        file_path     = step { resolve_output_path(output) }
-        template_path = step { template_path_for(output) }
+        file_path = step { resolve_output_path(output) }
+        template  = step { template_for(output) }
+        contents  = step { render_template(template:) }
 
-        step { generate_file(file_path:, template_path:) }
+        step { generate_file(contents:, file_path:) }
       end
+    end
+
+    def render_template(template:)
+      parameters = file_parameters.merge(options)
+
+      Cuprum::Cli::Files::Engines::RenderTemplate
+        .new(file_system:)
+        .call(template, **parameters)
+    end
+
+    def report_file_contents(contents)
+      say "\n", verbose: true
+      say(
+        contents
+          .each_line
+          .map { |line| line == "\n" ? "\n" : "  #{line}" }.join,
+        verbose: true
+      )
+      say "\n", verbose: true
     end
 
     def resolve_output_path(output) # rubocop:disable Metrics/MethodLength
@@ -314,21 +339,32 @@ module Cuprum::Cli::Files
       failure(error)
     end
 
-    def template_path_for(output) # rubocop:disable Metrics/MethodLength
-      template_path =
-        if output.key == :default && options[:template]
-          options[:template]
-        else
-          options[:"#{output.key}_template"] || output.template_path
-        end
+    def template_for(output) # rubocop:disable Metrics/MethodLength
+      template_path = template_path_from_options(output)
 
-      return template_path unless template_path.nil? || template_path.empty?
+      unless template_path.nil? || template_path.empty?
+        return build_file_template(template_path)
+      end
+
+      template_path = output.template_path
+
+      unless template_path.nil? || template_path.empty?
+        return build_file_template(template_path)
+      end
 
       error = generator_error(
         details: 'output does not define a template path',
         key:     output.key
       )
       failure(error)
+    end
+
+    def template_path_from_options(output)
+      if output.key == :default && options.key?(:template)
+        return options[:template]
+      end
+
+      options[:"#{output.key}_template"]
     end
   end
 end
