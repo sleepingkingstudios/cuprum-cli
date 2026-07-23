@@ -3,10 +3,10 @@
 require 'cuprum/command'
 require 'herb'
 
-require 'cuprum/cli/files'
+require 'cuprum/cli/files/engines'
 require 'cuprum/cli/errors/files/missing_parameter'
 
-module Cuprum::Cli::Files
+module Cuprum::Cli::Files::Engines
   # Utility command for generating file contents from an .erb template.
   class RenderErb < Cuprum::Command
     class RenderingContext < BasicObject; end

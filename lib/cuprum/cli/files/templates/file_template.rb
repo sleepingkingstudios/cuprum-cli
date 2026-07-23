@@ -39,7 +39,7 @@ module Cuprum::Cli::Files::Templates # rubocop:disable Style/Documentation
       def build(file_path)
         engine =
           case File.extname(file_path)
-          when '.erb' then :erb
+          when '.erb' then Cuprum::Cli::Files::Engines::ERB
           end
 
         new(engine:, file_path:)

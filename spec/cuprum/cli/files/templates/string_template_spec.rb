@@ -35,7 +35,7 @@ RSpec.describe Cuprum::Cli::Files::Templates::StringTemplate do
     include_examples 'should define reader', :engine, nil
 
     context 'when initialized with engine: value' do
-      let(:engine)  { :erb }
+      let(:engine)  { Cuprum::Cli::Files::Engines::ERB }
       let(:options) { super().merge(engine:) }
 
       it { expect(template.engine).to be engine }

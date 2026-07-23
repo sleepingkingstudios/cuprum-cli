@@ -7,7 +7,7 @@ require 'cuprum/cli/dependencies'
 require 'cuprum/cli/dependencies/file_system'
 require 'cuprum/cli/errors/files/missing_template'
 require 'cuprum/cli/files'
-require 'cuprum/cli/files/render_erb'
+require 'cuprum/cli/files/engines/render_erb'
 require 'cuprum/cli/options'
 
 module Cuprum::Cli::Files
@@ -79,7 +79,7 @@ module Cuprum::Cli::Files
     def render_template(parameters:, template:, template_path:)
       case File.extname(template_path)
       when '.erb'
-        Cuprum::Cli::Files::RenderErb
+        Cuprum::Cli::Files::Engines::RenderErb
           .new(template_name: template_path).call(template, **parameters)
       else
         template

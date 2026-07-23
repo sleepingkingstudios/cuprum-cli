@@ -28,7 +28,7 @@ RSpec.describe Cuprum::Cli::Files::Templates::FileTemplate do
         expect(described_class.build(file_path))
           .to be_a(described_class)
           .and have_attributes(
-            engine:    :erb,
+            engine:    Cuprum::Cli::Files::Engines::ERB,
             file_path:
           )
       end
@@ -126,7 +126,7 @@ RSpec.describe Cuprum::Cli::Files::Templates::FileTemplate do
     include_examples 'should define reader', :engine, nil
 
     context 'when initialized with engine: value' do
-      let(:engine)  { :erb }
+      let(:engine)  { Cuprum::Cli::Files::Engines::ERB }
       let(:options) { super().merge(engine:) }
 
       it { expect(template.engine).to be engine }

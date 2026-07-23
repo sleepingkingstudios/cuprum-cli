@@ -812,7 +812,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         template = file_system.read_file(template_path)
 
         if template_path.end_with?('.erb')
-          command  = Cuprum::Cli::Files::RenderErb.new
+          command  = Cuprum::Cli::Files::Engines::RenderErb.new
           params   = generator.file_parameters.merge(generator.options)
           template = command.call(template, **params).value
         end
