@@ -11,6 +11,7 @@
 
 - Fixed directory expansion for `Ci::RSpecEachCommand`.
 - Fixed `Ci::RSpecEachCommand` reporting failing specs as errored.
+- Updated `Ci::RSpecEachCommand` output to report total elapsed time.
 - Updated `File::NewCommand` to use generators instead of raw templates.
 
 ## Dependencies
@@ -26,6 +27,8 @@
 
 ## Integrations
 
+- Added `Async` integration.
+- Added `Async::Commands::RSpecEachCommand`, which allows running spec files in parallel.
 - Fixed error handling for `Thor` integration.
 - Enabled passing variadic options through `Thor` tasks.
 

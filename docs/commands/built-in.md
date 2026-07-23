@@ -71,6 +71,8 @@ Similar to the `rspec` CLI utility, the takes an optional list of file patterns 
 `:gemfile`
 : The path to the gemfile used when running RSpec utility.
 
+For users of the `Async` gem, `Cuprum::Cli` defines [an improved version of the RSpec Each command](../integrations#rspec-each-command) that can parallelize running the individual tests (but be wary of external dependencies, such as databases).
+
 [Back to Top](#)
 
 ## File Commands

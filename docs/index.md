@@ -215,6 +215,11 @@ Once a command is defined, `Cuprum::Cli` integrates with an external CLI provide
     Third-party tools that <code>Cuprum::Cli</code> can use to call commands from the command line.
     <ul>
       <li>
+        <a href="./integrations#async">Async</a>
+        <br>
+        Using the <a href="https://socketry.github.io/async/" target="_blank">Async</a> gem to parallelize tasks.
+      </li>
+      <li>
         <a href="./integrations#thor">Thor</a>
         <br>
         Using <code>Cuprum::Cli</code> commands with the <a href="https://github.com/rails/thor" target="_blank">Thor</a> toolkit.

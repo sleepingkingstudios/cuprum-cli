@@ -8,7 +8,33 @@ breadcrumbs:
 
 `Cuprum::Cli` integrates with third-party tools to call [commands](./commands) from the command line.
 
+- [Async](#async)
 - [Thor](#thor)
+
+Integrations are not loaded or auto-loadable by default; to use integration code, you must manually `require` the integration.
+
+## Async
+
+`Cuprum::Cli` defines an optional integration with the <a href="https://socketry.github.io/async/" target="_blank">Async</a> gem to parallelize some commands.
+
+[Back to Top](#)
+
+### Built-In Commands
+
+`Cuprum::Cli` uses the `Async` gem to parallelize the following commands.
+
+- [RSpec Each Command](#rspec-each-command)
+
+[Back to Top](#)
+
+#### RSpec Each Command
+
+As the [RSpec Each Command](./commands/built-in#rspec-each-command), but with concurrent execution for the individual spec files. It supports the following additional options:
+
+`:max_jobs`
+: The maximum number of concurrent jobs. Defaults to the value of `ENV['ASYNC_CONCURRENT_TASKS']`, or `8`.
+
+**Important Note:** Applications that rely on external resources such as databases should be cautious when running tests in parallel. Best practice is to provide an isolated environment for each test run.
 
 ## Thor
 

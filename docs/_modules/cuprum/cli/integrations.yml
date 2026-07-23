@@ -5,9 +5,12 @@ type: module
 files:
 - lib/cuprum/cli/integrations.rb
 - lib/cuprum/cli/integrations/thor.rb
+- lib/cuprum/cli/integrations/async.rb
 parent_path: cuprum/cli
 short_description: Namespace for integrations with other command-line tools.
 defined_modules:
+- name: Async
+  slug: async
 - name: Thor
   slug: thor
 data_path: cuprum/cli/integrations
