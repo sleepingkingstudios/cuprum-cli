@@ -13,7 +13,8 @@ end
 # Helper methods for generating appraisals.
 module AppraisalHelpers
   INTEGRATIONS = {
-    thor: %w[thor]
+    async: %w[async],
+    thor:  %w[thor]
   }.freeze
 
   def remove_docs
@@ -39,6 +40,13 @@ appraise('default') do
 
   remove_docs
   remove_integrations
+end
+
+appraise 'integrations/async' do
+  extend AppraisalHelpers
+
+  remove_docs
+  remove_integrations(except: :async)
 end
 
 appraise 'integrations/thor' do

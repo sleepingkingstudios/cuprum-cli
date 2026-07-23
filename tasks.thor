@@ -19,6 +19,13 @@ registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
     gemfile: 'gemfiles/default.gemfile'
   }
 registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
+  description: 'Runs the RSpec tests including specs for Async commands.',
+  full_name:   'ci:rspec:async',
+  options:     {
+    env:     { integration: 'async' },
+    gemfile: 'gemfiles/integrations_async.gemfile'
+  }
+registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
   description: 'Runs the RSpec tests including specs for the Thor integration.',
   full_name:   'ci:rspec:thor',
   options:     {
