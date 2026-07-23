@@ -64,7 +64,8 @@ module Cuprum::Cli::Files
       def engines = @engines ||= default_engines
     end
 
-    autoload :RenderErb, 'cuprum/cli/files/engines/render_erb'
+    autoload :RenderErb,      'cuprum/cli/files/engines/render_erb'
+    autoload :RenderTemplate, 'cuprum/cli/files/engines/render_template'
 
     # Identifier for ERB files.
     ERB = 'cuprum.cli.files.engines.erb'
