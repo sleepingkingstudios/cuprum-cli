@@ -7,6 +7,8 @@ module Cuprum::Cli::Integrations
   #
   # @see https://socketry.github.io/async/
   module Async
+    autoload :Commands, 'cuprum/cli/integrations/async/commands'
+
     class << self
       # @return [Integer] The recommended maximum number of concurrent Async
       #   tasks. This value can be configured by setting an

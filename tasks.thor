@@ -6,6 +6,7 @@ require 'cuprum/cli'
 
 Cuprum::Cli.initializer.call
 
+require 'cuprum/cli/integrations/async'
 require 'cuprum/cli/integrations/thor/registry'
 
 registry = Cuprum::Cli::Integrations::Thor::Registry.new
@@ -32,7 +33,7 @@ registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
     env:     { integration: 'thor' },
     gemfile: 'gemfiles/integrations_thor.gemfile'
   }
-registry.register Cuprum::Cli::Commands::Ci::RSpecEachCommand
+registry.register Cuprum::Cli::Integrations::Async::Commands::RSpecEachCommand
 
 ################################################################################
 # File Commands
