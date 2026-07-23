@@ -10,6 +10,7 @@
 ### Built-In Commands
 
 - Fixed directory expansion for `Ci::RSpecEachCommand`.
+- Fixed `Ci::RSpecEachCommand` reporting failing specs as errored.
 - Updated `File::NewCommand` to use generators instead of raw templates.
 
 ## Dependencies
