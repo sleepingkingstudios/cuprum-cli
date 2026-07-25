@@ -241,6 +241,24 @@ module Cuprum::Cli::Files
       Cuprum::Cli::Files::Templates::FileTemplate.build(template_path)
     end
 
+    def check_if_file_already_exists(file_path:)
+      return unless file_system.file?(file_path)
+
+      error  =
+        file_not_writeable_error(file_path:, reason: 'file already exists')
+
+      failure(error)
+    end
+
+    def check_if_file_is_directory(file_path:)
+      return unless file_system.directory?(file_path)
+
+      error  =
+        file_not_writeable_error(file_path:, reason: 'file is a directory')
+
+      failure(error)
+    end
+
     def create_file(contents:, file_path:)
       Cuprum::Cli::Files::CreateFile
         .new(
@@ -249,6 +267,12 @@ module Cuprum::Cli::Files
           file_system:
         )
         .call(contents:, file_path:)
+    end
+
+    def duplicate_file_error(file_path:, key:)
+      details = "multiple outputs writing to output path #{file_path.inspect}"
+
+      generator_error(details:, key:)
     end
 
     def extract_file_parameters(file_path) # rubocop:disable Metrics/MethodLength
@@ -264,6 +288,10 @@ module Cuprum::Cli::Files
         root_path:     segments[0...-1].first || '',
         short_name:    base_name.split('.').first
       }
+    end
+
+    def file_not_writeable_error(**)
+      Cuprum::Cli::Errors::Files::FileNotWriteable.new(**)
     end
 
     def filter_outputs # rubocop:disable Metrics/MethodLength
@@ -294,6 +322,24 @@ module Cuprum::Cli::Files
       file_path
     end
 
+    def generate_contents(outputs) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      outputs.each_value.with_object({}) do |output, hsh|
+        file_path = step { resolve_output_path(output) }
+
+        if hsh.key?(file_path)
+          return failure(duplicate_file_error(file_path:, key: output.key))
+        end
+
+        template  = step { template_for(output) }
+        contents  = step { render_template(template:) }
+
+        step { check_if_file_is_directory(file_path:) }
+        step { check_if_file_already_exists(file_path:) }
+
+        hsh[file_path] = contents
+      end
+    end
+
     def generator_error(details: nil, key: nil)
       message = 'unable to generate output file'
       message = "#{message}#{key ? " #{key.inspect}" : 's'}"
@@ -310,13 +356,13 @@ module Cuprum::Cli::Files
     def process
       outputs = step { filter_outputs }
 
-      outputs.each_value.map do |output|
-        file_path = step { resolve_output_path(output) }
-        template  = step { template_for(output) }
-        contents  = step { render_template(template:) }
+      generated_files = step { generate_contents(outputs) }
 
+      generated_files.each do |file_path, contents|
         step { generate_file(contents:, file_path:) }
       end
+
+      generated_files.keys
     end
 
     def render_template(template:)

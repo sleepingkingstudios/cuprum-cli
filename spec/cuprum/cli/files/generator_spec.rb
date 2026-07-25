@@ -1358,6 +1358,101 @@ RSpec.describe Cuprum::Cli::Files::Generator do
             include_deferred 'should generate the output files'
           end
         end
+
+        context 'when a file path already exists' do
+          let(:expected_error) do
+            Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+              file_path: 'docs/path/to/file.md',
+              reason:    'file already exists'
+            )
+          end
+
+          before(:example) do
+            file_system.create_directory('docs/path/to', recursive: true)
+            file_system.write_file(
+              'docs/path/to/file.md',
+              'Conflicting file contents'
+            )
+          end
+
+          it 'should return a failing result' do
+            expect(generator.call)
+              .to be_a_failing_result
+              .with_error(expected_error)
+          end
+
+          it 'should not update the conflicting file' do
+            expect { generator.call }
+              .not_to(change { file_system.read_file('docs/path/to/file.md') })
+          end
+
+          it 'should not write other files', :aggregate_failures do
+            generator.call
+
+            expect(file_system.file?('lib/path/to/file.rb')).to be false
+            expect(file_system.file?('spec/path/to/file_spec.rb')).to be false
+          end
+        end
+
+        context 'when a file path points to a directory' do
+          let(:expected_error) do
+            Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+              file_path: 'docs/path/to/file.md',
+              reason:    'file is a directory'
+            )
+          end
+
+          before(:example) do
+            file_system
+              .create_directory('docs/path/to/file.md', recursive: true)
+          end
+
+          it 'should return a failing result' do
+            expect(generator.call)
+              .to be_a_failing_result
+              .with_error(expected_error)
+          end
+
+          it 'should not write any files', :aggregate_failures do
+            generator.call
+
+            expect(file_system.file?('docs/path/to/file.md')).to be false
+            expect(file_system.file?('lib/path/to/file.rb')).to be false
+            expect(file_system.file?('spec/path/to/file_spec.rb')).to be false
+          end
+        end
+
+        context 'when multiple outputs write to the same file path' do
+          let(:expected_error) do
+            details =
+              "multiple outputs writing to output path #{file_path.inspect}"
+            message =
+              "unable to generate output file :ruby - #{details}"
+
+            Cuprum::Cli::Errors::Files::GeneratorError.new(
+              details:,
+              file_path: 'lib/path/to/file.rb',
+              message:,
+              options:   generator.options
+            )
+          end
+
+          before(:example) do
+            described_class.output 'lib/%<relative_path>s/%<short_name>s.rb',
+              key:      :ruby,
+              template: Cuprum::Cli::Files::Templates::StringTemplate.new(
+                raw_template: 'Duplicate file contents'
+              )
+          end
+
+          it 'should return a failing result' do
+            expect(generator.call)
+              .to be_a_failing_result
+              .with_error(expected_error)
+          end
+
+          include_deferred 'should not generate any output files'
+        end
       end
       # rubocop:enable RSpec/MultipleMemoizedHelpers, RSpec/NestedGroups
     end
