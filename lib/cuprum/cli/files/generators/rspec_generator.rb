@@ -10,8 +10,8 @@ module Cuprum::Cli::Files::Generators
     option :rspec_template
 
     output '%<file_path>s',
-      key:           :rspec,
-      template_path: File.join(
+      key:      :rspec,
+      template: File.join(
         Cuprum::Cli::Files::Generators::TEMPLATES_PATH,
         'rspec.rb.erb'
       )

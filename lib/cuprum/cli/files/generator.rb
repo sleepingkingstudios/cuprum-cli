@@ -22,7 +22,7 @@ module Cuprum::Cli::Files
     class OutputAlreadyExistsError < KeyError; end
 
     # Data class representing a configured output file.
-    Output = Data.define(:key, :path, :template_path)
+    Output = Data.define(:key, :path, :template)
 
     class << self
       # Marks the generator as abstract.
@@ -119,11 +119,11 @@ module Cuprum::Cli::Files
       # @param path [String] the file path for the generated file.
       # @param key [String, Symbol] a unique key used to identify the output.
       #   Defaults to :default.
-      # @param template_path [String] the path to the template file for the
-      #   output. If not provided, the user must provide a template for that output.
+      # @param template [String] the path to the template file for the output.
+      #   If not provided, the user must provide a template for that output.
       #
       # @return [void]
-      def output(path, key: :default, template_path: nil)
+      def output(path, key: :default, template: nil) # rubocop:disable Metrics/MethodLength
         key = key.to_sym
 
         if abstract?
@@ -135,7 +135,9 @@ module Cuprum::Cli::Files
           raise OutputAlreadyExistsError, output_already_exists_message(key)
         end
 
-        own_outputs[key] = Output.new(key:, path:, template_path:)
+        template = resolve_template(template)
+
+        own_outputs[key] = Output.new(key:, path:, template:)
 
         nil
       end
@@ -179,6 +181,18 @@ module Cuprum::Cli::Files
 
         "unable to define output #{key.inspect} - #{class_name} already " \
           "defines output #{key.inspect}"
+      end
+
+      def resolve_template(template)
+        return if template.nil?
+
+        return template if template.is_a?(Cuprum::Cli::Files::Template)
+
+        if template.is_a?(String)
+          return Cuprum::Cli::Files::Templates::FileTemplate.build(template)
+        end
+
+        raise ArgumentError, 'template must be a Template or file path'
       end
     end
 
@@ -339,18 +353,14 @@ module Cuprum::Cli::Files
       failure(error)
     end
 
-    def template_for(output) # rubocop:disable Metrics/MethodLength
+    def template_for(output)
       template_path = template_path_from_options(output)
 
       unless template_path.nil? || template_path.empty?
         return build_file_template(template_path)
       end
 
-      template_path = output.template_path
-
-      unless template_path.nil? || template_path.empty?
-        return build_file_template(template_path)
-      end
+      return output.template if output.template
 
       error = generator_error(
         details: 'output does not define a template path',
