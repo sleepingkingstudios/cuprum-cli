@@ -13,7 +13,7 @@ module Cuprum::Cli::Files
       #
       #   @return [Cuprum::Command] the render command for the engine.
       #
-      #   @raises [KeyError] if there is no matching engine.
+      #   @raise [KeyError] if there is no matching engine.
       #
       # @overload fetch(engine, default)
       #   Retrieves the render command for the given engine.
@@ -46,7 +46,8 @@ module Cuprum::Cli::Files
       # Registers a render command for the specified engine.
       #
       # @param engine [String] the engine identifier.
-      # @param [Cuprum::Command] the render command for the engine.
+      # @param render_command [Cuprum::Command] the render command for the
+      #   engine.
       #
       # @return [void]
       def register(engine, render_command)

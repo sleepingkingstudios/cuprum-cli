@@ -51,6 +51,19 @@ class_methods:
   path: cuprum/cli/options/class-methods/i-resolve-options
   slug: resolve-options
   inherited: true
+constants:
+- name: FALSY_VALUES
+  path: cuprum/cli/dependencies/standard-io/helpers/falsy-values
+  slug: falsy-values
+  inherited: true
+- name: INTEGER_PATTERN
+  path: cuprum/cli/dependencies/standard-io/helpers/integer-pattern
+  slug: integer-pattern
+  inherited: true
+- name: TRUTHY_VALUES
+  path: cuprum/cli/dependencies/standard-io/helpers/truthy-values
+  slug: truthy-values
+  inherited: true
 instance_attributes:
 - name: file_path
   read: true
@@ -65,6 +78,10 @@ instance_attributes:
   slug: options
   inherited: true
 instance_methods:
+- name: ask
+  path: cuprum/cli/dependencies/standard-io/helpers/i-ask
+  slug: ask
+  inherited: true
 - name: file_parameters
   path: cuprum/cli/files/generator/i-file-parameters
   slug: file-parameters
@@ -77,6 +94,10 @@ instance_methods:
 - name: say
   path: cuprum/cli/options/verbose/i-say
   slug: say
+  inherited: true
+- name: warn
+  path: cuprum/cli/dependencies/standard-io/helpers/i-warn
+  slug: warn
   inherited: true
 data_path: cuprum/cli/files/generators/r-spec-generator
 constructor: true

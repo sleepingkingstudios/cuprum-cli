@@ -1,0 +1,8 @@
+---
+name: Cuprum::Cli::Files::Engines::ERB
+parent_path: cuprum/cli/files/engines
+slug: erb
+short_description: Identifier for ERB files.
+value: "'cuprum.cli.files.engines.erb'"
+data_path: cuprum/cli/files/engines/erb
+version: "*"

@@ -19,11 +19,11 @@ instance_attributes:
   path: cuprum/cli/files/generator/output/i-path
   slug: path
   inherited: false
-- name: template_path
+- name: template
   read: true
   write: false
-  path: cuprum/cli/files/generator/output/i-template-path
-  slug: template-path
+  path: cuprum/cli/files/generator/output/i-template
+  slug: template
   inherited: false
 data_path: cuprum/cli/files/generator/output
 constructor: false

@@ -1,0 +1,23 @@
+---
+name: Cuprum::Cli::Files::CreateFile#initialize
+parent_path: cuprum/cli/files/create-file
+signature: initialize(**)
+slug: initialize
+constructor: true
+data_path: cuprum/cli/files/create-file/i-initialize
+overloads:
+- name: Cuprum::Cli::Files::CreateFile#initialize
+  parent_path: cuprum/cli/files/create-file
+  signature: initialize(**options)
+  slug: initialize
+  constructor: true
+  params:
+  - description: options for initializing the command.
+    name: options
+    type:
+    - name: Hash
+returns:
+- description: a new instance of CreateFile
+  type:
+  - name: CreateFile
+version: "*"

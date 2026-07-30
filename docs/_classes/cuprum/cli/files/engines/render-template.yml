@@ -1,0 +1,19 @@
+---
+name: Cuprum::Cli::Files::Engines::RenderTemplate
+slug: render-template
+type: class
+files:
+- lib/cuprum/cli/files/engines/render_template.rb
+parent_path: cuprum/cli/files/engines
+short_description: Generates the contents of the given template.
+data_path: cuprum/cli/files/engines/render-template
+included_modules:
+- name: Plumbum::Consumer
+  slug: consumer
+- name: Plumbum::Parameters
+  slug: parameters
+constructor: false
+inherited_classes:
+- name: Cuprum::Command
+  slug: command
+version: "*"

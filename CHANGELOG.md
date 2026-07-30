@@ -14,14 +14,14 @@
 - Updated `Ci::RSpecEachCommand` output to report total elapsed time.
 - Updated `File::NewCommand` to use generators instead of raw templates.
 
-## Dependencies
+### Dependencies
 
 - Implemented `Clock` dependency.
 - Improved handling of file parameters for `FileSystem::Mock`.
 - Fixed a `FileSystem::Mock` bug that would wipe existing mock directories.
 - Fixed a `FileSystem::Mock` bug that did not include directories in `each_file`.
 
-## Files
+### Files
 
 - Implemented file generators, a more robust solution for generating files or groups of files.
 

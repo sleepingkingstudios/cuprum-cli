@@ -51,6 +51,19 @@ class_methods:
   path: cuprum/cli/options/class-methods/i-resolve-options
   slug: resolve-options
   inherited: true
+constants:
+- name: FALSY_VALUES
+  path: cuprum/cli/dependencies/standard-io/helpers/falsy-values
+  slug: falsy-values
+  inherited: true
+- name: INTEGER_PATTERN
+  path: cuprum/cli/dependencies/standard-io/helpers/integer-pattern
+  slug: integer-pattern
+  inherited: true
+- name: TRUTHY_VALUES
+  path: cuprum/cli/dependencies/standard-io/helpers/truthy-values
+  slug: truthy-values
+  inherited: true
 defined_classes:
 - name: AbstractGeneratorError
   slug: abstract-generator-error
@@ -72,6 +85,10 @@ instance_attributes:
   slug: options
   inherited: false
 instance_methods:
+- name: ask
+  path: cuprum/cli/dependencies/standard-io/helpers/i-ask
+  slug: ask
+  inherited: true
 - name: file_parameters
   path: cuprum/cli/files/generator/i-file-parameters
   slug: file-parameters
@@ -85,12 +102,19 @@ instance_methods:
   path: cuprum/cli/options/verbose/i-say
   slug: say
   inherited: true
+- name: warn
+  path: cuprum/cli/dependencies/standard-io/helpers/i-warn
+  slug: warn
+  inherited: true
 data_path: cuprum/cli/files/generator
 extended_modules:
 - name: Cuprum::Cli::Options::ClassMethods
   slug: class-methods
   path: cuprum/cli/options/class-methods
 included_modules:
+- name: Cuprum::Cli::Dependencies::StandardIo::Helpers
+  slug: helpers
+  path: cuprum/cli/dependencies/standard-io/helpers
 - name: Cuprum::Cli::Options::Quiet
   slug: quiet
   path: cuprum/cli/options/quiet

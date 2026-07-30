@@ -1,0 +1,24 @@
+---
+name: Cuprum::Cli::Files::Engines.register
+parent_path: cuprum/cli/files/engines
+signature: register(engine, render_command)
+slug: register
+constructor: false
+data_path: cuprum/cli/files/engines/c-register
+params:
+- description: the engine identifier.
+  name: engine
+  type:
+  - name: String
+- description: |-
+    the render command for the
+    engine.
+  name: render_command
+  type:
+  - name: Cuprum::Command
+returns:
+- description: ''
+  type:
+  - name: void
+short_description: Registers a render command for the specified engine.
+version: "*"

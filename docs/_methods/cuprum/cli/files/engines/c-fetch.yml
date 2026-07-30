@@ -1,0 +1,76 @@
+---
+name: Cuprum::Cli::Files::Engines.fetch
+parent_path: cuprum/cli/files/engines
+signature: fetch(engine, default = UNDEFINED, &)
+slug: fetch
+constructor: false
+data_path: cuprum/cli/files/engines/c-fetch
+overloads:
+- name: Cuprum::Cli::Files::Engines.fetch
+  parent_path: cuprum/cli/files/engines
+  signature: fetch(engine)
+  slug: fetch
+  constructor: false
+  params:
+  - description: the engine identifier.
+    name: engine
+    type:
+    - name: String
+  raises:
+  - description: if there is no matching engine.
+    type:
+    - name: KeyError
+  returns:
+  - description: the render command for the engine.
+    type:
+    - name: Cuprum::Command
+  short_description: Retrieves the render command for the given engine.
+- name: Cuprum::Cli::Files::Engines.fetch
+  parent_path: cuprum/cli/files/engines
+  signature: fetch(engine, default)
+  slug: fetch
+  constructor: false
+  params:
+  - description: the engine identifier.
+    name: engine
+    type:
+    - name: String
+  - description: |-
+      the command to return if there is no
+      matching engine.
+    name: default
+    type:
+    - name: Cuprum::Command
+  returns:
+  - description: the render command for the engine.
+    type:
+    - name: Cuprum::Command
+  short_description: Retrieves the render command for the given engine.
+- name: Cuprum::Cli::Files::Engines.fetch
+  parent_path: cuprum/cli/files/engines
+  signature: fetch(engine) { |engine| }
+  slug: fetch
+  constructor: false
+  description: If there is no matching engine. calls the block with the given engine.
+  params:
+  - description: the engine identifier.
+    name: engine
+    type:
+    - name: String
+  returns:
+  - description: the render command for the engine.
+    type:
+    - name: Cuprum::Command
+  short_description: Retrieves the render command for the given engine.
+  yield_params:
+  - description: the engine identifier.
+    name: engine
+    type:
+    - name: String
+  yield_returns:
+  - description: |-
+      the command to return if there is no
+      matching engine.
+    type:
+    - name: Cuprum::Command
+version: "*"
