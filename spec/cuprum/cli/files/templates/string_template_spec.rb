@@ -15,6 +15,16 @@ RSpec.describe Cuprum::Cli::Files::Templates::StringTemplate do
   end
   let(:options) { {} }
 
+  describe '.build' do
+    it { expect(described_class).to respond_to(:build).with(1).argument }
+
+    it 'should build a StringTemplate with engine: nil' do
+      expect(described_class.build(raw_template))
+        .to be_a(described_class)
+        .and have_attributes(engine: nil, raw_template:)
+    end
+  end
+
   describe '.members' do
     let(:expected) { %i[engine raw_template] }
 

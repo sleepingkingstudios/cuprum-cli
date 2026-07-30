@@ -457,6 +457,28 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         end
       end
 
+      describe 'with template: a raw template' do
+        let(:template) do
+          <<~MARKDOWN
+            # Greetings, Starfighter
+
+            You have been recruited by the Star League to defend the frontier
+            against Xur and the Ko-Dan armada!
+          MARKDOWN
+        end
+
+        let(:options) { super().merge(template:) }
+        let(:expected_properties) do
+          expected_template =
+            Cuprum::Cli::Files::Templates::StringTemplate
+            .new(raw_template: template)
+
+          super().merge(template: expected_template)
+        end
+
+        include_deferred 'should add the output'
+      end
+
       describe 'with template: a FileTemplate' do
         let(:template) do
           Cuprum::Cli::Files::Templates::FileTemplate.new(

@@ -183,16 +183,10 @@ module Cuprum::Cli::Files
           "defines output #{key.inspect}"
       end
 
-      def resolve_template(template)
-        return if template.nil?
+      def resolve_template(maybe_template)
+        return if maybe_template.nil?
 
-        return template if template.is_a?(Cuprum::Cli::Files::Template)
-
-        if template.is_a?(String)
-          return Cuprum::Cli::Files::Templates::FileTemplate.build(template)
-        end
-
-        raise ArgumentError, 'template must be a Template or file path'
+        Cuprum::Cli::Files::Template.build(maybe_template)
       end
     end
 
