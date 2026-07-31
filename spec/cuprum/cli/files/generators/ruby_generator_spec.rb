@@ -9,9 +9,37 @@ RSpec.describe Cuprum::Cli::Files::Generators::RubyGenerator do
   include Cuprum::Cli::RSpec::Deferred::GeneratorsExamples
   include Cuprum::Cli::RSpec::Deferred::OptionsExamples
 
-  subject(:generator) { described_class.new(file_path, **constructor_options) }
+  subject(:generator) do
+    described_class.new(
+      file_path,
+      file_system:,
+      standard_io:,
+      **constructor_options
+    )
+  end
 
-  let(:file_path)           { 'lib/path/to/file.rb' }
+  let(:file_path) { 'lib/path/to/file.rb' }
+  let(:files) do
+    ruby_template_path = File.join(
+      Cuprum::Cli::Files::Generators::TEMPLATES_PATH,
+      'ruby.rb.erb'
+    )
+    rspec_template_path = File.join(
+      Cuprum::Cli::Files::Generators::TEMPLATES_PATH,
+      'rspec.rb.erb'
+    )
+
+    {
+      rspec_template_path => File.read(rspec_template_path),
+      ruby_template_path  => File.read(ruby_template_path)
+    }
+  end
+  let(:file_system) do
+    Cuprum::Cli::Dependencies::FileSystem::Mock.new(files:)
+  end
+  let(:standard_io) do
+    Cuprum::Cli::Dependencies::StandardIo::Mock.new
+  end
   let(:constructor_options) { {} }
 
   include_deferred 'should define option', :parent_class, type: :string

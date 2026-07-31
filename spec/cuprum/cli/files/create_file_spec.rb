@@ -2,28 +2,24 @@
 
 require 'cuprum/cli/dependencies/file_system/mock'
 require 'cuprum/cli/dependencies/standard_io/mock'
-require 'cuprum/cli/files/generate_file'
+require 'cuprum/cli/files/create_file'
 require 'cuprum/cli/rspec/deferred/options_examples'
 
-RSpec.describe Cuprum::Cli::Files::GenerateFile do
+RSpec.describe Cuprum::Cli::Files::CreateFile do
   include Cuprum::Cli::RSpec::Deferred::OptionsExamples
 
   subject(:command) do
     described_class.new(file_system:, standard_io:, **options)
   end
 
-  deferred_context 'when the template file exists' do
-    let(:template) { defined?(super()) ? super() : "Greetings, starfighter!\n" }
-
-    before(:example) { file_system.write_file(template_path, template) }
-  end
-
-  let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new(files:) }
+  let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
   let(:standard_io) { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
   let(:options)     { {} }
-  let(:files) do
-    { 'templates' => {} }
-  end
+
+  include_deferred 'should define option',
+    :directories,
+    type:    :boolean,
+    default: true
 
   include_deferred 'should define option',
     :dry_run,
@@ -34,10 +30,6 @@ RSpec.describe Cuprum::Cli::Files::GenerateFile do
     :force,
     type:    :boolean,
     default: false
-
-  include_deferred 'should define --quiet option'
-
-  include_deferred 'should define --verbose option'
 
   describe '.new' do
     it 'should define the constructor' do
@@ -51,7 +43,7 @@ RSpec.describe Cuprum::Cli::Files::GenerateFile do
       let(:options) { super().merge(invalid_option: 'invalid value') }
       let(:error_message) do
         "unrecognized option :invalid_option for #{described_class.name} " \
-          '- valid options are :directories, :dry_run, :force, :quiet, :verbose'
+          '- valid options are :directories, :dry_run, :force'
       end
 
       it 'should raise an exception' do
@@ -77,13 +69,6 @@ RSpec.describe Cuprum::Cli::Files::GenerateFile do
         expect(file_system.read(file_path)).to be == contents
       end
 
-      it 'should output the results' do
-        call_command
-
-        expect(standard_io.combined_stream.tap(&:rewind).read)
-          .to be == expected_output
-      end
-
       describe 'when initialized with dry_run: true' do
         let(:options) { super().merge(dry_run: true) }
 
@@ -102,89 +87,34 @@ RSpec.describe Cuprum::Cli::Files::GenerateFile do
               .not_to(change { file_system.file?(file_path) })
           end
         end
-
-        it 'should output the results' do
-          call_command
-
-          expect(standard_io.combined_stream.tap(&:rewind).read)
-            .to be == expected_output
-        end
-      end
-
-      describe 'when initialized with quiet: true' do
-        let(:options) { super().merge(quiet: true) }
-
-        it 'should not output the results' do
-          call_command
-
-          expect(standard_io.combined_stream.tap(&:rewind).read).to be == ''
-        end
-      end
-
-      describe 'when initialized with verbose: true' do
-        let(:options) { super().merge(verbose: true) }
-        let(:expected_output) do
-          <<~OUTPUT
-            Generating file #{file_path}...
-
-            #{
-              contents
-                .each_line
-                .map { |line| line == "\n" ? "\n" : "  #{line}" }
-                .join
-            }
-          OUTPUT
-        end
-
-        it 'should output the results' do
-          call_command
-
-          expect(standard_io.combined_stream.tap(&:rewind).read)
-            .to be == expected_output
-        end
       end
     end
 
-    let(:file_path)     { 'file.rb' }
-    let(:template_path) { 'templates/template.rb' }
-    let(:parameters)    { {} }
-    let(:contents)      { template }
-    let(:expected_output) do
-      "Generating file #{file_path}...\n"
+    let(:file_path) { 'file.rb' }
+    let(:contents) do
+      <<~MARKDOWN
+        # Greetings, Starfighter
+
+        You have been recruited by the Star League to defend the frontier
+        against Xur and the Ko-Dan armada!
+      MARKDOWN
     end
 
     define_method(:call_command) do
-      command.call(file_path:, parameters:, template_path:)
+      command.call(contents:, file_path:)
     end
 
     it 'should define the method' do
       expect(command)
         .to be_callable
         .with(0).arguments
-        .and_keywords(:file_path, :parameters, :template_path)
+        .and_keywords(:contents, :file_path)
     end
 
-    context 'when the template file does not exist' do
-      let(:expected_error) do
-        Cuprum::Cli::Errors::Files::MissingTemplate.new(
-          message:       "unable to generate file #{file_path}",
-          template_path:
-        )
-      end
-
-      it 'should return a failing result' do
-        expect(call_command)
-          .to be_a_failing_result
-          .with_error(expected_error)
-      end
-    end
-
-    wrap_deferred 'when the template file exists' do
-      include_deferred 'should generate the file'
-    end
+    include_deferred 'should generate the file'
 
     context 'when the file path is not writeable' do
-      let(:file_path) { './templates' }
+      let(:file_path) { 'templates' }
       let(:expected_error) do
         Cuprum::Cli::Errors::Files::FileNotWriteable.new(
           file_path:,
@@ -192,12 +122,17 @@ RSpec.describe Cuprum::Cli::Files::GenerateFile do
         )
       end
 
-      include_deferred 'when the template file exists'
+      before(:example) { file_system.create_directory(file_path) }
 
       it 'should return a failing result' do
         expect(call_command)
           .to be_a_failing_result
           .with_error(expected_error)
+      end
+
+      it 'should not write the file to the file system' do
+        expect { call_command }
+          .not_to(change { file_system.file?(file_path) })
       end
     end
 
@@ -213,12 +148,15 @@ RSpec.describe Cuprum::Cli::Files::GenerateFile do
         file_system.write_file(file_path, "Existing contents...\n")
       end
 
-      include_deferred 'when the template file exists'
-
       it 'should return a failing result' do
         expect(call_command)
           .to be_a_failing_result
           .with_error(expected_error)
+      end
+
+      it 'should not write the file to the file system' do
+        expect { call_command }
+          .not_to(change { file_system.read_file(file_path) })
       end
 
       context 'when initialized with force: true' do
@@ -230,8 +168,6 @@ RSpec.describe Cuprum::Cli::Files::GenerateFile do
 
     context 'when the file path requires intermediate directories' do
       let(:file_path) { 'files/path/to/file.rb' }
-
-      include_deferred 'when the template file exists'
 
       include_deferred 'should generate the file'
 
@@ -249,48 +185,11 @@ RSpec.describe Cuprum::Cli::Files::GenerateFile do
             .to be_a_failing_result
             .with_error(expected_error)
         end
-      end
-    end
 
-    context 'when the template has format: ERB' do
-      let(:template_path) { 'templates/template.rb.erb' }
-      let(:template) do
-        <<~RUBY
-          # frozen_string_literal: true
-
-          puts 'Greetings, <%= greeting %>!'
-        RUBY
-      end
-
-      include_deferred 'when the template file exists'
-
-      describe 'with invalid parameters' do # rubocop:disable RSpec/MultipleMemoizedHelpers
-        let(:expected_error) do
-          Cuprum::Cli::Errors::Files::MissingParameter.new(
-            message:        'unable to render ERB template',
-            parameter_name: :greeting,
-            template_name:  template_path
-          )
+        it 'should not write the file to the file system' do
+          expect { call_command }
+            .not_to(change { file_system.file?(file_path) })
         end
-
-        it 'should return a failing result' do
-          expect(call_command)
-            .to be_a_failing_result
-            .with_error(expected_error)
-        end
-      end
-
-      describe 'with valid parameters' do
-        let(:parameters) { super().merge(greeting: 'starfighter') }
-        let(:contents) do
-          <<~RUBY
-            # frozen_string_literal: true
-
-            puts 'Greetings, starfighter!'
-          RUBY
-        end
-
-        include_deferred 'should generate the file'
       end
     end
   end

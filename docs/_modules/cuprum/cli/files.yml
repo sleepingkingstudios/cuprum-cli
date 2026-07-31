@@ -4,21 +4,30 @@ slug: files
 type: module
 files:
 - lib/cuprum/cli/files.rb
+- lib/cuprum/cli/files/engines.rb
+- lib/cuprum/cli/files/template.rb
 - lib/cuprum/cli/files/generator.rb
+- lib/cuprum/cli/files/templates.rb
 - lib/cuprum/cli/files/generators.rb
-- lib/cuprum/cli/files/render_erb.rb
-- lib/cuprum/cli/files/generate_file.rb
+- lib/cuprum/cli/files/create_file.rb
 parent_path: cuprum/cli
 short_description: Namespace for shared functionality for manipulating files.
+constants:
+- name: Template
+  path: cuprum/cli/files/template
+  slug: template
+  inherited: false
 defined_classes:
-- name: GenerateFile
-  slug: generate-file
+- name: CreateFile
+  slug: create-file
 - name: Generator
   slug: generator
-- name: RenderErb
-  slug: render-erb
 defined_modules:
+- name: Engines
+  slug: engines
 - name: Generators
   slug: generators
+- name: Templates
+  slug: templates
 data_path: cuprum/cli/files
 version: "*"

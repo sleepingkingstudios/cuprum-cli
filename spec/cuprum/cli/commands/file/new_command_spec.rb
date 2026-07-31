@@ -13,13 +13,10 @@ RSpec.describe Cuprum::Cli::Commands::File::NewCommand do
   end
 
   let(:template_paths) do
-    described_class
-      .default_generators
-      .map(&:outputs)
-      .map(&:values)
-      .flatten
-      .map(&:template_path)
-      .uniq
+    templates_directory =
+      File.join(Cuprum::Cli.gem_path, 'spec', 'support', 'templates')
+
+    Dir[File.join(templates_directory, '**', '*')]
   end
   let(:files) do
     template_paths.to_h do |template_path|

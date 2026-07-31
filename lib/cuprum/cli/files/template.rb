@@ -1,0 +1,78 @@
+# frozen_string_literal: true
+
+require 'cuprum/result_helpers'
+
+require 'cuprum/cli/files'
+
+module Cuprum::Cli::Files
+  # Data class representing a file generator template.
+  Template =
+    SleepingKingStudios::Tools::Toolbox::HeritableData.define(:engine) do # rubocop:disable Metrics/BlockLength
+      include Cuprum::ResultHelpers
+
+      class_methods = Module.new do
+        # Converts a raw input string to a template object.
+        #
+        # - If the input is a Template, returns the input.
+        # - If the input is a single-line String, generates and returns a
+        #   FileTemplate with the input as the file path.
+        # - If the input is a multi-line String, generates and returns a
+        #   StringTemplate with the input as the raw template value.
+        # - For all other values, raises an ArgumentError.
+        #
+        # @param raw_template [String] the unprocessed template string.
+        #
+        # @return [Template] the generated template.
+        def build(maybe_template)
+          return maybe_template if maybe_template.is_a?(Template)
+
+          if maybe_template.is_a?(String)
+            return build_template_from_string(maybe_template)
+          end
+
+          tools.assertions.validate_presence(maybe_template, as: 'template')
+
+          raise ArgumentError, 'template must be a Template or file path'
+        end
+
+        private
+
+        def build_template_from_string(maybe_template)
+          tools.assertions.validate_presence(maybe_template, as: 'template')
+
+          if file_path?(maybe_template)
+            Cuprum::Cli::Files::Templates::FileTemplate.build(maybe_template)
+          else
+            Cuprum::Cli::Files::Templates::StringTemplate.build(maybe_template)
+          end
+        end
+
+        def file_path?(value)
+          !value.include?("\n")
+        end
+
+        def tools = SleepingKingStudios::Tools::Toolbelt.instance
+      end
+      const_set(:ClassMethods, class_methods)
+
+      def self.included(other)
+        super
+
+        other.extend(const_get(:ClassMethods))
+      end
+
+      # @param engine [Symbol] the engine used to generate the template
+      #   contents.
+      def initialize(engine: nil, **)
+        super
+      end
+
+      # @return [Cuprum::Result] a result with the raw template, or a result
+      #   with an error if unable to return the template contents.
+      def call
+        error = Cuprum::Errors::CommandNotImplemented.new(command: self)
+
+        failure(error)
+      end
+    end
+end

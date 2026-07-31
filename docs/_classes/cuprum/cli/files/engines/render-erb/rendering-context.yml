@@ -1,0 +1,11 @@
+---
+name: Cuprum::Cli::Files::Engines::RenderErb::RenderingContext
+slug: rendering-context
+type: class
+files:
+- lib/cuprum/cli/files/engines/render_erb.rb
+parent_path: cuprum/cli/files/engines/render-erb
+short_description: ''
+data_path: cuprum/cli/files/engines/render-erb/rendering-context
+constructor: false
+version: "*"

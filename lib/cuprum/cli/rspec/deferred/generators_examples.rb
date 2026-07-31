@@ -16,12 +16,6 @@ module Cuprum::Cli::RSpec::Deferred
         end
 
       describe(description) do
-        let(:generate_command) do
-          instance_double(
-            Cuprum::Cli::Files::GenerateFile,
-            call: Cuprum::Result.new
-          )
-        end
         let(:expected_key) do
           next super() if defined?(super())
 
@@ -42,18 +36,18 @@ module Cuprum::Cli::RSpec::Deferred
 
           examples_options.fetch(:template)
         end
-        let(:expected_keywords) do
-          {
-            file_path:     expected_file_path,
-            parameters:    expected_parameters,
-            template_path: expected_template_path
-          }
-        end
+        let(:expected_contents) do
+          next super() if defined?(super())
 
-        before(:example) do
-          allow(Cuprum::Cli::Files::GenerateFile)
-            .to receive(:new)
-            .and_return(generate_command)
+          template = File.read(expected_template_path)
+          result   =
+            Cuprum::Cli::Files::Engines::RenderErb
+            .new
+            .call(template, **expected_parameters)
+
+          raise result.error.message if result.failure?
+
+          result.value
         end
 
         if examples_options.fetch(:require_template, false)
@@ -61,18 +55,15 @@ module Cuprum::Cli::RSpec::Deferred
           it 'should not generate the file' do
             subject.call
 
-            expect(generate_command)
-              .not_to have_received(:call)
-              .with(**expected_keywords)
+            expect(file_system.file?(expected_file_path)).to be false
           end
           # :nocov:
         else
           it 'should generate the file' do
             subject.call
 
-            expect(generate_command)
-              .to have_received(:call)
-              .with(**expected_keywords)
+            expect(file_system.read_file(expected_file_path))
+              .to eq(expected_contents)
           end
         end
 
@@ -85,9 +76,7 @@ module Cuprum::Cli::RSpec::Deferred
             it 'should not generate the file' do
               subject.call
 
-              expect(generate_command)
-                .not_to have_received(:call)
-                .with(**expected_keywords)
+              expect(file_system.file?(expected_file_path)).to be false
             end
           end
         end
@@ -99,16 +88,19 @@ module Cuprum::Cli::RSpec::Deferred
             let(:constructor_options) do
               super().merge("#{expected_key}_template": custom_template)
             end
-            let(:expected_keywords) do
-              super().merge(template_path: custom_template)
+
+            before(:example) do
+              file_system.write_file(
+                custom_template,
+                File.read(expected_template_path)
+              )
             end
 
             it 'should generate the file' do
               subject.call
 
-              expect(generate_command)
-                .to have_received(:call)
-                .with(**expected_keywords)
+              expect(file_system.read_file(expected_file_path))
+                .to eq(expected_contents)
             end
           end
         end

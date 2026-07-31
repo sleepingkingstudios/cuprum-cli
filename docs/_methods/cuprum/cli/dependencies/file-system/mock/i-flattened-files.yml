@@ -1,0 +1,16 @@
+---
+name: Cuprum::Cli::Dependencies::FileSystem::Mock#flattened_files
+parent_path: cuprum/cli/dependencies/file-system/mock
+signature: flattened_files
+slug: flattened-files
+constructor: false
+data_path: cuprum/cli/dependencies/file-system/mock/i-flattened-files
+returns:
+- description: |-
+    a list of the defined file paths in the mock file
+    system.
+  type:
+  - name: Array
+    items:
+    - name: String
+version: "*"

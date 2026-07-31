@@ -43,9 +43,17 @@ instance_methods:
   path: cuprum/cli/dependencies/file-system/mock/i-each-file
   slug: each-file
   inherited: false
+- name: expanded_dirs
+  path: cuprum/cli/dependencies/file-system/mock/i-expanded-dirs
+  slug: expanded-dirs
+  inherited: false
 - name: file?
   path: cuprum/cli/dependencies/file-system/mock/i-file?
   slug: file?
+  inherited: false
+- name: flattened_files
+  path: cuprum/cli/dependencies/file-system/mock/i-flattened-files
+  slug: flattened-files
   inherited: false
 - name: initialize
   path: cuprum/cli/dependencies/file-system/mock/i-initialize

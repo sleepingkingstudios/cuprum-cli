@@ -4,13 +4,13 @@ require 'cuprum'
 require 'plumbum'
 
 require 'cuprum/cli/files'
-require 'cuprum/cli/files/generate_file'
 
 module Cuprum::Cli::Files
   # Command for generating templated files.
   class Generator < Cuprum::Command # rubocop:disable Metrics/ClassLength
     include Plumbum::Consumer
     prepend Plumbum::Parameters
+    include Cuprum::Cli::Dependencies::StandardIo::Helpers
     extend  Cuprum::Cli::Options::ClassMethods
     include Cuprum::Cli::Options::Quiet
     include Cuprum::Cli::Options::Verbose
@@ -22,7 +22,7 @@ module Cuprum::Cli::Files
     class OutputAlreadyExistsError < KeyError; end
 
     # Data class representing a configured output file.
-    Output = Data.define(:key, :path, :template_path)
+    Output = Data.define(:key, :path, :template)
 
     class << self
       # Marks the generator as abstract.
@@ -119,11 +119,11 @@ module Cuprum::Cli::Files
       # @param path [String] the file path for the generated file.
       # @param key [String, Symbol] a unique key used to identify the output.
       #   Defaults to :default.
-      # @param template_path [String] the path to the template file for the
-      #   output. If not provided, the user must provide a template for that output.
+      # @param template [String] the path to the template file for the output.
+      #   If not provided, the user must provide a template for that output.
       #
       # @return [void]
-      def output(path, key: :default, template_path: nil)
+      def output(path, key: :default, template: nil) # rubocop:disable Metrics/MethodLength
         key = key.to_sym
 
         if abstract?
@@ -135,7 +135,9 @@ module Cuprum::Cli::Files
           raise OutputAlreadyExistsError, output_already_exists_message(key)
         end
 
-        own_outputs[key] = Output.new(key:, path:, template_path:)
+        template = resolve_template(template)
+
+        own_outputs[key] = Output.new(key:, path:, template:)
 
         nil
       end
@@ -180,6 +182,12 @@ module Cuprum::Cli::Files
         "unable to define output #{key.inspect} - #{class_name} already " \
           "defines output #{key.inspect}"
       end
+
+      def resolve_template(maybe_template)
+        return if maybe_template.nil?
+
+        Cuprum::Cli::Files::Template.build(maybe_template)
+      end
     end
 
     abstract
@@ -223,6 +231,44 @@ module Cuprum::Cli::Files
 
     private
 
+    def build_file_template(template_path)
+      Cuprum::Cli::Files::Templates::FileTemplate.build(template_path)
+    end
+
+    def check_if_file_already_exists(file_path:)
+      return unless file_system.file?(file_path)
+
+      error  =
+        file_not_writeable_error(file_path:, reason: 'file already exists')
+
+      failure(error)
+    end
+
+    def check_if_file_is_directory(file_path:)
+      return unless file_system.directory?(file_path)
+
+      error  =
+        file_not_writeable_error(file_path:, reason: 'file is a directory')
+
+      failure(error)
+    end
+
+    def create_file(contents:, file_path:)
+      Cuprum::Cli::Files::CreateFile
+        .new(
+          directories: directories?,
+          dry_run:     dry_run?,
+          file_system:
+        )
+        .call(contents:, file_path:)
+    end
+
+    def duplicate_file_error(file_path:, key:)
+      details = "multiple outputs writing to output path #{file_path.inspect}"
+
+      generator_error(details:, key:)
+    end
+
     def extract_file_parameters(file_path) # rubocop:disable Metrics/MethodLength
       base_name = File.basename(file_path)
       segments  = file_path.split(File::SEPARATOR)
@@ -236,6 +282,10 @@ module Cuprum::Cli::Files
         root_path:     segments[0...-1].first || '',
         short_name:    base_name.split('.').first
       }
+    end
+
+    def file_not_writeable_error(**)
+      Cuprum::Cli::Errors::Files::FileNotWriteable.new(**)
     end
 
     def filter_outputs # rubocop:disable Metrics/MethodLength
@@ -256,23 +306,32 @@ module Cuprum::Cli::Files
       failure(error)
     end
 
-    def generate_command
-      @generate_command ||=
-        Cuprum::Cli::Files::GenerateFile
-        .new(
-          directories: directories?,
-          dry_run:     dry_run?,
-          file_system:,
-          quiet:       quiet?,
-          standard_io:,
-          verbose:     verbose?
-        )
+    def generate_file(contents:, file_path:)
+      say "Generating file #{file_path}..."
+
+      report_file_contents(contents)
+
+      step { create_file(contents:, file_path:) }
+
+      file_path
     end
 
-    def generate_file(file_path:, template_path:)
-      parameters = file_parameters.merge(options)
+    def generate_contents(outputs) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      outputs.each_value.with_object({}) do |output, hsh|
+        file_path = step { resolve_output_path(output) }
 
-      generate_command.call(file_path:, parameters:, template_path:)
+        if hsh.key?(file_path)
+          return failure(duplicate_file_error(file_path:, key: output.key))
+        end
+
+        template  = step { template_for(output) }
+        contents  = step { render_template(template:) }
+
+        step { check_if_file_is_directory(file_path:) }
+        step { check_if_file_already_exists(file_path:) }
+
+        hsh[file_path] = contents
+      end
     end
 
     def generator_error(details: nil, key: nil)
@@ -291,12 +350,32 @@ module Cuprum::Cli::Files
     def process
       outputs = step { filter_outputs }
 
-      outputs.each_value.map do |output|
-        file_path     = step { resolve_output_path(output) }
-        template_path = step { template_path_for(output) }
+      generated_files = step { generate_contents(outputs) }
 
-        step { generate_file(file_path:, template_path:) }
+      generated_files.each do |file_path, contents|
+        step { generate_file(contents:, file_path:) }
       end
+
+      generated_files.keys
+    end
+
+    def render_template(template:)
+      parameters = file_parameters.merge(options)
+
+      Cuprum::Cli::Files::Engines::RenderTemplate
+        .new(file_system:)
+        .call(template, **parameters)
+    end
+
+    def report_file_contents(contents)
+      say "\n", verbose: true
+      say(
+        contents
+          .each_line
+          .map { |line| line == "\n" ? "\n" : "  #{line}" }.join,
+        verbose: true
+      )
+      say "\n", verbose: true
     end
 
     def resolve_output_path(output) # rubocop:disable Metrics/MethodLength
@@ -314,21 +393,28 @@ module Cuprum::Cli::Files
       failure(error)
     end
 
-    def template_path_for(output) # rubocop:disable Metrics/MethodLength
-      template_path =
-        if output.key == :default && options[:template]
-          options[:template]
-        else
-          options[:"#{output.key}_template"] || output.template_path
-        end
+    def template_for(output)
+      template_path = template_path_from_options(output)
 
-      return template_path unless template_path.nil? || template_path.empty?
+      unless template_path.nil? || template_path.empty?
+        return build_file_template(template_path)
+      end
+
+      return output.template if output.template
 
       error = generator_error(
         details: 'output does not define a template path',
         key:     output.key
       )
       failure(error)
+    end
+
+    def template_path_from_options(output)
+      if output.key == :default && options.key?(:template)
+        return options[:template]
+      end
+
+      options[:"#{output.key}_template"]
     end
   end
 end

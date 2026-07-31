@@ -1,7 +1,7 @@
 ---
 name: Cuprum::Cli::Files::Generator.output
 parent_path: cuprum/cli/files/generator
-signature: 'output(path, key: :default, template_path: nil)'
+signature: 'output(path, key: :default, template: nil)'
 slug: output
 constructor: false
 data_path: cuprum/cli/files/generator/c-output
@@ -38,9 +38,9 @@ params:
   - name: String
   - name: Symbol
 - description: |-
-    the path to the template file for the
-    output. If not provided, the user must provide a template for that output.
-  name: template_path
+    the path to the template file for the output.
+    If not provided, the user must provide a template for that output.
+  name: template
   type:
   - name: String
   default: nil

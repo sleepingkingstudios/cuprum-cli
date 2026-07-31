@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Files::Generator::Output#template
+parent_path: cuprum/cli/files/generator/output
+signature: template
+slug: template
+constructor: false
+data_path: cuprum/cli/files/generator/output/i-template
+returns:
+- description: the current value of template
+  type:
+  - name: Object
+short_description: Returns the value of attribute template
+version: "*"

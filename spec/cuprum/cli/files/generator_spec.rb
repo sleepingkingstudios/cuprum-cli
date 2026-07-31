@@ -39,7 +39,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
   end
 
   describe '::Output' do
-    let(:expected_members) { %i[key path template_path] }
+    let(:expected_members) { %i[key path template] }
 
     include_examples 'should define constant',
       :Output,
@@ -315,7 +315,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
       expect(described_class)
         .to respond_to(:output)
         .with(1).argument
-        .and_keywords(:key, :template_path)
+        .and_keywords(:key, :template)
     end
 
     it 'should raise an exception' do
@@ -323,7 +323,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         .to raise_error described_class::AbstractGeneratorError, error_message
     end
 
-    it 'should not add a matcher' do
+    it 'should not add an output' do
       expect do
         handle_exception { described_class.output(file_path, **options) }
       end
@@ -339,7 +339,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           .to raise_error described_class::AbstractGeneratorError, error_message
       end
 
-      it 'should not add a matcher' do
+      it 'should not add an output' do
         expect do
           handle_exception { described_class.output(file_path, **options) }
         end
@@ -348,11 +348,23 @@ RSpec.describe Cuprum::Cli::Files::Generator do
     end
 
     wrap_deferred 'with a generator class' do
+      deferred_examples 'should add the output' do
+        it 'should set the output', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
+          expect { described_class.output(output_path, **options) }
+            .to change(described_class, :outputs)
+            .to have_key(key)
+
+          expect(described_class.outputs[key])
+            .to be_a(described_class::Output)
+            .and(have_attributes(**expected_properties))
+        end
+      end
+
       let(:expected_properties) do
         {
           key:,
-          path:          output_path,
-          template_path: nil
+          path:     output_path,
+          template: nil
         }
       end
 
@@ -405,22 +417,96 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         end
       end
 
-      describe 'with template_path: value' do
-        let(:template_path) { 'path/to/template.md' }
-        let(:options)       { super().merge(template_path:) }
-        let(:expected_properties) do
-          super().merge(template_path:)
+      describe 'with template: nil' do
+        let(:options) { super().merge(template: nil) }
+
+        include_deferred 'should add the output'
+      end
+
+      describe 'with template: an Object' do
+        let(:options) { super().merge(template: Object.new.freeze) }
+        let(:error_message) do
+          'template must be a Template or file path'
         end
 
-        it 'should set the output', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
+        it 'should raise an exception' do
           expect { described_class.output(output_path, **options) }
-            .to change(described_class, :outputs)
-            .to have_key(key)
-
-          expect(described_class.outputs[key])
-            .to be_a(described_class::Output)
-            .and(have_attributes(**expected_properties))
+            .to raise_error ArgumentError, error_message
         end
+      end
+
+      describe 'with template: a file path' do
+        let(:template) { 'path/to/template.md' }
+        let(:options)  { super().merge(template:) }
+        let(:expected_properties) do
+          expected_template =
+            Cuprum::Cli::Files::Templates::FileTemplate.new(
+              engine:    nil,
+              file_path: template
+            )
+
+          super().merge(template: expected_template)
+        end
+
+        include_deferred 'should add the output'
+
+        context 'when the template includes basic whitespace' do
+          let(:template) { 'example template.md' }
+
+          include_deferred 'should add the output'
+        end
+      end
+
+      describe 'with template: a raw template' do
+        let(:template) do
+          <<~MARKDOWN
+            # Greetings, Starfighter
+
+            You have been recruited by the Star League to defend the frontier
+            against Xur and the Ko-Dan armada!
+          MARKDOWN
+        end
+
+        let(:options) { super().merge(template:) }
+        let(:expected_properties) do
+          expected_template =
+            Cuprum::Cli::Files::Templates::StringTemplate
+            .new(raw_template: template)
+
+          super().merge(template: expected_template)
+        end
+
+        include_deferred 'should add the output'
+      end
+
+      describe 'with template: a FileTemplate' do
+        let(:template) do
+          Cuprum::Cli::Files::Templates::FileTemplate.new(
+            file_path: 'path/to/template.md'
+          )
+        end
+        let(:options)             { super().merge(template:) }
+        let(:expected_properties) { super().merge(template:) }
+
+        include_deferred 'should add the output'
+      end
+
+      describe 'with template: a StringTemplate' do
+        let(:raw_template) do
+          <<~MARKDOWN
+            # Greetings, Starfighter
+
+            You have been recruited by the Star League to defend the frontier
+            against Xur and the Ko-Dan armada!
+          MARKDOWN
+        end
+        let(:template) do
+          Cuprum::Cli::Files::Templates::StringTemplate.new(raw_template:)
+        end
+        let(:options)             { super().merge(template:) }
+        let(:expected_properties) { super().merge(template:) }
+
+        include_deferred 'should add the output'
       end
 
       context 'when the generator is an abstract class' do
@@ -472,8 +558,8 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         let(:expected_properties) do
           {
             key:,
-            path:          output_path,
-            template_path: nil
+            path:     output_path,
+            template: nil
           }
         end
 
@@ -501,9 +587,9 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         let(:expected_outputs) do
           {
             default: described_class::Output.new(
-              key:           :default,
-              path:          'docs/out.md',
-              template_path: nil
+              key:      :default,
+              path:     'docs/out.md',
+              template: nil
             )
           }
         end
@@ -517,16 +603,21 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
       context 'when the generator has multiple outputs' do
         let(:expected_outputs) do
+          plain_text_template =
+            Cuprum::Cli::Files::Templates::FileTemplate.new(
+              file_path: 'templates/plain_text.txt'
+            )
+
           {
             default:    described_class::Output.new(
-              key:           :default,
-              path:          'docs/out.md',
-              template_path: nil
+              key:      :default,
+              path:     'docs/out.md',
+              template: nil
             ),
             plain_text: described_class::Output.new(
-              key:           :plain_text,
-              path:          'docs/out.txt',
-              template_path: 'templates/plain_text.txt'
+              key:      :plain_text,
+              path:     'docs/out.txt',
+              template: plain_text_template
             )
           }
         end
@@ -534,8 +625,8 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         before(:example) do
           described_class.output 'docs/out.md'
           described_class.output 'docs/out.txt',
-            key:           :plain_text,
-            template_path: 'templates/plain_text.txt'
+            key:      :plain_text,
+            template: 'templates/plain_text.txt'
         end
 
         it { expect(described_class.outputs).to be == expected_outputs }
@@ -547,16 +638,21 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
       context 'when the parent class has multiple outputs' do
         let(:expected_outputs) do
+          plain_text_template =
+            Cuprum::Cli::Files::Templates::FileTemplate.new(
+              file_path: 'templates/plain_text.txt'
+            )
+
           {
             default:    described_class::Output.new(
-              key:           :default,
-              path:          'docs/out.md',
-              template_path: nil
+              key:      :default,
+              path:     'docs/out.md',
+              template: nil
             ),
             plain_text: described_class::Output.new(
-              key:           :plain_text,
-              path:          'docs/out.txt',
-              template_path: 'templates/plain_text.txt'
+              key:      :plain_text,
+              path:     'docs/out.txt',
+              template: plain_text_template
             )
           }
         end
@@ -564,8 +660,8 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         before(:example) do
           parent_class.output 'docs/out.md'
           parent_class.output 'docs/out.txt',
-            key:           :plain_text,
-            template_path: 'templates/plain_text.txt'
+            key:      :plain_text,
+            template: 'templates/plain_text.txt'
         end
 
         it { expect(described_class.outputs).to be == expected_outputs }
@@ -573,21 +669,30 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
       context 'when the parent class and generator have multiple outputs' do
         let(:expected_outputs) do
+          default_template =
+            Cuprum::Cli::Files::Templates::FileTemplate.new(
+              file_path: 'templates/default.txt'
+            )
+          plain_text_template =
+            Cuprum::Cli::Files::Templates::FileTemplate.new(
+              file_path: 'templates/plain_text.txt'
+            )
+
           {
             default:    described_class::Output.new(
-              key:           :default,
-              path:          'docs/out/default.txt',
-              template_path: 'templates/default.txt'
+              key:      :default,
+              path:     'docs/out/default.txt',
+              template: default_template
             ),
             plain_text: described_class::Output.new(
-              key:           :plain_text,
-              path:          'docs/out.txt',
-              template_path: 'templates/plain_text.txt'
+              key:      :plain_text,
+              path:     'docs/out.txt',
+              template: plain_text_template
             ),
             signature:  described_class::Output.new(
-              key:           :signature,
-              path:          'docs/signature.txt',
-              template_path: nil
+              key:      :signature,
+              path:     'docs/signature.txt',
+              template: nil
             )
           }
         end
@@ -595,13 +700,13 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         before(:example) do
           parent_class.output 'docs/out.md'
           parent_class.output 'docs/out.txt',
-            key:           :plain_text,
-            template_path: 'templates/plain_text.txt'
+            key:      :plain_text,
+            template: 'templates/plain_text.txt'
 
           described_class.output 'docs/signature.txt', key: :signature
           described_class.output 'docs/out/default.txt',
-            key:           :default,
-            template_path: 'templates/default.txt'
+            key:      :default,
+            template: 'templates/default.txt'
         end
 
         it { expect(described_class.outputs).to be == expected_outputs }
@@ -656,6 +761,13 @@ RSpec.describe Cuprum::Cli::Files::Generator do
   end
 
   describe '#call' do
+    let(:file_system) do
+      Cuprum::Cli::Dependencies::FileSystem::Mock.new
+    end
+    let(:standard_io) do
+      Cuprum::Cli::Dependencies::StandardIo::Mock.new
+    end
+    let(:constructor_options) { { file_system:, standard_io: } }
     let(:expected_error) do
       details = 'generator does not define any outputs'
 
@@ -676,110 +788,121 @@ RSpec.describe Cuprum::Cli::Files::Generator do
     end
 
     wrap_deferred 'with a generator class' do
-      deferred_examples 'should configure the generate command' do
-        let(:expected_options) do
-          file_system = Cuprum::Cli::Dependencies.provider.get(:file_system)
-          standard_io = Cuprum::Cli::Dependencies.provider.get(:standard_io)
-
-          {
-            directories: true,
-            dry_run:     false,
-            file_system:,
-            quiet:       false,
-            standard_io:,
-            verbose:     false
-          }
+      deferred_examples 'should not generate any output files' do
+        it 'should not generate any output files' do
+          expect { generator.call }.not_to change(file_system, :files)
         end
 
-        it 'should configure the generator' do
+        it 'should not write to any output stream' do
           generator.call
 
-          expect(Cuprum::Cli::Files::GenerateFile)
-            .to have_received(:new)
-            .with(**expected_options)
+          expect(standard_io.combined_stream.string).to be == ''
+        end
+      end
+
+      deferred_examples 'should generate the output files' do
+        let(:expected_output_text) do
+          expected_output_files
+            .each_key
+            .map { |file_path| "Generating file #{file_path}...\n" }
+            .join
         end
 
-        context 'when initialized with directories: false' do
-          let(:constructor_options) { super().merge(directories: false) }
-          let(:expected_options)    { super().merge(directories: false) }
+        define_method :generated_files do
+          file_system
+            .flattened_files
+            .reject { |file_path| file_path.start_with?('spec/support') }
+            .reject { |file_path| file_path.start_with?('tmp') }
+        end
 
-          it 'should configure the generator' do
-            generator.call
+        it 'should generate each output file', :aggregate_failures do
+          generator.call
 
-            expect(Cuprum::Cli::Files::GenerateFile)
-              .to have_received(:new)
-              .with(**expected_options)
+          expect(generated_files).to match_array(expected_output_files.keys)
+
+          expected_output_files.each do |output_path, contents|
+            expect(file_system.read_file(output_path)).to be == contents
           end
+        end
+
+        it 'should report the files to the output stream',
+          :aggregate_failures \
+        do
+          generator.call
+
+          expect(standard_io.output_stream.string).to be == expected_output_text
+          expect(standard_io.error_stream.string).to be == ''
         end
 
         context 'when initialized with dry_run: true' do
           let(:constructor_options) { super().merge(dry_run: true) }
-          let(:expected_options)    { super().merge(dry_run: true) }
 
-          it 'should configure the generator' do
+          it 'should not generate any output files' do
+            expect { generator.call }.not_to change(file_system, :files)
+          end
+
+          it 'should report the files to the output stream',
+            :aggregate_failures \
+          do
             generator.call
 
-            expect(Cuprum::Cli::Files::GenerateFile)
-              .to have_received(:new)
-              .with(**expected_options)
-          end
-        end
-
-        context 'when initialized with file_system: value' do
-          let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
-          let(:constructor_options) do
-            super().merge(file_system:)
-          end
-          let(:expected_options) { super().merge(file_system:) }
-
-          it 'should configure the generator' do
-            generator.call
-
-            expect(Cuprum::Cli::Files::GenerateFile)
-              .to have_received(:new)
-              .with(**expected_options)
+            expect(standard_io.output_stream.string)
+              .to be == expected_output_text
+            expect(standard_io.error_stream.string).to be == ''
           end
         end
 
         context 'when initialized with quiet: true' do
           let(:constructor_options) { super().merge(quiet: true) }
-          let(:expected_options)    { super().merge(quiet: true) }
 
-          it 'should configure the generator' do
+          it 'should generate each output file', :aggregate_failures do
             generator.call
 
-            expect(Cuprum::Cli::Files::GenerateFile)
-              .to have_received(:new)
-              .with(**expected_options)
+            expected_output_files.each do |output_path, contents|
+              expect(file_system.read_file(output_path)).to be == contents
+            end
           end
-        end
 
-        context 'when initialized with standard_io: value' do
-          let(:standard_io) { Cuprum::Cli::Dependencies::StandardIo::Mock.new }
-          let(:constructor_options) do
-            super().merge(standard_io:)
-          end
-          let(:expected_options) { super().merge(standard_io:) }
-
-          it 'should configure the generator' do
+          it 'should not write to any output stream' do
             generator.call
 
-            expect(Cuprum::Cli::Files::GenerateFile)
-              .to have_received(:new)
-              .with(**expected_options)
+            expect(standard_io.combined_stream.string).to be == ''
           end
         end
 
         context 'when initialized with verbose: true' do
           let(:constructor_options) { super().merge(verbose: true) }
-          let(:expected_options)    { super().merge(verbose: true) }
+          let(:expected_output_text) do
+            expected_output_files
+              .each
+              .map do |file_path, contents|
+                indented =
+                  contents
+                  .each_line
+                  .map { |line| line.strip.empty? ? "\n" : "  #{line}" }
+                  .join
 
-          it 'should configure the generator' do
+                "Generating file #{file_path}...\n\n#{indented}\n"
+              end
+              .join
+          end
+
+          it 'should generate each output file', :aggregate_failures do
             generator.call
 
-            expect(Cuprum::Cli::Files::GenerateFile)
-              .to have_received(:new)
-              .with(**expected_options)
+            expected_output_files.each do |output_path, contents|
+              expect(file_system.read_file(output_path)).to be == contents
+            end
+          end
+
+          it 'should report the files to the output stream',
+            :aggregate_failures \
+          do
+            generator.call
+
+            expect(standard_io.output_stream.string)
+              .to be == expected_output_text
+            expect(standard_io.error_stream.string).to be == ''
           end
         end
       end
@@ -788,20 +911,28 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         File.join(Cuprum::Cli.gem_path, 'spec', 'support', 'templates')
       end
       let(:generate_result) { Cuprum::Result.new }
-      let(:generate_command) do
-        instance_double(
-          Cuprum::Cli::Files::GenerateFile,
-          call: nil
-        )
+      let(:expected_value)  { expected_output_files.keys }
+
+      define_method :render_template do |template_path|
+        template = file_system.read_file(template_path)
+
+        if template_path.end_with?('.erb')
+          command  = Cuprum::Cli::Files::Engines::RenderErb.new
+          params   = generator.file_parameters.merge(generator.options)
+          template = command.call(template, **params).value
+        end
+
+        template
       end
 
       before(:example) do
-        allow(Cuprum::Cli::Files::GenerateFile)
-          .to receive(:new)
-          .and_return(generate_command)
+        file_system.create_directory(templates_directory, recursive: true)
 
-        allow(generate_command).to receive(:call) do |file_path:, **|
-          Cuprum::Result.new(value: file_path)
+        Dir["#{templates_directory}/*"].each do |file_path|
+          relative_path =
+            File.join(templates_directory, File.basename(file_path))
+
+          file_system.write_file(relative_path, File.read(file_path))
         end
       end
 
@@ -811,23 +942,17 @@ RSpec.describe Cuprum::Cli::Files::Generator do
           .with_error(expected_error)
       end
 
-      it 'should not generate any files' do
-        generator.call
-
-        expect(generate_command).not_to have_received(:call)
-      end
+      include_deferred 'should not generate any output files'
 
       # rubocop:disable RSpec/MultipleMemoizedHelpers, RSpec/NestedGroups
       context 'when the generator has one output' do
         let(:output_path)    { 'docs/%<relative_path>s/%<short_name>s.md' }
         let(:output_options) { {} }
-        let(:expected_value) { %w[docs/path/to/file.md] }
-        let(:expected_parameters) do
-          parameters = generator.file_parameters.merge(generator.options)
+        let(:expected_output_files) do
+          template_path = File.join(templates_directory, 'docs.md.erb')
 
           {
-            file_path:  'docs/path/to/file.md',
-            parameters:
+            'docs/path/to/file.md' => render_template(template_path)
           }
         end
 
@@ -836,10 +961,10 @@ RSpec.describe Cuprum::Cli::Files::Generator do
         end
 
         context 'when the output path has missing wildcards' do
-          let(:template_path) do
+          let(:template) do
             File.join(templates_directory, 'docs.md.erb')
           end
-          let(:output_options) { super().merge(template_path:) }
+          let(:output_options) { super().merge(template:) }
           let(:output_path)    { 'docs/%<secret_path>s/%<short_name>s.md' }
           let(:expected_error) do
             details =
@@ -859,11 +984,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
               .with_error(expected_error)
           end
 
-          it 'should not generate any files' do
-            generator.call
-
-            expect(generate_command).not_to have_received(:call)
-          end
+          include_deferred 'should not generate any output files'
 
           context 'when the generator defines a matching option' do
             before(:example) { described_class.option :secret_path }
@@ -874,30 +995,28 @@ RSpec.describe Cuprum::Cli::Files::Generator do
                 .with_error(expected_error)
             end
 
-            it 'should not generate any files' do
-              generator.call
-
-              expect(generate_command).not_to have_received(:call)
-            end
+            include_deferred 'should not generate any output files'
 
             context 'when initialized with a matching value' do
               let(:constructor_options) do
                 super().merge(secret_path: 'path/to/secret')
               end
-              let(:expected_parameters) do
-                super().merge(
-                  file_path:     'docs/path/to/secret/file.md',
-                  template_path:
-                )
+              let(:expected_output_files) do
+                template_path = File.join(templates_directory, 'docs.md.erb')
+                rendered      = render_template(template_path)
+
+                {
+                  'docs/path/to/secret/file.md' => rendered
+                }
               end
 
-              it 'should generate the file' do
-                generator.call
-
-                expect(generate_command)
-                  .to have_received(:call)
-                  .with(**expected_parameters)
+              it 'should return a passing result' do
+                expect(generator.call)
+                  .to be_a_passing_result
+                  .with_value(expected_value)
               end
+
+              include_deferred 'should generate the output files'
             end
           end
         end
@@ -921,11 +1040,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
               .with_error(expected_error)
           end
 
-          it 'should not generate any files' do
-            generator.call
-
-            expect(generate_command).not_to have_received(:call)
-          end
+          include_deferred 'should not generate any output files'
 
           context 'when the generator defines a :template option' do
             before(:example) { described_class.option :template }
@@ -936,28 +1051,32 @@ RSpec.describe Cuprum::Cli::Files::Generator do
                 .with_error(expected_error)
             end
 
-            it 'should not generate any files' do
-              generator.call
-
-              expect(generate_command).not_to have_received(:call)
-            end
+            include_deferred 'should not generate any output files'
 
             context 'when initialized with template: value' do
               let(:custom_template_path) { 'tmp/custom_template.md.erb' }
               let(:constructor_options) do
                 super().merge(template: custom_template_path)
               end
-              let(:expected_parameters) do
-                super().merge(template_path: custom_template_path)
+              let(:expected_output_files) do
+                rendered = render_template(custom_template_path)
+
+                {
+                  'docs/path/to/file.md' => rendered
+                }
               end
 
-              it 'should generate the file' do
-                generator.call
-
-                expect(generate_command)
-                  .to have_received(:call)
-                  .with(**expected_parameters)
+              before(:example) do
+                file_system.create_directory('tmp')
+                file_system.write(
+                  custom_template_path,
+                  file_system.read(
+                    File.join(templates_directory, 'docs.md.erb')
+                  )
+                )
               end
+
+              include_deferred 'should generate the output files'
             end
           end
 
@@ -970,40 +1089,39 @@ RSpec.describe Cuprum::Cli::Files::Generator do
                 .with_error(expected_error)
             end
 
-            it 'should not generate any files' do
-              generator.call
-
-              expect(generate_command).not_to have_received(:call)
-            end
+            include_deferred 'should not generate any output files'
 
             context 'when initialized with default_template: value' do
               let(:custom_template_path) { 'tmp/custom_template.md.erb' }
               let(:constructor_options) do
                 super().merge(default_template: custom_template_path)
               end
-              let(:expected_parameters) do
-                super().merge(template_path: custom_template_path)
+              let(:expected_output_files) do
+                rendered = render_template(custom_template_path)
+
+                {
+                  'docs/path/to/file.md' => rendered
+                }
               end
 
-              it 'should generate the file' do
-                generator.call
-
-                expect(generate_command)
-                  .to have_received(:call)
-                  .with(**expected_parameters)
+              before(:example) do
+                file_system.create_directory('tmp')
+                file_system.write(
+                  custom_template_path,
+                  file_system.read(
+                    File.join(templates_directory, 'docs.md.erb')
+                  )
+                )
               end
+
+              include_deferred 'should generate the output files'
             end
           end
         end
 
         context 'when the template path is defined' do
-          let(:template_path)  { File.join(templates_directory, 'docs.md.erb') }
-          let(:output_options) { super().merge(template_path:) }
-          let(:expected_parameters) do
-            super().merge(template_path:)
-          end
-
-          include_deferred 'should configure the generate command'
+          let(:template)       { File.join(templates_directory, 'docs.md.erb') }
+          let(:output_options) { super().merge(template:) }
 
           it 'should return a passing result' do
             expect(generator.call)
@@ -1011,94 +1129,55 @@ RSpec.describe Cuprum::Cli::Files::Generator do
               .with_value(expected_value)
           end
 
-          it 'should generate the file' do
-            generator.call
-
-            expect(generate_command)
-              .to have_received(:call)
-              .with(**expected_parameters)
-          end
+          include_deferred 'should generate the output files'
 
           context 'when the generator defines a :template option' do
             before(:example) { described_class.option :template }
 
-            it 'should generate the file' do
-              generator.call
-
-              expect(generate_command)
-                .to have_received(:call)
-                .with(**expected_parameters)
-            end
+            include_deferred 'should generate the output files'
 
             context 'when initialized with template: value' do
               let(:custom_template_path) { 'tmp/custom_template.md.erb' }
               let(:constructor_options) do
                 super().merge(template: custom_template_path)
               end
-              let(:expected_parameters) do
-                super().merge(template_path: custom_template_path)
+
+              before(:example) do
+                file_system.create_directory('tmp')
+                file_system.write(
+                  custom_template_path,
+                  file_system.read(
+                    File.join(templates_directory, 'docs.md.erb')
+                  )
+                )
               end
 
-              it 'should generate the file' do
-                generator.call
-
-                expect(generate_command)
-                  .to have_received(:call)
-                  .with(**expected_parameters)
-              end
+              include_deferred 'should generate the output files'
             end
           end
 
           context 'when the generator defines a :default_template option' do
             before(:example) { described_class.option :default_template }
 
-            it 'should generate the file' do
-              generator.call
-
-              expect(generate_command)
-                .to have_received(:call)
-                .with(**expected_parameters)
-            end
+            include_deferred 'should generate the output files'
 
             context 'when initialized with default_template: value' do
               let(:custom_template_path) { 'tmp/custom_template.md.erb' }
               let(:constructor_options) do
                 super().merge(default_template: custom_template_path)
               end
-              let(:expected_parameters) do
-                super().merge(template_path: custom_template_path)
-              end
 
-              it 'should generate the file' do
-                generator.call
-
-                expect(generate_command)
-                  .to have_received(:call)
-                  .with(**expected_parameters)
-              end
-            end
-          end
-
-          context 'when the file generation fails' do
-            let(:generate_error) do
-              Cuprum::Error.new(message: 'Something went wrong')
-            end
-
-            before(:example) do
-              allow(generate_command)
-                .to receive(:call)
-                .with(
-                  file_path:     'docs/path/to/file.md',
-                  parameters:    an_instance_of(Hash),
-                  template_path: an_instance_of(String)
+              before(:example) do
+                file_system.create_directory('tmp')
+                file_system.write(
+                  custom_template_path,
+                  file_system.read(
+                    File.join(templates_directory, 'docs.md.erb')
+                  )
                 )
-                .and_return(Cuprum::Result.new(error: generate_error))
-            end
+              end
 
-            it 'should return a failing result' do
-              expect(generator.call)
-                .to be_a_failing_result
-                .with_error(generate_error)
+              include_deferred 'should generate the output files'
             end
           end
         end
@@ -1125,11 +1204,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
                 .with_error(expected_error)
             end
 
-            it 'should not generate any files' do
-              generator.call
-
-              expect(generate_command).not_to have_received(:call)
-            end
+            include_deferred 'should not generate any output files'
 
             context 'when the generator defines a :docs_template option' do
               before(:example) { described_class.option :docs_template }
@@ -1140,42 +1215,34 @@ RSpec.describe Cuprum::Cli::Files::Generator do
                   .with_error(expected_error)
               end
 
-              it 'should not generate any files' do
-                generator.call
-
-                expect(generate_command).not_to have_received(:call)
-              end
+              include_deferred 'should not generate any output files'
 
               context 'when initialized with docs_template: value' do
                 let(:custom_template_path) { 'tmp/custom_template.md.erb' }
                 let(:constructor_options) do
                   super().merge(docs_template: custom_template_path)
                 end
-                let(:expected_parameters) do
-                  super().merge(template_path: custom_template_path)
+
+                before(:example) do
+                  file_system.create_directory('tmp')
+                  file_system.write(
+                    custom_template_path,
+                    file_system.read(
+                      File.join(templates_directory, 'docs.md.erb')
+                    )
+                  )
                 end
 
-                it 'should generate the file' do
-                  generator.call
-
-                  expect(generate_command)
-                    .to have_received(:call)
-                    .with(**expected_parameters)
-                end
+                include_deferred 'should generate the output files'
               end
             end
           end
 
           context 'when the template path is defined' do
-            let(:template_path) do
+            let(:template) do
               File.join(templates_directory, 'docs.md.erb')
             end
-            let(:output_options) { super().merge(template_path:) }
-            let(:expected_parameters) do
-              super().merge(template_path:)
-            end
-
-            include_deferred 'should configure the generate command'
+            let(:output_options) { super().merge(template:) }
 
             it 'should return a passing result' do
               expect(generator.call)
@@ -1183,65 +1250,45 @@ RSpec.describe Cuprum::Cli::Files::Generator do
                 .with_value(expected_value)
             end
 
-            it 'should generate the file' do
-              generator.call
-
-              expect(generate_command)
-                .to have_received(:call)
-                .with(**expected_parameters)
-            end
+            include_deferred 'should generate the output files'
 
             context 'when the generator defines a :docs_template option' do
               before(:example) { described_class.option :docs_template }
 
-              it 'should generate the file' do
-                generator.call
-
-                expect(generate_command)
-                  .to have_received(:call)
-                  .with(**expected_parameters)
-              end
+              include_deferred 'should generate the output files'
 
               context 'when initialized with docs_template: value' do
                 let(:custom_template_path) { 'tmp/custom_template.md.erb' }
                 let(:constructor_options) do
                   super().merge(docs_template: custom_template_path)
                 end
-                let(:expected_parameters) do
-                  super().merge(template_path: custom_template_path)
+
+                before(:example) do
+                  file_system.create_directory('tmp')
+                  file_system.write(
+                    custom_template_path,
+                    file_system.read(
+                      File.join(templates_directory, 'docs.md.erb')
+                    )
+                  )
                 end
 
-                it 'should generate the file' do
-                  generator.call
-
-                  expect(generate_command)
-                    .to have_received(:call)
-                    .with(**expected_parameters)
-                end
+                include_deferred 'should generate the output files'
               end
             end
           end
 
           context 'when the generator defines a matching predicate option' do
-            let(:template_path) do
+            let(:template) do
               File.join(templates_directory, 'docs.md.erb')
             end
-            let(:output_options) { super().merge(template_path:) }
-            let(:expected_parameters) do
-              super().merge(template_path:)
-            end
+            let(:output_options) { super().merge(template:) }
 
             before(:example) do
               described_class.option :docs, type: :boolean, default: true
             end
 
-            it 'should generate the file' do
-              generator.call
-
-              expect(generate_command)
-                .to have_received(:call)
-                .with(**expected_parameters)
-            end
+            include_deferred 'should generate the output files'
 
             context 'when initialized with matching option: false' do
               let(:constructor_options) { super().merge(docs: false) }
@@ -1262,89 +1309,45 @@ RSpec.describe Cuprum::Cli::Files::Generator do
                   .with_error(expected_error)
               end
 
-              it 'should not generate any files' do
-                generator.call
-
-                expect(generate_command).not_to have_received(:call)
-              end
+              include_deferred 'should not generate any output files'
             end
 
             context 'when initialized with matching option: true' do
               let(:constructor_options) { super().merge(docs: true) }
 
-              it 'should generate the file' do
-                generator.call
-
-                expect(generate_command)
-                  .to have_received(:call)
-                  .with(**expected_parameters)
-              end
+              include_deferred 'should generate the output files'
             end
           end
         end
       end
 
       context 'when the generator has many outputs' do
-        deferred_examples 'should generate the matching files' do
-          it 'should generate the matching files', :aggregate_failures do # rubocop:disable RSpec/ExampleLength
-            generator.call
-
-            expect(generate_command)
-              .to have_received(:call)
-              .exactly(expected_parameters.size).times
-            expected_parameters.each do |expected|
-              expect(generate_command)
-                .to have_received(:call)
-                .with(**expected)
-            end
-          end
-        end
-
         let(:file_path) { 'lib/path/to/file.rb' }
-        let(:expected_value) do
-          %w[
-            lib/path/to/file.rb
-            docs/path/to/file.md
-            spec/path/to/file_spec.rb
-          ]
-        end
-        let(:expected_parameters) do
-          parameters = generator.file_parameters.merge(generator.options)
+        let(:expected_output_files) do
+          docs_path = File.join(templates_directory, 'docs.md.erb')
+          ruby_path = File.join(templates_directory, 'ruby.rb.erb')
+          spec_path = File.join(templates_directory, 'rspec.rb.erb')
 
-          [
-            {
-              file_path:     'lib/path/to/file.rb',
-              parameters:,
-              template_path: 'templates/ruby.rb'
-            },
-            {
-              file_path:     'docs/path/to/file.md',
-              parameters:,
-              template_path: 'templates/docs.md'
-            },
-            {
-              file_path:     'spec/path/to/file_spec.rb',
-              parameters:,
-              template_path: 'templates/rspec.rb'
-            }
-          ]
+          {
+            'lib/path/to/file.rb'       => render_template(ruby_path),
+            'docs/path/to/file.md'      => render_template(docs_path),
+            'spec/path/to/file_spec.rb' => render_template(spec_path)
+          }
         end
 
         before(:example) do
           described_class.output '%<file_path>s',
-            template_path: 'templates/ruby.rb'
+            template: File.join(templates_directory, 'ruby.rb.erb')
 
           described_class.output 'docs/%<relative_path>s/%<short_name>s.md',
-            key:           :docs,
-            template_path: 'templates/docs.md'
+            key:      :docs,
+            template: File.join(templates_directory, 'docs.md.erb')
 
           described_class.output \
             'spec/%<relative_path>s/%<short_name>s_spec.rb',
-            key:           :rspec,
-            template_path: 'templates/rspec.rb'
+            key:      :rspec,
+            template: File.join(templates_directory, 'rspec.rb.erb')
         end
-
-        include_deferred 'should generate the matching files'
 
         it 'should return a passing result' do
           expect(generator.call)
@@ -1352,45 +1355,125 @@ RSpec.describe Cuprum::Cli::Files::Generator do
             .with_value(expected_value)
         end
 
+        include_deferred 'should generate the output files'
+
         context 'when the generator defines filtering options' do
           before(:example) do
             described_class.option :docs,  type: :boolean, default: true
             described_class.option :rspec, type: :boolean, default: true
           end
 
-          include_deferred 'should generate the matching files'
+          include_deferred 'should generate the output files'
 
           context 'when initialized with filtering options' do
             let(:constructor_options) { super().merge(rspec: false) }
-            let(:expected_parameters) do
-              super().reject { |hsh| hsh[:template_path].end_with?('rspec.rb') }
+            let(:expected_output_files) do
+              docs_path = File.join(templates_directory, 'docs.md.erb')
+              ruby_path = File.join(templates_directory, 'ruby.rb.erb')
+
+              {
+                'lib/path/to/file.rb'  => render_template(ruby_path),
+                'docs/path/to/file.md' => render_template(docs_path)
+              }
             end
 
-            include_deferred 'should generate the matching files'
+            include_deferred 'should generate the output files'
           end
         end
 
-        context 'when the file generation fails' do
-          let(:generate_error) do
-            Cuprum::Error.new(message: 'Something went wrong')
+        context 'when a file path already exists' do
+          let(:expected_error) do
+            Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+              file_path: 'docs/path/to/file.md',
+              reason:    'file already exists'
+            )
           end
 
           before(:example) do
-            allow(generate_command)
-              .to receive(:call)
-              .with(
-                file_path:     'docs/path/to/file.md',
-                parameters:    an_instance_of(Hash),
-                template_path: an_instance_of(String)
-              )
-              .and_return(Cuprum::Result.new(error: generate_error))
+            file_system.create_directory('docs/path/to', recursive: true)
+            file_system.write_file(
+              'docs/path/to/file.md',
+              'Conflicting file contents'
+            )
           end
 
           it 'should return a failing result' do
             expect(generator.call)
               .to be_a_failing_result
-              .with_error(generate_error)
+              .with_error(expected_error)
           end
+
+          it 'should not update the conflicting file' do
+            expect { generator.call }
+              .not_to(change { file_system.read_file('docs/path/to/file.md') })
+          end
+
+          it 'should not write other files', :aggregate_failures do
+            generator.call
+
+            expect(file_system.file?('lib/path/to/file.rb')).to be false
+            expect(file_system.file?('spec/path/to/file_spec.rb')).to be false
+          end
+        end
+
+        context 'when a file path points to a directory' do
+          let(:expected_error) do
+            Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+              file_path: 'docs/path/to/file.md',
+              reason:    'file is a directory'
+            )
+          end
+
+          before(:example) do
+            file_system
+              .create_directory('docs/path/to/file.md', recursive: true)
+          end
+
+          it 'should return a failing result' do
+            expect(generator.call)
+              .to be_a_failing_result
+              .with_error(expected_error)
+          end
+
+          it 'should not write any files', :aggregate_failures do
+            generator.call
+
+            expect(file_system.file?('docs/path/to/file.md')).to be false
+            expect(file_system.file?('lib/path/to/file.rb')).to be false
+            expect(file_system.file?('spec/path/to/file_spec.rb')).to be false
+          end
+        end
+
+        context 'when multiple outputs write to the same file path' do
+          let(:expected_error) do
+            details =
+              "multiple outputs writing to output path #{file_path.inspect}"
+            message =
+              "unable to generate output file :ruby - #{details}"
+
+            Cuprum::Cli::Errors::Files::GeneratorError.new(
+              details:,
+              file_path: 'lib/path/to/file.rb',
+              message:,
+              options:   generator.options
+            )
+          end
+
+          before(:example) do
+            described_class.output 'lib/%<relative_path>s/%<short_name>s.rb',
+              key:      :ruby,
+              template: Cuprum::Cli::Files::Templates::StringTemplate.new(
+                raw_template: 'Duplicate file contents'
+              )
+          end
+
+          it 'should return a failing result' do
+            expect(generator.call)
+              .to be_a_failing_result
+              .with_error(expected_error)
+          end
+
+          include_deferred 'should not generate any output files'
         end
       end
       # rubocop:enable RSpec/MultipleMemoizedHelpers, RSpec/NestedGroups
@@ -1461,9 +1544,9 @@ RSpec.describe Cuprum::Cli::Files::Generator do
   describe '#resolve_output_path' do
     let(:output) do
       described_class::Output.new(
-        key:           :default,
-        path:          output_path,
-        template_path: nil
+        key:      :default,
+        path:     output_path,
+        template: nil
       )
     end
     let(:resolved_path) do

@@ -16,8 +16,7 @@ class MarkdownGenerator < Cuprum::Cli::Files::Generator
 
   option :template
 
-  output '%<file_path>s',
-    template_path: 'templates/docs_template.md.erb'
+  output '%<file_path>s', template: 'templates/docs_template.md.erb'
 end
 ```
 
@@ -29,6 +28,10 @@ For a full list of available methods, see the [Reference documentation](../refer
   - [Generator Matching](#generator-matching)
   - [Generator Outputs](#generator-outputs)
   - [Generator Options](#generator-options)
+- [Templates](#templates)
+  - [File Templates](#file-templates)
+  - [String Templates](#string-templates)
+  - [Template Engines](#template-engines)
 - [Using Generators](#using-generators)
   - [Generating Files](#generating-files)
   - [Filtering Outputs](#filtering-outputs)
@@ -44,8 +47,7 @@ To define a generator, we declare a new `class` that inherits from `Cuprum::Cli:
 class MarkdownGenerator < Cuprum::Cli::Files::Generator
   match_file(/\.md\z/)
 
-  output '%<file_path>s',
-    template_path: 'templates/docs_template.md.erb'
+  output '%<file_path>s', template: 'templates/docs_template.md.erb'
 end
 ```
 
@@ -97,7 +99,7 @@ Block matchers are the only match statements that allow matching against the opt
 
 ### Generator Outputs
 
-A generator's output statements are used to determine which files will be created when the generator is called. Each output has up to three parts: the file path for the generated file, an optional key, and an optional template path.
+A generator's output statements are used to determine which files will be created when the generator is called. Each output has up to three parts: the file path for the generated file, an optional key, and an optional template.
 
 ```ruby
 class DocsGenerator < Cuprum::Cli::Files::Generator
@@ -108,14 +110,14 @@ class DocsGenerator < Cuprum::Cli::Files::Generator
   output '%<file_path>s'
 
   output File.join('%<dir_name>s', '%<short_name>.yml'),
-    key:           :data,
-    template_path: 'templates/docs/data.yml.erb'
+    key:      :data,
+    template: 'templates/docs/data.yml.erb'
 end
 ```
 
 The above generator will generate two files:
 
-- The first file is a Markdown file at the specified file path. Since there is no defined template path, the user will need to define the template path when calling the generator using the `--template` option.
+- The first file is a Markdown file at the specified file path. Since there is no defined template, the user will need to define the template when calling the generator using the `--template` option.
 - The second file is a YAML file in the same directory and with the same short name but with a `.yml` extension. The YAML file will be generating using the `'templates/docs/data.yml.erb'` template, and has the unique `:data` key.
 
 For example, if we call this generator with a file path of `docs/errors/unknown_error.md` and option `--template=templates/docs/doc.md.yml`, it will generate two files:
@@ -156,11 +158,17 @@ Each of these parameters can be used in the file path and when [evaluating the f
 
 [Back to Top](#)
 
-#### Template Paths
+#### Output Templates
 
-Each output can also define a template path, which is a `String` that represents a path to a template file. This template file [determines the contents of the generated file](#generating-files) for that output, along with the parameters parsed from the input path (see above) and the generator options.
+Each output can also define a template, which can be one of three types of value:
 
-The template path can be omitted from the output, in which case the generator must define a corresponding template option and the end user pass the desired template when calling the generator. See [custom templates](#custom-templates) for more information.
+- A [template object](#templates), such as a [StringTemplate](#string-templates) or [FileTemplate](#file-templates).
+- A single-line `String`, which is interpreted as a file path and converted to a [FileTemplate](#file-templates).
+- A multi-line `String`, which is interpreted as a raw template literal and converted to a [StringTemplate](#string-templates).
+
+The template (along with the generator options and [the parameters parsed from the input path](#file-paths)) is used to generate the contents of the output file.
+
+The template can be omitted from the output, in which case the generator must define a corresponding template option and the end user pass the desired template file path when calling the generator. See [custom templates](#custom-templates) for more information.
 
 [Back to Top](#)
 
@@ -177,6 +185,113 @@ If you try and define an output *on the same generator class* with an existing k
 Generators define the same [Options DSL](../commands#command-options) as Commands, and can define new options using the `.option(option_name, **opts)` class method. Any option values passed to the generator can be used when [generating file paths](#file-paths) and when [rendering the contents of an output](#generating-files).
 
 Additionally, `Cuprum::Cli` also allows [filtering outputs](#filtering-outputs) and [customizing templates](#custom-templates) based on the options passed to the generator.
+
+[Back to Top](#)
+
+## Templates
+
+`Cuprum::Cli` uses `Template` objects internally to determine the contents of generated files. A template may represent [a file on the file system](#file-templates) or may wrap [a raw template value](#string-templates). In addition, each template defines an optional [engine](#engine), which is used to process the raw template and the [generator parameters](#generating-files) to build the final contents of the output file.
+
+You can also define custom template classes by defining a subclass of `Cuprum::Cli::Files::Template`. The subclass must define a `#call` method that either returns a `String` (the raw template) or a failing `Cuprum::Result` with a `Cuprum::Error`. For example, you could define a template that retrieves the contents from a web url:
+
+```ruby
+UrlTemplate = Cuprum::Cli::Files::Template.define(:url) do
+  def call
+    conn = Faraday.new(url:) do |faraday|
+      faraday.response :raise_error # raise Faraday::Error on status code 4xx or 5xx
+    end
+
+    response = conn.get(url)
+    response.body
+  rescue Faraday::Error => exception
+    error = Cuprum::Error.new(message: exception.message)
+
+    failure(error)
+  end
+end
+```
+
+[Back to Top](#)
+
+### File Templates
+
+A `FileTemplate` represents a template definition stored on the local file system.
+
+```ruby
+file_path = 'templates/docs.md.erb'
+template  = Cuprum::Cli::Files::Templates::FileTemplate.build(file_path)
+template.file_path
+#=> 'templates/docs.md.erb'
+template.engine
+#=> 'cuprum.cli.files.engines.erb'
+```
+
+If you pass a file path to `FileTemplate.build`, it will automatically detect [ERB files](#erb-engine) that end with a `.erb` suffix. You can also manually generate a template using `FileTemplate.new(engine:, file_path:)`.
+
+[Back to Top](#)
+
+### String Templates
+
+A `StringTemplate` represents a template definition stored as a `String` literal.
+
+```ruby
+raw_template = <<~MARKDOWN
+  # Greetings, Starfighter
+
+  You have been recruited by the Star League to defend the frontier
+  against Xur and the Ko-Dan armada!
+MARKDOWN
+template     = Cuprum::Cli::Files::Templates::StringTemplate.build(raw_template)
+template.engine
+#=> nil
+template.raw_template
+#=> "# Greetings, Starfighter\n\n..."
+```
+
+You can also manually generate a template using `StringTemplate.new(engine:, raw_template:)`.
+
+[Back to Top](#)
+
+### Template Engines
+
+Each template defines an optional `#engine` property. When generating the file contents, the template engine is matched against the definitions in `Cuprum::Cli::Files::Engines`. If a matching definition is found, that engine is used to generate the file contents using the raw template and the generator parameters.
+
+```ruby
+engine = Cuprum::Cli::Files::Engines.fetch(Cuprum::Cli::Files::Engines::ERB)
+engine
+#=> Cuprum::Cli::Files::Engines::RenderErb
+engine.call(raw_template, **parameters)
+#=> The generated contents of the file.
+```
+
+To use a custom engine, define a subclass of `Cuprum::Command` with a `#process` method that takes a `raw_template` String argument and any keywords. The `#process` method must return either the generated `String` contents or a failing `Cuprum::Result` with a `Cuprum::Error` explaining the failure.
+
+```ruby
+class SprintfEngine < Cuprum::Command
+  private
+
+  def process(raw_template, **parameters)
+    sprintf(raw_template, parameters)
+  rescue KeyError => exception
+    error = Cuprum::Error.new(message: exception.message)
+    failure(error)
+  end
+end
+```
+
+Once the engine is defined, register the engine in `Cuprum::Cli::Files::Engines`:
+
+```ruby
+Cuprum::Cli::Files::Engines.register('sprintf', SprintfEngine)
+```
+
+Any subsequent generators that receive a template with `engine: 'sprintf'` will generate the file contents using the defined `SprintfEngine` command.
+
+[Back to Top](#)
+
+#### ERB Engine
+
+`Cuprum::Cli` has one default engine which generates `ERB` content using the <a href="https://herb-tools.dev/" target="_blank">Herb toolchain</a>.
 
 [Back to Top](#)
 
@@ -208,8 +323,8 @@ Either way, once a generator is called, it performs the following steps:
 - The generator [filters the defined outputs](#filtering-outputs) based on the given options.
 - If all outputs are filtered out, it returns a failing result. Otherwise, for each enabled output:
   - The generator determines the [output file path](#file-paths) for the output.
-  - The generator loads the template from the [template path](#template-paths) for the output.
-  - Using the template, the options, and the parameters from the file path, the generator [generates the file contents](#generating-files).
+  - The generator reads the raw template from the [template](#templates) for the output.
+  - Using the [template engine](#template-engine) defined for the template, the options, and the parameters from the file path, the generator [generates the file contents](#generating-files).
   - Finally, the generator writes the contents to the output file path.
 
 If any of these steps fails, the generator will return [a failing Result](https://www.sleepingkingstudios.com/cuprum/results).
@@ -232,11 +347,9 @@ In addition to any [custom options](#generator-options) defined for the generato
 
 ### Generating Files
 
-The contents of each generated file depends on four things: the [file template](#template-paths) as read from the file system, the parameters parsed from the [file path](#file-path), the options passed to the generator, and the extname of the *template file*. Currently, `Cuprum::Cli` supports two template types - `.erb` files, and plain text templates.
+The contents of each generated file depends on four things: the [raw template](#templates) and the [template engine](#template-engines) configured for the output, the parameters parsed from the [file path](#file-path), and the options passed to the generator. When the generator is called, the raw template and the combined options are passed to the engine, and the resulting text will be used as the contents of the generated file.
 
-If the template file ends with `.erb`, it will be evaluated as an ERB file. All of the options and file path parameters are available when the ERB file is evaluated. The resulting text will be used as the contents of the generated file.
-
-All other templates are treated as plain text, and the exact contents of the template will be used as the contents of the generated file.
+`Cuprum::Cli` has one default engine which [generates ERB content](#erb-engine) using the <a href="https://herb-tools.dev/" target="_blank">Herb toolchain</a>. All other templates are treated as plain text, and the exact contents of the template will be used as the contents of the generated file.
 
 [Back to Top](#)
 
@@ -246,7 +359,7 @@ The template used for a given output can be customized by defining a matching op
 
 Once the option is defined, you can then pass a custom template path to the generator, either in the generator options (as `template: 'path/to/template.txt.erb'`) or on the command line (as `--template=path/to/template.txt.erb`). This template path will be used when generating the corresponding output file instead of whatever template was originally defined for that output.
 
-If the output does not define a [template path](#template-paths), the generator will need to be provided a template option for that output. In such cases, use `required: true` for that option.
+If the output does not define a [template](#output-templates), the generator will need to be provided a template option for that output. In such cases, use `required: true` for that option.
 
 [Back to Top](#)
 

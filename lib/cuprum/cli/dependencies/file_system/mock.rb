@@ -90,6 +90,14 @@ module Cuprum::Cli::Dependencies
       nil
     end
 
+    # @return [Array<String>] a list of the defined directory paths in the mock
+    #   file system.
+    def expanded_dirs = expand_dirs(files:).to_a.sort
+
+    # @return [Array<String>] a list of the defined file paths in the mock file
+    #   system.
+    def flattened_files = flatten_files(files:)
+
     # (see Cuprum::Cli::Dependencies::FileSystem#directory?)
     def file?(path)
       tools.assertions.validate_name(path, as: 'path')
@@ -205,14 +213,6 @@ module Cuprum::Cli::Dependencies
       end
 
       flat
-    end
-
-    def expanded_dirs
-      @expanded_dirs ||= expand_dirs(files:).to_a.sort
-    end
-
-    def flattened_files
-      @flattened_files ||= flatten_files(files:)
     end
 
     def io_stream?(file_or_path)
