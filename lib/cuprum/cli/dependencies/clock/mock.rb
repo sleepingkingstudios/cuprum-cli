@@ -16,7 +16,9 @@ module Cuprum::Cli::Dependencies
     end
 
     # @return [Numeric] the mocked monotonic time.
-    def get_monotonic_time = @monotonic_time # rubocop:disable Naming/AccessorMethodName
+    def get_monotonic_time # rubocop:disable Naming/AccessorMethodName
+      @monotonic_time
+    end
 
     # @return [Time] the mocked current time.
     def get_time = @current_time # rubocop:disable Naming/AccessorMethodName

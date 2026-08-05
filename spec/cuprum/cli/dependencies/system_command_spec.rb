@@ -217,10 +217,8 @@ RSpec.describe Cuprum::Cli::Dependencies::SystemCommand do
       let(:environment) { { secret_key: 12_345 } }
       let(:options)     { { k: 'v', key: 'value' } }
       let(:expected_command) do
-        # rubocop:disable Style/RedundantLineContinuation
         %(SECRET_KEY=12345 #{super()} path/to/file --option=value ) \
           '--option=other -k="v" --key="value"'
-        # rubocop:enable Style/RedundantLineContinuation
       end
 
       include_deferred 'should call the system command'
@@ -398,10 +396,8 @@ RSpec.describe Cuprum::Cli::Dependencies::SystemCommand do
       let(:environment) { { secret_key: 12_345 } }
       let(:options)     { { k: 'v', key: 'value' } }
       let(:expected_command) do
-        # rubocop:disable Style/RedundantLineContinuation
         %(SECRET_KEY=12345 #{super()} path/to/file --option=value ) \
           '--option=other -k="v" --key="value"'
-        # rubocop:enable Style/RedundantLineContinuation
       end
 
       include_deferred 'should call the system command'
