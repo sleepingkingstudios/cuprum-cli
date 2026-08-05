@@ -8,7 +8,9 @@ module Cuprum::Cli::Dependencies
     autoload :Mock, 'cuprum/cli/dependencies/clock/mock'
 
     # @return [Numeric] a monotonically increasing system clock time.
-    def get_monotonic_time = Process.clock_gettime(Process::CLOCK_MONOTONIC) # rubocop:disable Naming/AccessorMethodName
+    def get_monotonic_time # rubocop:disable Naming/AccessorMethodName
+      Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    end
 
     # @return [Time] the current time in the UTC time zone.
     def get_time = Time.now(in: 'Z') # rubocop:disable Naming/AccessorMethodName
