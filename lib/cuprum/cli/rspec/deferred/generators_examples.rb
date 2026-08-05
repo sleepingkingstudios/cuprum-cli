@@ -34,7 +34,9 @@ module Cuprum::Cli::RSpec::Deferred
         let(:expected_template_path) do
           next super() if defined?(super())
 
-          examples_options.fetch(:template)
+          path = examples_options.fetch(:template)
+
+          path.is_a?(Proc) ? instance_exec(&path) : path
         end
         let(:expected_contents) do
           next super() if defined?(super())
@@ -52,15 +54,15 @@ module Cuprum::Cli::RSpec::Deferred
 
         if examples_options.fetch(:require_template, false)
           # :nocov:
-          it 'should not generate the file' do
-            subject.call
+          it 'should not generate the file', :aggregate_failures do
+            expect(subject.call).to be_a_failing_result
 
             expect(file_system.file?(expected_file_path)).to be false
           end
           # :nocov:
         else
-          it 'should generate the file' do
-            subject.call
+          it 'should generate the file', :aggregate_failures do
+            expect(subject.call).to be_a_passing_result
 
             expect(file_system.read_file(expected_file_path))
               .to eq(expected_contents)
@@ -73,8 +75,8 @@ module Cuprum::Cli::RSpec::Deferred
               super().merge(expected_key => false)
             end
 
-            it 'should not generate the file' do
-              subject.call
+            it 'should not generate the file', :aggregate_failures do
+              expect(subject.call).to be_a_passing_result
 
               expect(file_system.file?(expected_file_path)).to be false
             end
@@ -96,8 +98,8 @@ module Cuprum::Cli::RSpec::Deferred
               )
             end
 
-            it 'should generate the file' do
-              subject.call
+            it 'should generate the file', :aggregate_failures do
+              expect(subject.call).to be_a_passing_result
 
               expect(file_system.read_file(expected_file_path))
                 .to eq(expected_contents)
