@@ -183,7 +183,13 @@ module Cuprum::Cli::RSpec::Deferred
         end
 
         describe '#default' do
-          it { expect(defined_option.default).to be == configured_default }
+          let(:option_default) do
+            default = defined_option.default
+
+            default.is_a?(Proc) ? default.call : default
+          end
+
+          it { expect(option_default).to be == configured_default }
         end
 
         describe '#description' do
