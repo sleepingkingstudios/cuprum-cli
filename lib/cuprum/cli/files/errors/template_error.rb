@@ -2,13 +2,13 @@
 
 require 'cuprum/error'
 
-require 'cuprum/cli/errors/files'
+require 'cuprum/cli/files/errors'
 
-module Cuprum::Cli::Errors::Files
+module Cuprum::Cli::Files::Errors
   # Error returned when an error occurs when generating templated content.
   class TemplateError < Cuprum::Error
     # Short string used to identify the type of error.
-    TYPE = 'cuprum.cli.errors.files.template_error'
+    TYPE = 'cuprum.cli.files.errors.template_error'
 
     # @param message [String] message describing the nature of the error.
     # @param details [String] additional information about the error.

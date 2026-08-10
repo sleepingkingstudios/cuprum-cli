@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/errors/files/generator_error'
+require 'cuprum/cli/files/errors/generator_error'
 
-RSpec.describe Cuprum::Cli::Errors::Files::GeneratorError do
+RSpec.describe Cuprum::Cli::Files::Errors::GeneratorError do
   subject(:error) { described_class.new(message:, **constructor_options) }
 
   let(:message)             { 'Something went wrong' }
@@ -11,7 +11,7 @@ RSpec.describe Cuprum::Cli::Errors::Files::GeneratorError do
   describe '::TYPE' do
     include_examples 'should define immutable constant',
       :TYPE,
-      'cuprum.cli.errors.files.generator_error'
+      'cuprum.cli.files.errors.generator_error'
   end
 
   describe '.new' do

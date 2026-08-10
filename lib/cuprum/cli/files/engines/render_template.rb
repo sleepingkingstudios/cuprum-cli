@@ -39,7 +39,7 @@ module Cuprum::Cli::Files::Engines
     def unknown_engine_error(engine:)
       details = "unknown template engine #{engine.inspect}"
 
-      Cuprum::Cli::Errors::Files::TemplateError.new(
+      Cuprum::Cli::Files::Errors::TemplateError.new(
         details:,
         message: "unable to render template - #{details}"
       )

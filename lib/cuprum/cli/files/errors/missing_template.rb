@@ -2,13 +2,13 @@
 
 require 'cuprum/error'
 
-require 'cuprum/cli/errors/files'
+require 'cuprum/cli/files/errors'
 
-module Cuprum::Cli::Errors::Files
+module Cuprum::Cli::Files::Errors
   # Error returned when unable to load a template.
   class MissingTemplate < Cuprum::Error
     # Short string used to identify the type of error.
-    TYPE = 'cuprum.cli.errors.files.missing_template'
+    TYPE = 'cuprum.cli.files.errors.missing_template'
 
     # @param template_path [String] the expected template path.
     # @param message [String] an optional message to display.

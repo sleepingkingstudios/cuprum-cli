@@ -46,7 +46,7 @@ module Cuprum::Cli::Files::Templates
     def call
       success(file_system.read_file(file_path))
     rescue Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
-      error = Cuprum::Cli::Errors::Files::MissingTemplate.new(
+      error = Cuprum::Cli::Files::Errors::MissingTemplate.new(
         message:       'unable to generate file',
         template_path: file_path
       )

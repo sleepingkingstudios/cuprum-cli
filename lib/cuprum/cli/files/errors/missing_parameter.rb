@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/errors/files'
-require 'cuprum/cli/errors/files/template_error'
+require 'cuprum/cli/files/errors'
+require 'cuprum/cli/files/errors/template_error'
 
-module Cuprum::Cli::Errors::Files
+module Cuprum::Cli::Files::Errors
   # Error returned when a required parameter is missing when rendering content.
-  class MissingParameter < Cuprum::Cli::Errors::Files::TemplateError
+  class MissingParameter < Cuprum::Cli::Files::Errors::TemplateError
     # Short string used to identify the type of error.
-    TYPE = 'cuprum.cli.errors.files.missing_parameter'
+    TYPE = 'cuprum.cli.files.errors.missing_parameter'
 
     # @param parameter_name [String, Symbol] the name of the missing parameter.
     # @param details [String] additional information about the error.

@@ -2,13 +2,13 @@
 
 require 'cuprum/error'
 
-require 'cuprum/cli/errors/files'
+require 'cuprum/cli/files/errors'
 
-module Cuprum::Cli::Errors::Files
+module Cuprum::Cli::Files::Errors
   # Error returned when attempting to generate a file in an invalid location.
   class FileNotWriteable < Cuprum::Error
     # Short string used to identify the type of error.
-    TYPE = 'cuprum.cli.errors.files.file_not_writeable'
+    TYPE = 'cuprum.cli.files.errors.file_not_writeable'
 
     # @param file_path [String] the path to the expected file.
     # @param message [String] message describing the nature of the error.

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/errors/files/missing_template'
+require 'cuprum/cli/files/errors/missing_template'
 
-RSpec.describe Cuprum::Cli::Errors::Files::MissingTemplate do
+RSpec.describe Cuprum::Cli::Files::Errors::MissingTemplate do
   subject(:error) { described_class.new(template_path:, **options) }
 
   let(:template_path) { 'path/to/template.txt' }
@@ -11,7 +11,7 @@ RSpec.describe Cuprum::Cli::Errors::Files::MissingTemplate do
   describe '::TYPE' do
     include_examples 'should define immutable constant',
       :TYPE,
-      'cuprum.cli.errors.files.missing_template'
+      'cuprum.cli.files.errors.missing_template'
   end
 
   describe '.new' do

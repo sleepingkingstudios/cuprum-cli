@@ -771,7 +771,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
     let(:expected_error) do
       details = 'generator does not define any outputs'
 
-      Cuprum::Cli::Errors::Files::GeneratorError.new(
+      Cuprum::Cli::Files::Errors::GeneratorError.new(
         details:,
         file_path:,
         message:   "unable to generate output files - #{details}",
@@ -970,7 +970,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
             details =
               "missing parameter :secret_path for output path #{output_path}"
 
-            Cuprum::Cli::Errors::Files::GeneratorError.new(
+            Cuprum::Cli::Files::Errors::GeneratorError.new(
               details:,
               file_path:,
               message:   "unable to generate output file :default - #{details}",
@@ -1026,7 +1026,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
             details = 'output does not define a template path'
             message = "unable to generate output file :default - #{details}"
 
-            Cuprum::Cli::Errors::Files::GeneratorError.new(
+            Cuprum::Cli::Files::Errors::GeneratorError.new(
               details:,
               file_path:,
               message:,
@@ -1190,7 +1190,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
               details = 'output does not define a template path'
               message = "unable to generate output file :docs - #{details}"
 
-              Cuprum::Cli::Errors::Files::GeneratorError.new(
+              Cuprum::Cli::Files::Errors::GeneratorError.new(
                 details:,
                 file_path:,
                 message:,
@@ -1295,7 +1295,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
               let(:expected_error) do
                 details = 'all outputs have been disabled'
 
-                Cuprum::Cli::Errors::Files::GeneratorError.new(
+                Cuprum::Cli::Files::Errors::GeneratorError.new(
                   details:,
                   file_path:,
                   message:   "unable to generate output files - #{details}",
@@ -1383,7 +1383,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
         context 'when a file path already exists' do
           let(:expected_error) do
-            Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+            Cuprum::Cli::Files::Errors::FileNotWriteable.new(
               file_path: 'docs/path/to/file.md',
               reason:    'file already exists'
             )
@@ -1418,7 +1418,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
         context 'when a file path points to a directory' do
           let(:expected_error) do
-            Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+            Cuprum::Cli::Files::Errors::FileNotWriteable.new(
               file_path: 'docs/path/to/file.md',
               reason:    'file is a directory'
             )
@@ -1451,7 +1451,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
             message =
               "unable to generate output file :ruby - #{details}"
 
-            Cuprum::Cli::Errors::Files::GeneratorError.new(
+            Cuprum::Cli::Files::Errors::GeneratorError.new(
               details:,
               file_path: 'lib/path/to/file.rb',
               message:,

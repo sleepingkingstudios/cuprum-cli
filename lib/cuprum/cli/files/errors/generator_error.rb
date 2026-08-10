@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/errors/files'
+require 'cuprum/cli/files/errors'
 
-module Cuprum::Cli::Errors::Files
+module Cuprum::Cli::Files::Errors
   # Error returned when an error occurs when calling a generator.
   class GeneratorError < Cuprum::Error
     # Short string used to identify the type of error.
-    TYPE = 'cuprum.cli.errors.files.generator_error'
+    TYPE = 'cuprum.cli.files.errors.generator_error'
 
     # @param message [String] message describing the nature of the error.
     # @param details [String] additional information about the error.

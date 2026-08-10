@@ -46,7 +46,7 @@ RSpec.describe Cuprum::Cli::Files::Templates::FileTemplate do
 
     context 'when the template file does not exist' do
       let(:expected_error) do
-        Cuprum::Cli::Errors::Files::MissingTemplate.new(
+        Cuprum::Cli::Files::Errors::MissingTemplate.new(
           message:       'unable to generate file',
           template_path: file_path
         )
@@ -84,7 +84,7 @@ RSpec.describe Cuprum::Cli::Files::Templates::FileTemplate do
 
       context 'when the template file does not exist' do
         let(:expected_error) do
-          Cuprum::Cli::Errors::Files::MissingTemplate.new(
+          Cuprum::Cli::Files::Errors::MissingTemplate.new(
             message:       'unable to generate file',
             template_path: file_path
           )

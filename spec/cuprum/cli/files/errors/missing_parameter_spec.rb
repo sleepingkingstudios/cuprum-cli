@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/errors/files/missing_parameter'
+require 'cuprum/cli/files/errors/missing_parameter'
 
-RSpec.describe Cuprum::Cli::Errors::Files::MissingParameter do
+RSpec.describe Cuprum::Cli::Files::Errors::MissingParameter do
   subject(:error) { described_class.new(parameter_name:, **options) }
 
   let(:parameter_name) { 'widget' }
@@ -11,7 +11,7 @@ RSpec.describe Cuprum::Cli::Errors::Files::MissingParameter do
   describe '::TYPE' do
     include_examples 'should define immutable constant',
       :TYPE,
-      'cuprum.cli.errors.files.missing_parameter'
+      'cuprum.cli.files.errors.missing_parameter'
   end
 
   describe '.new' do

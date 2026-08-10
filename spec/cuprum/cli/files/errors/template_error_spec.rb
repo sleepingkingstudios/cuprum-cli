@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/errors/files/template_error'
+require 'cuprum/cli/files/errors/template_error'
 
-RSpec.describe Cuprum::Cli::Errors::Files::TemplateError do
+RSpec.describe Cuprum::Cli::Files::Errors::TemplateError do
   subject(:error) { described_class.new(message:, **options) }
 
   let(:message) { 'Something went wrong' }
@@ -11,7 +11,7 @@ RSpec.describe Cuprum::Cli::Errors::Files::TemplateError do
   describe '::TYPE' do
     include_examples 'should define immutable constant',
       :TYPE,
-      'cuprum.cli.errors.files.template_error'
+      'cuprum.cli.files.errors.template_error'
   end
 
   describe '.new' do

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'cuprum/cli/errors/files/file_not_writeable'
+require 'cuprum/cli/files/errors/file_not_writeable'
 
-RSpec.describe Cuprum::Cli::Errors::Files::FileNotWriteable do
+RSpec.describe Cuprum::Cli::Files::Errors::FileNotWriteable do
   subject(:error) { described_class.new(file_path:, **options) }
 
   let(:file_path) { 'path/to/file.txt' }
@@ -11,7 +11,7 @@ RSpec.describe Cuprum::Cli::Errors::Files::FileNotWriteable do
   describe '::TYPE' do
     include_examples 'should define immutable constant',
       :TYPE,
-      'cuprum.cli.errors.files.file_not_writeable'
+      'cuprum.cli.files.errors.file_not_writeable'
   end
 
   describe '.new' do

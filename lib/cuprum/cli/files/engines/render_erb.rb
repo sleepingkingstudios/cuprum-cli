@@ -4,7 +4,7 @@ require 'cuprum/command'
 require 'herb'
 
 require 'cuprum/cli/files/engines'
-require 'cuprum/cli/errors/files/missing_parameter'
+require 'cuprum/cli/files/errors/missing_parameter'
 
 module Cuprum::Cli::Files::Engines
   # Utility command for generating file contents from an .erb template.
@@ -29,7 +29,7 @@ module Cuprum::Cli::Files::Engines
       message = 'unable to render ERB template'
       message = "#{message} #{template_name}" if template_name
 
-      Cuprum::Cli::Errors::Files::TemplateError.new(message:, details:)
+      Cuprum::Cli::Files::Errors::TemplateError.new(message:, details:)
     end
 
     def empty_binding = RenderingContext.new.instance_exec { Kernel.binding }
@@ -50,7 +50,7 @@ module Cuprum::Cli::Files::Engines
     end
 
     def missing_parameter_error(parameter_name)
-      Cuprum::Cli::Errors::Files::MissingParameter.new(
+      Cuprum::Cli::Files::Errors::MissingParameter.new(
         message:        'unable to render ERB template',
         parameter_name:,
         template_name:
@@ -79,7 +79,7 @@ module Cuprum::Cli::Files::Engines
     end
 
     def template_error(message)
-      Cuprum::Cli::Errors::Files::TemplateError.new(
+      Cuprum::Cli::Files::Errors::TemplateError.new(
         message:       "unable to render ERB template - #{message}",
         template_name:
       )

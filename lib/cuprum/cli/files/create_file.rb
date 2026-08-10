@@ -73,7 +73,7 @@ module Cuprum::Cli::Files
     end
 
     def file_not_writeable_error(**)
-      Cuprum::Cli::Errors::Files::FileNotWriteable.new(**)
+      Cuprum::Cli::Files::Errors::FileNotWriteable.new(**)
     end
 
     def process(contents:, file_path:)
