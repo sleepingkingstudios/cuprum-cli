@@ -10,6 +10,568 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
     include RSpec::SleepingKingStudios::Deferred::Provider
 
     deferred_examples 'should implement the file_system dependency' do
+      describe '#copy_file', :writeable_root_path do
+        deferred_context 'with destination_path: an absolute path' do
+          let(:destination_path) do
+            path     = absolute_file_path
+            dirname  = File.dirname(path)
+            basename = File.basename(path)
+            extname  = File.extname(path)
+
+            File.join(
+              dirname,
+              basename.sub(/#{extname}\z/, "_copy#{extname}")
+            )
+          end
+          let(:path) { destination_path }
+        end
+
+        deferred_context 'with destination_path: a relative path' do
+          let(:destination_path) do
+            path     = relative_file_path
+            dirname  = File.dirname(path)
+            basename = File.basename(path)
+            extname  = File.extname(path)
+
+            File.join(
+              dirname,
+              basename.sub(/#{extname}\z/, "_copy#{extname}")
+            )
+          end
+          let(:path) { destination_path }
+        end
+
+        deferred_context 'with destination_path: a qualified path' do
+          let(:destination_path) do
+            path =
+              if defined?(root_path) && root_path
+                "../#{root_path.split(File::SEPARATOR).last}/" \
+                  "#{File.basename(qualified_file_path)}"
+              else
+                qualified_file_path
+              end
+
+            dirname  = File.dirname(path)
+            basename = File.basename(path)
+            extname  = File.extname(path)
+
+            File.join(
+              dirname,
+              basename.sub(/#{extname}\z/, "_copy#{extname}")
+            )
+          end
+          let(:path) { destination_path }
+        end
+
+        deferred_examples 'should not copy the file' do
+          it 'should not copy the file' do
+            expect { safe_copy_file }
+              .not_to(change { subject.file?(destination_path) })
+          end
+        end
+
+        deferred_examples 'should copy the file' do
+          include_deferred 'when created files are cleaned up'
+
+          it 'should not change the source file', :aggregate_failures do
+            copy_file
+
+            expect(subject.file?(source_path)).to be true
+            expect(subject.read_file(source_path)).to eq expected_contents
+          end
+
+          it 'should create the destination file', :aggregate_failures do
+            copy_file
+
+            expect(subject.file?(destination_path)).to be true
+            expect(subject.read_file(destination_path))
+              .to eq expected_contents
+          end
+
+          describe 'with a transform block' do
+            let(:block)             { ->(data) { data.upcase } } # rubocop:disable Style/SymbolProc
+            let(:expected_contents) { super().upcase }
+
+            it 'should create the destination file', :aggregate_failures do
+              copy_file
+
+              expect(subject.file?(destination_path)).to be true
+              expect(subject.read_file(destination_path))
+                .to eq expected_contents
+            end
+          end
+        end
+
+        deferred_examples 'should copy the file to a valid destination' do
+          include_deferred 'should copy the file'
+
+          context 'when the path is a directory' do
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+            end
+            let(:error_message) do
+              "unable to write file #{destination_path} - file is a directory"
+            end
+            let(:base_path) do
+              File.dirname(destination_path)
+            end
+
+            before(:example) do
+              subject.create_directory(destination_path)
+            end
+
+            include_deferred 'when created directories are cleaned up'
+
+            it 'should raise an exception' do
+              expect { copy_file }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not copy the file'
+          end
+
+          context 'when the path is a file' do
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::FileAlreadyExistsError
+            end
+            let(:error_message) do
+              "unable to write file #{destination_path} - file already exists"
+            end
+
+            before(:example) do
+              subject.write_file(destination_path, 'Existing contents...')
+            end
+
+            it 'should raise an exception' do
+              expect { copy_file }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not copy the file'
+
+            describe 'with force: true' do
+              let(:copy_options) { super().merge(force: true) }
+
+              include_deferred 'should copy the file'
+            end
+          end
+
+          context 'when the path includes a file' do
+            let(:destination_path) do
+              path     = super()
+              dirname  = File.dirname(path)
+              basename = File.basename(path)
+
+              File.join(dirname, 'a_file', basename)
+            end
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
+            end
+            let(:error_message) do
+              "unable to write file #{destination_path} - directory is a file"
+            end
+            let(:file_paths_to_remove) { [File.dirname(destination_path)] }
+
+            before(:example) do
+              subject.write_file(
+                File.dirname(destination_path),
+                'Existing contents...'
+              )
+            end
+
+            it 'should raise an exception' do
+              expect { copy_file }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not copy the file'
+          end
+
+          context 'when the path includes missing directories' do
+            let(:destination_path) do
+              path     = super()
+              dirname  = File.dirname(path)
+              basename = File.basename(path)
+
+              File.join(dirname, 'missing_directory', basename)
+            end
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+            end
+            let(:error_message) do
+              "unable to write file #{destination_path} - directory not found"
+            end
+
+            it 'should raise an exception' do
+              expect { copy_file }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not copy the file'
+          end
+        end
+
+        let(:invalid_absolute_path) do
+          defined?(super()) ? super() : '/invalid-absolute-path'
+        end
+        let(:invalid_qualified_path) do
+          defined?(super()) ? super() : '../invalid-qualified-path'
+        end
+        let(:invalid_relative_path) do
+          defined?(super()) ? super() : 'invalid-relative-path'
+        end
+        let(:source_path)       { 'path/to/source.txt' }
+        let(:destination_path)  { 'path/to/destination.txt' }
+        let(:copy_options)      { {} }
+        let(:block)             { nil }
+        let(:expected_contents) { subject.read_file(source_path) }
+
+        define_method :copy_file do
+          subject.copy_file(
+            source_path,
+            destination_path,
+            **copy_options,
+            &block
+          )
+        end
+
+        define_method :safe_copy_file do
+          copy_file
+        rescue StandardError
+          nil
+        end
+
+        include_deferred 'with valid file paths'
+
+        it 'should define the method' do
+          expect(subject)
+            .to respond_to(:copy_file)
+            .with(2).arguments
+            .and_keywords(:force)
+            .and_a_block
+        end
+
+        describe 'with destination_path: nil' do
+          let(:error_message) do
+            tools
+              .assertions
+              .error_message_for('presence', as: :destination_path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file(source_path, nil) }
+              .to raise_error ArgumentError, error_message
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        describe 'with destination_path: nil' do
+          let(:error_message) do
+            'destination_path is not a String or IO stream'
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file(source_path, Object.new.freeze) }
+              .to raise_error ArgumentError, error_message
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        describe 'with destination_path: an empty String' do
+          let(:error_message) do
+            tools
+              .assertions
+              .error_message_for('presence', as: :destination_path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file(source_path, '') }
+              .to raise_error ArgumentError, error_message
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        describe 'with source_path: nil' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: :source_path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file(nil, destination_path) }
+              .to raise_error ArgumentError, error_message
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        describe 'with source_path: an Object' do
+          let(:error_message) do
+            'source_path is not a String or IO stream'
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file(Object.new.freeze, destination_path) }
+              .to raise_error ArgumentError, error_message
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        describe 'with source_path: an empty String' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: :source_path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file('', destination_path) }
+              .to raise_error ArgumentError, error_message
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        describe 'with source_path: an invalid absolute path' do
+          let(:source_path) { invalid_absolute_path }
+          let(:error_class) do
+            Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
+          end
+          let(:error_message) do
+            "unable to read file #{source_path} - file not found"
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file(source_path, destination_path) }
+              .to raise_error(error_class, error_message)
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        describe 'with source_path: an invalid qualified path' do
+          let(:source_path) { invalid_qualified_path }
+          let(:error_class) do
+            Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
+          end
+          let(:error_message) do
+            "unable to read file #{source_path} - file not found"
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file(source_path, destination_path) }
+              .to raise_error(error_class, error_message)
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        describe 'with source_path: an invalid relative path' do
+          let(:source_path) { invalid_relative_path }
+          let(:error_class) do
+            Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
+          end
+          let(:error_message) do
+            "unable to read file #{source_path} - file not found"
+          end
+
+          it 'should raise an exception' do
+            expect { subject.copy_file(source_path, destination_path) }
+              .to raise_error(error_class, error_message)
+          end
+
+          include_deferred 'should not copy the file'
+        end
+
+        wrap_deferred 'with valid file paths' do
+          describe 'with source_path: an absolute path to a directory' do
+            let(:source_path) { absolute_directory_path }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+            end
+            let(:error_message) do
+              "unable to read file #{source_path} - file is a directory"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.copy_file(source_path, destination_path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not copy the file'
+          end
+
+          describe 'with source_path: an absolute path to a file' do
+            let(:source_path) { absolute_file_path }
+
+            wrap_deferred 'with destination_path: an absolute path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+
+            wrap_deferred 'with destination_path: a relative path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+
+            wrap_deferred 'with destination_path: a qualified path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+          end
+
+          describe 'with source_path: a relative path to a directory' do
+            let(:source_path) { relative_directory_path }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+            end
+            let(:error_message) do
+              "unable to read file #{source_path} - file is a directory"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.copy_file(source_path, destination_path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not copy the file'
+          end
+
+          describe 'with source_path: a relative path to a file' do
+            let(:source_path) { relative_file_path }
+
+            wrap_deferred 'with destination_path: an absolute path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+
+            wrap_deferred 'with destination_path: a relative path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+
+            wrap_deferred 'with destination_path: a qualified path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+          end
+
+          describe 'with source_path: a qualified path to a directory' do
+            let(:source_path) { qualified_directory_path }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+            end
+            let(:error_message) do
+              "unable to read file #{source_path} - file is a directory"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.copy_file(source_path, destination_path) }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not copy the file'
+          end
+
+          describe 'with source_path: a qualified path to a file' do
+            let(:source_path) { qualified_file_path }
+
+            wrap_deferred 'with destination_path: an absolute path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+
+            wrap_deferred 'with destination_path: a relative path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+
+            wrap_deferred 'with destination_path: a qualified path' do
+              include_deferred 'should copy the file to a valid destination'
+            end
+          end
+
+          wrap_deferred 'when initialized with root_path: value' do
+            describe 'with source_path: a relative path to a directory' do
+              let(:directory) do
+                File.join('..', '..', 'tmp', 'files')
+              end
+              let(:source_path) do
+                File.join(directory, "#{SecureRandom.uuid}.txt")
+              end
+              let(:error_class) do
+                Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+              end
+              let(:error_message) do
+                "unable to read file #{source_path} - file is a directory"
+              end
+
+              before(:example) { subject.create_directory(source_path) }
+
+              it 'should raise an exception' do
+                expect { subject.copy_file(source_path, destination_path) }
+                  .to raise_error(error_class, error_message)
+              end
+
+              include_deferred 'should not copy the file'
+            end
+
+            describe 'with source_path: a relative path to a file' do
+              let(:directory) do
+                File.join('..', '..', 'tmp', 'files')
+              end
+              let(:source_path) do
+                File.join(directory, "#{SecureRandom.uuid}.txt")
+              end
+
+              before(:example) do
+                subject.write_file(source_path, 'Existing contents...')
+              end
+
+              wrap_deferred 'with destination_path: a relative path' do
+                include_deferred 'should copy the file to a valid destination'
+              end
+
+              wrap_deferred 'with destination_path: a qualified path' do
+                include_deferred 'should copy the file to a valid destination'
+              end
+            end
+
+            describe 'with source_path: a qualified path to a directory' do
+              let(:source_path) do
+                File.join('nested', SecureRandom.uuid)
+              end
+              let(:error_class) do
+                Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+              end
+              let(:error_message) do
+                "unable to read file #{source_path} - file is a directory"
+              end
+
+              before(:example) { subject.create_directory(source_path) }
+
+              it 'should raise an exception' do
+                expect { subject.copy_file(source_path, destination_path) }
+                  .to raise_error(error_class, error_message)
+              end
+
+              include_deferred 'should not copy the file'
+            end
+
+            describe 'with source_path: a qualified path to a file' do
+              let(:source_path) do
+                File.join('nested', "#{SecureRandom.uuid}.txt")
+              end
+
+              before(:example) do
+                subject.write_file(source_path, 'Existing contents...')
+              end
+
+              wrap_deferred 'with destination_path: a relative path' do
+                include_deferred 'should copy the file to a valid destination'
+              end
+
+              wrap_deferred 'with destination_path: a qualified path' do
+                include_deferred 'should copy the file to a valid destination'
+              end
+            end
+          end
+        end
+      end
+
       describe '#create_directory', :writeable_root_path do
         let(:base_path) { nil }
         let(:path)      { nil }
@@ -870,7 +1432,7 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
         end
       end
 
-      describe '#read_file', replace_file_contents: true do
+      describe '#read_file', :replace_file_contents do
         let(:invalid_absolute_path) do
           defined?(super()) ? super() : '/invalid-absolute-path'
         end
@@ -1046,7 +1608,7 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
             it { expect(subject.read_file(path)).to be == expected_contents }
           end
 
-          wrap_deferred 'with valid file paths' do
+          wrap_deferred 'when initialized with root_path: value' do
             describe 'with a qualified path to a directory' do
               let(:path) { qualified_directory_path }
               let(:error_class) do
@@ -1120,7 +1682,7 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
         end
       end
 
-      describe '#write_file', writeable_root_path: true do
+      describe '#write_file', :writeable_root_path do
         let(:invalid_absolute_path) do
           defined?(super()) ? super() : '/invalid-absolute-path'
         end

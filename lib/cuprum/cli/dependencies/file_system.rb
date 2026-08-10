@@ -20,6 +20,9 @@ module Cuprum::Cli::Dependencies
     # Exception raised when attempting to access a non-existent directory.
     class DirectoryNotFoundError < FileError; end
 
+    # Exception raised when attempting to overwrite an existing file.
+    class FileAlreadyExistsError < FileError; end
+
     # Exception raised when attempting to access a directory as a file.
     class FileIsADirectoryError < FileError; end
 
@@ -34,6 +37,57 @@ module Cuprum::Cli::Dependencies
 
     # @return [String] the path to the root directory.
     attr_reader :root_path
+
+    # @overload copy_file(source_path, destination_path, force: false)
+    #   Copies the contents of the source file to the destination path.
+    #
+    #   @param source_path [String] the path of the file to copy.
+    #   @param target_path [String] the path to write the file to.
+    #   @param force [true, false] if true, overwrites an existing file (not a
+    #     directory) at the destination path. Defaults to false.
+    #
+    #   @return [Integer] the number of bytes written.
+    #
+    #   @raise [FileNotFoundError] if the file to copy does not exist.
+    #   @raise [FileIsADirectoryError] if the file to copy is a directory, or if
+    #     there is a directory at the destination path.
+    #   @raise [FileAlreadyExistsError] if there is a file at the destination
+    #     path and the force: option is false.
+    #
+    # @overload copy_file(source_path, destination_path, force: false) { |source| }
+    #   Reads the source file and generates a new file with modified contents.
+    #
+    #   @param source_path [String] the path of the file to copy.
+    #   @param target_path [String] the path to write the file to.
+    #   @param force [true, false] if true, overwrites an existing file (not a
+    #     directory) at the destination path. Defaults to false.
+    #
+    #   @return [Integer] the number of bytes written.
+    #
+    #   @yield the transformation function used to modify the contents of the
+    #     file.
+    #   @yieldparam source [String] the contents of the source file.
+    #   @yieldreturn [String] the contents of the destination file.
+    #
+    #   @raise [FileNotFoundError] if the file to copy does not exist.
+    #   @raise [FileIsADirectoryError] if the file to copy is a directory, or if
+    #     there is a directory at the destination path.
+    #   @raise [FileAlreadyExistsError] if there is a file at the destination
+    #     path and the force: option is false.
+    def copy_file(source_path, destination_path, force: false, &block)
+      validate_file(source_path,      as: 'source_path')
+      validate_file(destination_path, as: 'destination_path')
+
+      if !force && file?(destination_path)
+        raise FileAlreadyExistsError,
+          "unable to write file #{destination_path} - file already exists"
+      end
+
+      contents = read_file(source_path)
+      contents = block.call(contents) if block
+
+      write_file(destination_path, contents)
+    end
 
     # Creates a directory at the requested path.
     #

@@ -129,10 +129,15 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
     around(:example) do |example|
       example.call
     ensure
-      resolved = defined?(file_path) ? file_path : path
-      resolved = resolve_to_absolute_path(resolved)
+      created_files = defined?(file_paths_to_remove) ? file_paths_to_remove : []
+      created_files << file_path if defined?(file_path)
+      created_files << path      if defined?(path)
 
-      FileUtils.remove_file(resolved, force: true)
+      created_files.each do |file|
+        resolved = resolve_to_absolute_path(file)
+
+        FileUtils.remove_file(resolved, force: true)
+      end
     end
   end
 
@@ -166,6 +171,12 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
     include_examples 'should define constant',
       :FileError,
       -> { be_a(Class).and(be < StandardError) }
+  end
+
+  describe '::FileAlreadyExistsError' do
+    include_examples 'should define constant',
+      :FileAlreadyExistsError,
+      -> { be_a(Class).and(be < described_class::FileError) }
   end
 
   describe '::FileIsADirectoryError' do
