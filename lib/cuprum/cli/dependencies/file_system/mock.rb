@@ -81,6 +81,10 @@ module Cuprum::Cli::Dependencies
     def each_file(pattern, &)
       return enum_for(:each_file, pattern) unless block_given?
 
+      if pattern.is_a?(String) && pattern.start_with?(root_path)
+        pattern = pattern[(root_path.length + 1)..]
+      end
+
       [*expanded_dirs, *flattened_files].each do |file_path|
         next unless matches_pattern?(file_path:, pattern:)
 

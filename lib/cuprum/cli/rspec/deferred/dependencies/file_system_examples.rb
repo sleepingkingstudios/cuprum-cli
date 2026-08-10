@@ -1269,6 +1269,23 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
             include_deferred 'should return or yield the matching file names'
           end
 
+          describe 'with a pattern that includes the root path' do
+            let(:pattern) { "#{subject.root_path}/*.txt" }
+            let(:expected_files) do
+              rxp = /\A\w+\.txt\z/
+
+              matching_entries.select do |str|
+                str[(1 + subject.root_path.size)..].match?(rxp)
+              end
+            end
+
+            include_deferred 'should return or yield the matching file names'
+
+            wrap_deferred 'when initialized with root_path: value' do
+              include_deferred 'should return or yield the matching file names'
+            end
+          end
+
           context 'when a matching file is added to the file system' do
             let(:pattern)   { '*.txt' }
             let(:file_path) { File.join(subject.root_path, 'added_file.txt') }
