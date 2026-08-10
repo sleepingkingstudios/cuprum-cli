@@ -17,13 +17,16 @@
 ### Dependencies
 
 - Implemented `Clock` dependency.
+- Implemented `FileSystem#copy_file` helper.
 - Improved handling of file parameters for `FileSystem::Mock`.
+- Fixed a `FileSystem#each_file` bug when matching a template that included the root path.
 - Fixed a `FileSystem::Mock` bug that would wipe existing mock directories.
 - Fixed a `FileSystem::Mock` bug that did not include directories in `each_file`.
 
 ### Files
 
 - Implemented file generators, a more robust solution for generating files or groups of files.
+- Refactored `Errors::Files` to `Files::Errors`.
 
 ## Integrations
 

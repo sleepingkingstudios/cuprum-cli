@@ -1,0 +1,39 @@
+---
+name: Cuprum::Cli::Files::Errors::FileNotWriteable
+slug: file-not-writeable
+type: class
+files:
+- lib/cuprum/cli/files/errors/file_not_writeable.rb
+parent_path: cuprum/cli/files/errors
+short_description: Error returned when attempting to generate a file in an invalid
+  location.
+constants:
+- name: TYPE
+  path: cuprum/cli/files/errors/file-not-writeable/type
+  slug: type
+  inherited: false
+instance_attributes:
+- name: file_path
+  read: true
+  write: false
+  path: cuprum/cli/files/errors/file-not-writeable/i-file-path
+  slug: file-path
+  inherited: false
+- name: reason
+  read: true
+  write: false
+  path: cuprum/cli/files/errors/file-not-writeable/i-reason
+  slug: reason
+  inherited: false
+instance_methods:
+- name: initialize
+  path: cuprum/cli/files/errors/file-not-writeable/i-initialize
+  slug: initialize
+  inherited: false
+  constructor: true
+data_path: cuprum/cli/files/errors/file-not-writeable
+constructor: true
+inherited_classes:
+- name: Cuprum::Error
+  slug: error
+version: "*"

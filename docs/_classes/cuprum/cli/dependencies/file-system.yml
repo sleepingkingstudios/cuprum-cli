@@ -11,6 +11,8 @@ defined_classes:
   slug: directory-is-a-file-error
 - name: DirectoryNotFoundError
   slug: directory-not-found-error
+- name: FileAlreadyExistsError
+  slug: file-already-exists-error
 - name: FileError
   slug: file-error
 - name: FileIsADirectoryError
@@ -27,6 +29,10 @@ instance_attributes:
   slug: root-path
   inherited: false
 instance_methods:
+- name: copy_file
+  path: cuprum/cli/dependencies/file-system/i-copy-file
+  slug: copy-file
+  inherited: false
 - name: create_directory
   path: cuprum/cli/dependencies/file-system/i-create-directory
   slug: create-directory

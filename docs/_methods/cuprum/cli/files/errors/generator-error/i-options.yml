@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Files::Errors::GeneratorError#options
+parent_path: cuprum/cli/files/errors/generator-error
+signature: options
+slug: options
+constructor: false
+data_path: cuprum/cli/files/errors/generator-error/i-options
+returns:
+- description: additional options passed to the generator.
+  type:
+  - name: Hash
+version: "*"

@@ -102,6 +102,9 @@ clock.get_time
 
 The `FileSystem` dependency wraps the native file system and provides methods for reading from and writing to files and directories. It defines the following methods:
 
+`#copy_file(source_path, destination_path, force: false) { |contents| }`
+: Copies the contents of the file at `source_path` to a new file at `destination_path`. If a block is given, uses the block to transform the contents of the file.
+
 `#create_directory(path, recursive: true)`
 : Creates a directory at the requested path. If `recursive` is true, creates intermediate directories, like the `-p` option for `mkdir`.
 
@@ -120,7 +123,7 @@ The `FileSystem` dependency wraps the native file system and provides methods fo
 `#with_tempfile`
 : Creates a tempfile and passes it to the block.
 
-`write_file(file_or_path, data)`
+`#write_file(file_or_path, data)`
 : Writes the given contents to the IO object, or the file at the given path.
 
 For more information, see the [FileSystem reference](../reference/cuprum/cli/dependencies/file-system/).

@@ -15,6 +15,9 @@ direct_subclasses:
 - name: Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
   slug: directory-not-found-error
   path: cuprum/cli/dependencies/file-system/directory-not-found-error
+- name: Cuprum::Cli::Dependencies::FileSystem::FileAlreadyExistsError
+  slug: file-already-exists-error
+  path: cuprum/cli/dependencies/file-system/file-already-exists-error
 - name: Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
   slug: file-is-a-directory-error
   path: cuprum/cli/dependencies/file-system/file-is-a-directory-error

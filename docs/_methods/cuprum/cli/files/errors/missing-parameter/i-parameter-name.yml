@@ -1,0 +1,13 @@
+---
+name: Cuprum::Cli::Files::Errors::MissingParameter#parameter_name
+parent_path: cuprum/cli/files/errors/missing-parameter
+signature: parameter_name
+slug: parameter-name
+constructor: false
+data_path: cuprum/cli/files/errors/missing-parameter/i-parameter-name
+returns:
+- description: the name of the missing parameter.
+  type:
+  - name: String
+  - name: Symbol
+version: "*"
