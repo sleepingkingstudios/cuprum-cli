@@ -1,0 +1,17 @@
+---
+name: Cuprum::Cli::Dependencies::FileSystem::FileAlreadyExistsError
+slug: file-already-exists-error
+type: class
+files:
+- lib/cuprum/cli/dependencies/file_system.rb
+parent_path: cuprum/cli/dependencies/file-system
+short_description: Exception raised when attempting to overwrite an existing file.
+data_path: cuprum/cli/dependencies/file-system/file-already-exists-error
+constructor: false
+inherited_classes:
+- name: Cuprum::Cli::Dependencies::FileSystem::FileError
+  slug: file-error
+  path: cuprum/cli/dependencies/file-system/file-error
+- name: StandardError
+  slug: standard-error
+version: "*"

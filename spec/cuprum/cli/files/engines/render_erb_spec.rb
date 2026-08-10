@@ -66,7 +66,7 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderErb do
 
       describe 'with a missing parameter' do
         let(:expected_error) do
-          Cuprum::Cli::Errors::Files::MissingParameter.new(
+          Cuprum::Cli::Files::Errors::MissingParameter.new(
             message:        'unable to render ERB template',
             parameter_name: :greeting,
             template_name:  command.template_name
@@ -102,7 +102,7 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderErb do
               exception.message
             end
 
-          Cuprum::Cli::Errors::Files::TemplateError.new(
+          Cuprum::Cli::Files::Errors::TemplateError.new(
             message:       "unable to render ERB template - #{message}",
             template_name: command.template_name
           )
@@ -161,7 +161,7 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderErb do
     describe 'with a template with compilation errors' do
       let(:template) { '<p><div>Greetings, programs!</div></p>' }
       let(:expected_error) do
-        be_a(Cuprum::Cli::Errors::Files::TemplateError).and(
+        be_a(Cuprum::Cli::Files::Errors::TemplateError).and(
           have_attributes(
             details: /HTML\+ERB Compilation Errors/,
             message: 'unable to render ERB template'
@@ -179,7 +179,7 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderErb do
     describe 'with a template with security errors' do
       let(:template) { '<div <%= unsafe %>="value">Greetings, programs!</div>' }
       let(:expected_error) do
-        be_a(Cuprum::Cli::Errors::Files::TemplateError).and(
+        be_a(Cuprum::Cli::Files::Errors::TemplateError).and(
           have_attributes(
             details: /ERB output in attribute names is not allowed/,
             message: 'unable to render ERB template'

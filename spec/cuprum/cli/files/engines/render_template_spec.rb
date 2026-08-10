@@ -51,7 +51,7 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderTemplate do
 
       describe 'with invalid parameters' do
         let(:expected_error) do
-          Cuprum::Cli::Errors::Files::MissingParameter.new(
+          Cuprum::Cli::Files::Errors::MissingParameter.new(
             message:        'unable to render ERB template',
             parameter_name: :greeting
           )
@@ -96,7 +96,7 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderTemplate do
       let(:expected_error) do
         details = "unknown template engine #{engine.inspect}"
 
-        Cuprum::Cli::Errors::Files::TemplateError.new(
+        Cuprum::Cli::Files::Errors::TemplateError.new(
           details:,
           message: "unable to render template - #{details}"
         )
@@ -131,7 +131,7 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderTemplate do
 
       context 'when the template file does not exist' do
         let(:expected_error) do
-          Cuprum::Cli::Errors::Files::MissingTemplate.new(
+          Cuprum::Cli::Files::Errors::MissingTemplate.new(
             message:       'unable to generate file',
             template_path: template.file_path
           )

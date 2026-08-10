@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Files::Errors::GeneratorError#details
+parent_path: cuprum/cli/files/errors/generator-error
+signature: details
+slug: details
+constructor: false
+data_path: cuprum/cli/files/errors/generator-error/i-details
+returns:
+- description: additional information about the error.
+  type:
+  - name: String
+version: "*"

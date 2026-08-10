@@ -115,7 +115,7 @@ RSpec.describe Cuprum::Cli::Commands::File::NewCommand do
         message = "unable to generate file #{file_path} - #{details}"
         options = command.send(:options)
 
-        Cuprum::Cli::Errors::Files::GeneratorError.new(
+        Cuprum::Cli::Files::Errors::GeneratorError.new(
           details:,
           file_path:,
           message:,

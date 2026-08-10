@@ -1,8 +1,0 @@
----
-name: Cuprum::Cli::Errors::Files::MissingParameter::TYPE
-parent_path: cuprum/cli/errors/files/missing-parameter
-slug: type
-short_description: Short string used to identify the type of error.
-value: "'cuprum.cli.errors.files.missing_parameter'"
-data_path: cuprum/cli/errors/files/missing-parameter/type
-version: "*"

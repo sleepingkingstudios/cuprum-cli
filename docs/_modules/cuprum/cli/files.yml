@@ -4,6 +4,7 @@ slug: files
 type: module
 files:
 - lib/cuprum/cli/files.rb
+- lib/cuprum/cli/files/errors.rb
 - lib/cuprum/cli/files/engines.rb
 - lib/cuprum/cli/files/template.rb
 - lib/cuprum/cli/files/generator.rb
@@ -25,6 +26,8 @@ defined_classes:
 defined_modules:
 - name: Engines
   slug: engines
+- name: Errors
+  slug: errors
 - name: Generators
   slug: generators
 - name: Templates

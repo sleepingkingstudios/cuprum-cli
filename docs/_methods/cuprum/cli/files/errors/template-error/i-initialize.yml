@@ -1,0 +1,27 @@
+---
+name: Cuprum::Cli::Files::Errors::TemplateError#initialize
+parent_path: cuprum/cli/files/errors/template-error
+signature: 'initialize(message:, details: nil, template_name: nil, **)'
+slug: initialize
+constructor: true
+data_path: cuprum/cli/files/errors/template-error/i-initialize
+params:
+- description: message describing the nature of the error.
+  name: message
+  type:
+  - name: String
+- description: additional information about the error.
+  name: details
+  type:
+  - name: String
+  default: nil
+- description: the name of the rendered content, if any,
+  name: template_name
+  type:
+  - name: String
+  default: nil
+returns:
+- description: a new instance of TemplateError
+  type:
+  - name: TemplateError
+version: "*"

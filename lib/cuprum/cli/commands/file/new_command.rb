@@ -51,7 +51,7 @@ module Cuprum::Cli::Commands::File
       message = "unable to generate file #{file_path}"
       message = "#{message} - #{details}" if details
 
-      Cuprum::Cli::Errors::Files::GeneratorError.new(
+      Cuprum::Cli::Files::Errors::GeneratorError.new(
         details:,
         file_path:,
         message:,

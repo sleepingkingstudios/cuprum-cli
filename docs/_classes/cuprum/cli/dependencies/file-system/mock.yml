@@ -31,6 +31,10 @@ instance_attributes:
   slug: tempfiles
   inherited: false
 instance_methods:
+- name: copy_file
+  path: cuprum/cli/dependencies/file-system/i-copy-file
+  slug: copy-file
+  inherited: true
 - name: create_directory
   path: cuprum/cli/dependencies/file-system/mock/i-create-directory
   slug: create-directory

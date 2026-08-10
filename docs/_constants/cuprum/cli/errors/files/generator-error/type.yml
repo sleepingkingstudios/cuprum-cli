@@ -1,8 +1,0 @@
----
-name: Cuprum::Cli::Errors::Files::GeneratorError::TYPE
-parent_path: cuprum/cli/errors/files/generator-error
-slug: type
-short_description: Short string used to identify the type of error.
-value: "'cuprum.cli.errors.files.generator_error'"
-data_path: cuprum/cli/errors/files/generator-error/type
-version: "*"

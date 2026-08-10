@@ -1,8 +1,0 @@
----
-name: Cuprum::Cli::Errors::Files::TemplateError::TYPE
-parent_path: cuprum/cli/errors/files/template-error
-slug: type
-short_description: Short string used to identify the type of error.
-value: "'cuprum.cli.errors.files.template_error'"
-data_path: cuprum/cli/errors/files/template-error/type
-version: "*"

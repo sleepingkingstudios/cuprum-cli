@@ -116,7 +116,7 @@ RSpec.describe Cuprum::Cli::Files::CreateFile do
     context 'when the file path is not writeable' do
       let(:file_path) { 'templates' }
       let(:expected_error) do
-        Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+        Cuprum::Cli::Files::Errors::FileNotWriteable.new(
           file_path:,
           reason:    'file is a directory'
         )
@@ -138,7 +138,7 @@ RSpec.describe Cuprum::Cli::Files::CreateFile do
 
     context 'when the file path already exists' do
       let(:expected_error) do
-        Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+        Cuprum::Cli::Files::Errors::FileNotWriteable.new(
           file_path:,
           reason:    'file already exists'
         )
@@ -174,7 +174,7 @@ RSpec.describe Cuprum::Cli::Files::CreateFile do
       context 'when initialized with directories: false' do
         let(:options) { super().merge(directories: false) }
         let(:expected_error) do
-          Cuprum::Cli::Errors::Files::FileNotWriteable.new(
+          Cuprum::Cli::Files::Errors::FileNotWriteable.new(
             file_path:,
             reason:    'directory not found'
           )

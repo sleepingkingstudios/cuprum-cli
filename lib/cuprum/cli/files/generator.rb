@@ -285,7 +285,7 @@ module Cuprum::Cli::Files
     end
 
     def file_not_writeable_error(**)
-      Cuprum::Cli::Errors::Files::FileNotWriteable.new(**)
+      Cuprum::Cli::Files::Errors::FileNotWriteable.new(**)
     end
 
     def filter_outputs # rubocop:disable Metrics/MethodLength
@@ -339,7 +339,7 @@ module Cuprum::Cli::Files
       message = "#{message}#{key ? " #{key.inspect}" : 's'}"
       message = "#{message} - #{details}" if details
 
-      Cuprum::Cli::Errors::Files::GeneratorError.new(
+      Cuprum::Cli::Files::Errors::GeneratorError.new(
         details:,
         file_path:,
         message:,

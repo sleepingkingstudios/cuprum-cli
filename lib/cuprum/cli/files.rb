@@ -7,6 +7,7 @@ module Cuprum::Cli
   module Files
     autoload :CreateFile,   'cuprum/cli/files/create_file'
     autoload :Engines,      'cuprum/cli/files/engines'
+    autoload :Errors,       'cuprum/cli/files/errors'
     autoload :GenerateFile, 'cuprum/cli/files/generate_file'
     autoload :Generator,    'cuprum/cli/files/generator'
     autoload :Generators,   'cuprum/cli/files/generators'

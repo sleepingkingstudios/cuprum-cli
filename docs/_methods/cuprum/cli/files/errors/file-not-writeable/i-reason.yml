@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Files::Errors::FileNotWriteable#reason
+parent_path: cuprum/cli/files/errors/file-not-writeable
+signature: reason
+slug: reason
+constructor: false
+data_path: cuprum/cli/files/errors/file-not-writeable/i-reason
+returns:
+- description: additional details on the error.
+  type:
+  - name: String
+version: "*"

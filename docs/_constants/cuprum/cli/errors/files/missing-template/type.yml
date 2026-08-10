@@ -1,8 +1,0 @@
----
-name: Cuprum::Cli::Errors::Files::MissingTemplate::TYPE
-parent_path: cuprum/cli/errors/files/missing-template
-slug: type
-short_description: Short string used to identify the type of error.
-value: "'cuprum.cli.errors.files.missing_template'"
-data_path: cuprum/cli/errors/files/missing-template/type
-version: "*"
