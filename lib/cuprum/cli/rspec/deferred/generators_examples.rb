@@ -41,7 +41,7 @@ module Cuprum::Cli::RSpec::Deferred
         let(:expected_contents) do
           next super() if defined?(super())
 
-          template = File.read(expected_template_path)
+          template = file_system.read(expected_template_path)
           result   =
             Cuprum::Cli::Files::Engines::RenderErb
             .new
