@@ -201,7 +201,7 @@ module Cuprum::Cli::Files
     option :dry_run,     type: :boolean
 
     # @overload initialize(file_path, **options)
-    #   @param file_path [String] the input file path provided by the user.
+    #   @param file_path [String, nil] the input file path provided by the user.
     #   @param options [Hash] additional options for the generator.
     #
     #   @option options dry_run [true, false] if true, simulates file generation
@@ -211,7 +211,7 @@ module Cuprum::Cli::Files
     #     file names status to STDOUT. Defaults to false.
     #   @option options verbose [true, false] if true, prints the contents of
     #     generated files to STDOUT. Defaults to false.
-    def initialize(file_path, **)
+    def initialize(file_path = nil, **)
       super()
 
       @file_path = file_path
@@ -226,7 +226,12 @@ module Cuprum::Cli::Files
 
     # @return [Hash] parameters extracted from the input file name.
     def file_parameters
-      @file_parameters ||= extract_file_parameters(file_path)
+      @file_parameters ||=
+        if file_path
+          extract_file_parameters(file_path)
+        else
+          {}
+        end
     end
 
     private
