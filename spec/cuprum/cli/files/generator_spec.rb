@@ -1629,6 +1629,35 @@ RSpec.describe Cuprum::Cli::Files::Generator do
       end
     end
 
+    describe 'with a string with malformed parameters' do
+      let(:output_path) { 'lib/path/to/%<custom_path>/file.md' }
+      let(:expected_error) do
+        details =
+          "malformed format string - %/ for output path #{output_path}"
+        message = "unable to generate output file :default - #{details}"
+
+        Cuprum::Cli::Files::Errors::GeneratorError.new(
+          details:,
+          message:,
+          options: generator.options
+        )
+      end
+      let(:custom_path) { 'custom_path' }
+      let(:constructor_options) do
+        super().merge(custom_path:)
+      end
+
+      before(:example) { described_class.option :custom_path }
+
+      include_deferred 'with a generator class'
+
+      it 'should return a failing result' do
+        expect(resolved_path)
+          .to be_a_failing_result
+          .with_error(expected_error)
+      end
+    end
+
     describe 'with a string with missing parameters' do
       let(:output_path) { 'lib/path/to/%<custom_path>s' }
       let(:expected_error) do

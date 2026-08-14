@@ -383,18 +383,21 @@ module Cuprum::Cli::Files
       say "\n", verbose: true
     end
 
-    def resolve_output_path(output) # rubocop:disable Metrics/MethodLength
+    def resolve_output_path(output) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
       params = file_parameters.merge(options).compact
 
       format(output.path, params).gsub(%r{//+}, '/')
+    rescue ArgumentError => exception
+      raise unless exception.message.include?('malformed format string')
+
+      details = "#{exception.message} for output path #{output.path}"
+      error   = generator_error(details:, key: output.key)
+      failure(error)
     rescue KeyError => exception
       details =
         "missing parameter #{exception.key.inspect} for output path " \
         "#{output.path}"
-      error = generator_error(
-        details:,
-        key:     output.key
-      )
+      error   = generator_error(details:, key: output.key)
       failure(error)
     end
 
