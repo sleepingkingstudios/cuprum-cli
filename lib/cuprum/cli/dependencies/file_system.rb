@@ -75,8 +75,8 @@ module Cuprum::Cli::Dependencies
     #   @raise [FileAlreadyExistsError] if there is a file at the destination
     #     path and the force: option is false.
     def copy_file(source_path, destination_path, force: false, &block)
-      validate_file(source_path,      as: 'source_path')
-      validate_file(destination_path, as: 'destination_path')
+      validate_file_path(source_path,      as: 'source_path')
+      validate_file_path(destination_path, as: 'destination_path')
 
       if !force && file?(destination_path)
         raise FileAlreadyExistsError,
@@ -110,6 +110,30 @@ module Cuprum::Cli::Dependencies
       path
     end
     alias make_directory create_directory
+
+    # Removes the file at the requested path.
+    #
+    # @param path [String] the path to the file.
+    #
+    # @return [String] the path to the removed file.
+    def delete_file(path) # rubocop:disable Metrics/MethodLength
+      validate_file_path(path, as: 'path')
+
+      resolved = resolve_path(path)
+
+      if directory?(resolved)
+        raise FileIsADirectoryError,
+          "unable to delete file #{path} - file is a directory"
+      end
+
+      File.delete(resolved)
+
+      path
+    rescue Errno::ENOENT, Errno::EPERM
+      raise FileNotFoundError,
+        "unable to delete file #{path} - file not found"
+    end
+    alias remove_file delete_file
 
     # Checks if the requested directory exists.
     #
@@ -296,6 +320,14 @@ module Cuprum::Cli::Dependencies
       else
         raise ArgumentError, invalid_file_message(as:)
       end
+    end
+
+    def validate_file_path(path, as:)
+      tools.assertions.validate_presence(path, as:) if path.nil?
+
+      tools.assertions.validate_instance_of(path, as:, expected: String)
+
+      tools.assertions.validate_presence(path, as:)
     end
   end
 end

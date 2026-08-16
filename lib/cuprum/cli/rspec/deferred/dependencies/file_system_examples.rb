@@ -266,9 +266,9 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
           include_deferred 'should not copy the file'
         end
 
-        describe 'with destination_path: nil' do
+        describe 'with destination_path: an Object' do
           let(:error_message) do
-            'destination_path is not a String or IO stream'
+            'destination_path is not an instance of String'
           end
 
           it 'should raise an exception' do
@@ -309,7 +309,7 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
 
         describe 'with source_path: an Object' do
           let(:error_message) do
-            'source_path is not a String or IO stream'
+            'source_path is not an instance of String'
           end
 
           it 'should raise an exception' do
@@ -1025,6 +1025,285 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
                     change { subject.directory?(path) }.to(be true)
                   )
                 end
+              end
+            end
+          end
+        end
+      end
+
+      describe '#delete_file', :writeable_root_path do
+        let(:invalid_absolute_path) do
+          defined?(super()) ? super() : '/invalid-absolute-path'
+        end
+        let(:invalid_qualified_path) do
+          defined?(super()) ? super() : '../invalid-qualified-path'
+        end
+        let(:invalid_relative_path) do
+          defined?(super()) ? super() : 'invalid-relative-path'
+        end
+        let(:path) { 'path/to/source.txt' }
+
+        it { expect(subject).to respond_to(:delete_file).with(1).argument }
+
+        it 'should define the aliased method' do
+          expect(subject).to have_aliased_method(:delete_file).as(:remove_file)
+        end
+
+        describe 'with nil' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: :path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.delete_file(nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an Object' do
+          let(:error_message) do
+            'path is not an instance of String'
+          end
+
+          it 'should raise an exception' do
+            expect { subject.delete_file(Object.new.freeze) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an empty String' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: :path)
+          end
+
+          it 'should raise an exception' do
+            expect { subject.delete_file('') }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an invalid absolute path' do
+          let(:path) { invalid_absolute_path }
+          let(:error_class) do
+            Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
+          end
+          let(:error_message) do
+            "unable to delete file #{path} - file not found"
+          end
+
+          it 'should raise an exception' do
+            expect { subject.delete_file(path) }
+              .to raise_error(error_class, error_message)
+          end
+        end
+
+        describe 'with an invalid qualified path' do
+          let(:path) { invalid_qualified_path }
+          let(:error_class) do
+            Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
+          end
+          let(:error_message) do
+            "unable to delete file #{path} - file not found"
+          end
+
+          it 'should raise an exception' do
+            expect { subject.delete_file(path) }
+              .to raise_error(error_class, error_message)
+          end
+        end
+
+        describe 'with an invalid relative path' do
+          let(:path) { invalid_relative_path }
+          let(:error_class) do
+            Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
+          end
+          let(:error_message) do
+            "unable to delete file #{path} - file not found"
+          end
+
+          it 'should raise an exception' do
+            expect { subject.delete_file(path) }
+              .to raise_error(error_class, error_message)
+          end
+        end
+
+        wrap_deferred 'with valid file paths' do
+          describe 'with an absolute path to a directory' do
+            let(:path) { absolute_directory_path }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+            end
+            let(:error_message) do
+              "unable to delete file #{path} - file is a directory"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.delete_file(path) }
+                .to raise_error(error_class, error_message)
+            end
+          end
+
+          describe 'with an absolute path to a file' do
+            let(:path) { File.join(absolute_directory_path, 'temp.txt') }
+
+            before(:example) do
+              subject.write_file(path, 'Temporary contents...')
+            end
+
+            it { expect(subject.delete_file(path)).to eq path }
+
+            it 'should remove the file' do
+              expect { subject.delete_file(path) }.to(
+                change { subject.file?(path) }.to(be false)
+              )
+            end
+          end
+
+          describe 'with a qualified path to a directory' do
+            let(:path) { qualified_directory_path }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+            end
+            let(:error_message) do
+              "unable to delete file #{path} - file is a directory"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.delete_file(path) }
+                .to raise_error(error_class, error_message)
+            end
+          end
+
+          describe 'with a qualified path to a file' do
+            let(:path) { File.join(qualified_directory_path, 'temp.txt') }
+
+            before(:example) do
+              subject.write_file(path, 'Temporary contents...')
+            end
+
+            it { expect(subject.delete_file(path)).to eq path }
+
+            it 'should remove the file' do
+              expect { subject.delete_file(path) }.to(
+                change { subject.file?(path) }.to(be false)
+              )
+            end
+          end
+
+          describe 'with a relative path to a directory' do
+            let(:path) { relative_directory_path }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+            end
+            let(:error_message) do
+              "unable to delete file #{path} - file is a directory"
+            end
+
+            it 'should raise an exception' do
+              expect { subject.delete_file(path) }
+                .to raise_error(error_class, error_message)
+            end
+          end
+
+          describe 'with a relative path to a file' do
+            let(:path) { File.join(relative_directory_path, 'temp.txt') }
+
+            before(:example) do
+              subject.write_file(path, 'Temporary contents...')
+            end
+
+            it { expect(subject.delete_file(path)).to eq path }
+
+            it 'should remove the file' do
+              expect { subject.delete_file(path) }.to(
+                change { subject.file?(path) }.to(be false)
+              )
+            end
+          end
+
+          wrap_deferred 'when initialized with root_path: value' do
+            describe 'with a qualified path to a directory' do
+              let(:directory) do
+                File.join('..', '..', 'tmp', 'files')
+              end
+              let(:path) do
+                File.join(directory, "#{SecureRandom.uuid}.txt")
+              end
+              let(:error_class) do
+                Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+              end
+              let(:error_message) do
+                "unable to delete file #{path} - file is a directory"
+              end
+
+              before(:example) do
+                subject.create_directory(path, recursive: true)
+              end
+
+              it 'should raise an exception' do
+                expect { subject.delete_file(path) }
+                  .to raise_error(error_class, error_message)
+              end
+            end
+
+            describe 'with a qualified path to a file' do
+              let(:directory) do
+                File.join('..', '..', 'tmp', 'files')
+              end
+              let(:path) do
+                File.join(directory, "#{SecureRandom.uuid}.txt")
+              end
+
+              before(:example) do
+                subject.create_directory(directory, recursive: true)
+                subject.write_file(path, 'Temporary contents...')
+              end
+
+              it { expect(subject.delete_file(path)).to eq path }
+
+              it 'should remove the file' do
+                expect { subject.delete_file(path) }.to(
+                  change { subject.file?(path) }.to(be false)
+                )
+              end
+            end
+
+            describe 'with a qualified path to a directory' do
+              let(:path) do
+                File.join('nested', SecureRandom.uuid)
+              end
+              let(:error_class) do
+                Cuprum::Cli::Dependencies::FileSystem::FileIsADirectoryError
+              end
+              let(:error_message) do
+                "unable to delete file #{path} - file is a directory"
+              end
+
+              before(:example) do
+                subject.create_directory(path, recursive: true)
+              end
+
+              it 'should raise an exception' do
+                expect { subject.delete_file(path) }
+                  .to raise_error(error_class, error_message)
+              end
+            end
+
+            describe 'with a qualified path to a file' do
+              let(:path) do
+                File.join('nested', "#{SecureRandom.uuid}.txt")
+              end
+
+              before(:example) do
+                subject.write_file(path, 'Existing contents...')
+              end
+
+              it { expect(subject.delete_file(path)).to eq path }
+
+              it 'should remove the file' do
+                expect { subject.delete_file(path) }.to(
+                  change { subject.file?(path) }.to(be false)
+                )
               end
             end
           end

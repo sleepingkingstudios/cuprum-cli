@@ -66,6 +66,32 @@ module Cuprum::Cli::Dependencies
     end
     alias make_directory create_directory
 
+    # (see Cuprum::Cli::Dependencies::FileSystem#delete_file)
+    def delete_file(path) # rubocop:disable Metrics/MethodLength
+      validate_file_path(path, as: 'path')
+
+      resolved = resolve_path(path)
+
+      if directory?(resolved)
+        raise FileIsADirectoryError,
+          "unable to delete file #{path} - file is a directory"
+      end
+
+      unless file?(resolved)
+        raise FileNotFoundError,
+          "unable to delete file #{path} - file not found"
+      end
+
+      *relative, file = split_path(resolved)
+
+      directory = relative.empty? ? files : files.dig(*relative)
+
+      directory.delete(file)
+
+      path
+    end
+    alias remove_file delete_file
+
     # (see Cuprum::Cli::Dependencies::FileSystem#directory?)
     def directory?(path)
       tools.assertions.validate_name(path, as: 'path')
