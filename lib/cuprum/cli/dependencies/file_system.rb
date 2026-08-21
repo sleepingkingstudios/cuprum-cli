@@ -97,7 +97,7 @@ module Cuprum::Cli::Dependencies
     #
     # @return [String] the path to the created directory.
     def create_directory(path, recursive: false)
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       resolved = resolve_path(path)
 
@@ -142,7 +142,7 @@ module Cuprum::Cli::Dependencies
     # @return [true, false] true if the directory exists and is a directory,
     #   otherwise false.
     def directory?(path)
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       path = resolve_path(path)
 
@@ -168,9 +168,7 @@ module Cuprum::Cli::Dependencies
     def each_file(pattern, &)
       return enum_for(:each_file, pattern) unless block_given?
 
-      path = resolve_path(pattern)
-
-      Dir[path].each(&)
+      Dir.glob(pattern, base: root_path, &)
 
       nil
     end
@@ -182,7 +180,7 @@ module Cuprum::Cli::Dependencies
     # @return [true, false] true if the file exists and is a file,
     #   otherwise false.
     def file?(path)
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       path = resolve_path(path)
 
@@ -276,6 +274,9 @@ module Cuprum::Cli::Dependencies
     rescue Errno::ENOENT
       raise Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError,
         "unable to create directory #{path} - directory not found"
+    rescue Errno::ENOTDIR
+      raise DirectoryIsAFileError,
+        "unable to create directory #{path} - directory is a file"
     end
 
     def handle_write_errors(file_or_path)

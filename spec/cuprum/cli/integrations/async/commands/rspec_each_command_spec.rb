@@ -575,7 +575,7 @@ do
             'root_dir/child_spec.rb',
             'root_dir/sibling_spec.rb',
             'sibling_spec.rb'
-          ].map { |file| "#{file_system.root_path}/#{file}" }
+          ]
         end
         let(:expected_output) do
           <<~RAW
