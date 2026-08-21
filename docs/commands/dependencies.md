@@ -108,6 +108,9 @@ The `FileSystem` dependency wraps the native file system and provides methods fo
 `#create_directory(path, recursive: true)`
 : Creates a directory at the requested path. If `recursive` is true, creates intermediate directories, like the `-p` option for `mkdir`.
 
+`#delete_file(path)`
+: Removes the file at the requested path.
+
 `#directory?(path)`
 : Checks if the given path is a directory.
 

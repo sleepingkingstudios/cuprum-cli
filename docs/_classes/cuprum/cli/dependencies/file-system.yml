@@ -37,6 +37,10 @@ instance_methods:
   path: cuprum/cli/dependencies/file-system/i-create-directory
   slug: create-directory
   inherited: false
+- name: delete_file
+  path: cuprum/cli/dependencies/file-system/i-delete-file
+  slug: delete-file
+  inherited: false
 - name: directory?
   path: cuprum/cli/dependencies/file-system/i-directory?
   slug: directory?
