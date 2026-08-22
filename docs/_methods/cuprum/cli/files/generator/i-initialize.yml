@@ -1,7 +1,7 @@
 ---
 name: Cuprum::Cli::Files::Generator#initialize
 parent_path: cuprum/cli/files/generator
-signature: initialize(file_path, **)
+signature: initialize(file_path = nil, **)
 slug: initialize
 constructor: true
 data_path: cuprum/cli/files/generator/i-initialize
@@ -41,6 +41,7 @@ overloads:
     name: file_path
     type:
     - name: String
+    - name: nil
   - description: additional options for the generator.
     name: options
     type:

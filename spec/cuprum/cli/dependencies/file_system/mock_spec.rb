@@ -11,39 +11,13 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
   subject(:mock_fs) { described_class.new(**options) }
 
   deferred_context 'when initialized with files' do
-    let(:files) do
-      {
-        'root_dir'      => {
-          'child_dir'      => {},
-          'child_file.txt' => StringIO.new('Child File')
-        },
-        'root_file.txt' => StringIO.new('Root File')
-      }
-    end
+    let(:files)   { fixtures }
     let(:options) { super().merge(files:) }
+
+    include_deferred 'with fixture files and directories'
   end
 
-  deferred_context 'with valid file paths' do # rubocop:disable RSpec/MultipleMemoizedHelpers
-    let(:files) do
-      {
-        'root_dir'      => {
-          'child_dir'      => {},
-          'child_file.txt' => StringIO.new(
-            'Contents of root_dir/child_file.txt'
-          )
-        },
-        'root_file.txt' => StringIO.new('Root File')
-      }
-    end
-    let(:options) { super().merge(files:) }
-    let(:matching_entries) do
-      %w[
-        root_dir
-        root_dir/child_file.txt
-        root_file.txt
-      ].map { |file_name| File.join(mock_fs.root_path, file_name) }
-    end
-    let(:files_directory) { 'root_dir' }
+  deferred_context 'with valid file paths' do
     let(:absolute_directory_path) do
       File.join(mock_fs.root_path, 'root_dir', 'child_dir')
     end
@@ -72,23 +46,14 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
     let(:relative_file_path) do
       File.join('root_dir', 'child_file.txt')
     end
-    let(:writeable_path) do
-      File.join('root_dir', 'child_dir')
-    end
+
+    include_deferred 'when initialized with files'
   end
 
   deferred_context 'when initialized with root_path: value' do
-    let(:root_path) { File.join(Cuprum::Cli.gem_path, 'tmp', 'files') }
-    let(:options)   { super().merge(root_path:) }
-    let(:files)     { super().merge({ 'nested' => {} }) }
-  end
-
-  deferred_context 'when created directories are cleaned up' do
-    # Automatically handled by the test scope.
-  end
-
-  deferred_context 'when created files are cleaned up' do
-    # Automatically handled by the test scope.
+    let(:root_path)     { File.join(Cuprum::Cli.gem_path, 'tmp', 'files') }
+    let(:options)       { super().merge(root_path:) }
+    let(:fixtures_path) { root_path }
   end
 
   let(:options) { {} }
@@ -197,10 +162,6 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
   describe '#files' do
     include_examples 'should define reader', :files, {}
 
-    wrap_deferred 'when initialized with files' do
-      it { expect(mock_fs.files).to be == files }
-    end
-
     context 'when initialized with files with flattened paths' do
       let(:files) do
         {
@@ -267,7 +228,7 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
       end
       let(:options) { super().merge(files:) }
 
-      it 'should file contents to a StringIO', :aggregate_failures do
+      it 'should convert file contents to a StringIO', :aggregate_failures do
         file = mock_fs.files['file.txt']
 
         expect(file).to be_a(StringIO)
@@ -284,6 +245,42 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
       end
 
       it 'should convert nested file contents to a StringIO',
+        :aggregate_failures \
+      do
+        file = mock_fs.files.dig('directory', 'file.txt')
+
+        expect(file).to be_a(StringIO)
+        expect(file.string).to be == 'Nested File'
+      end
+    end
+
+    context 'when initialized with files with StringIO values' do
+      let(:files) do
+        {
+          'file.txt'          => StringIO.new('Top Level File'),
+          '/path/to/file.txt' => StringIO.new('Flattened File'),
+          'directory'         => { 'file.txt' => StringIO.new('Nested File') }
+        }
+      end
+      let(:options) { super().merge(files:) }
+
+      it 'should accept file contents as a StringIO', :aggregate_failures do
+        file = mock_fs.files['file.txt']
+
+        expect(file).to be_a(StringIO)
+        expect(file.string).to be == 'Top Level File'
+      end
+
+      it 'should accept flattened file contents as a StringIO',
+        :aggregate_failures \
+      do
+        file = mock_fs.files.dig('path', 'to', 'file.txt')
+
+        expect(file).to be_a(StringIO)
+        expect(file.string).to be == 'Flattened File'
+      end
+
+      it 'should accept nested file contents as a StringIO',
         :aggregate_failures \
       do
         file = mock_fs.files.dig('directory', 'file.txt')
@@ -324,7 +321,7 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
       context 'when a file is added to the file system' do
         let(:file_path) { 'added_file.txt' }
         let(:expected_files) do
-          super() << file_path
+          (super() << file_path).sort
         end
 
         before(:example) do
@@ -367,8 +364,7 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
   end
 
   describe '#write_file' do
-    let(:file_name) { "#{SecureRandom.uuid}.txt" }
-    let(:data)      { "Greetings, programs!\n" }
+    let(:data) { "Greetings, programs!\n" }
 
     describe 'with file: a mock Tempfile' do
       let(:tempfile) { described_class::MockTempfile.new('/path/to/file') }
@@ -388,6 +384,42 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
             .to be == data
 
           expect(tempfile.pos).to be 0
+        end
+      end
+    end
+
+    describe 'with a path to a file outside the root path' do
+      let(:file) { File.join('invalid', 'path', 'to', 'file.txt') }
+      let(:error_class) do
+        Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+      end
+      let(:error_message) do
+        "unable to write file #{file} - directory not found"
+      end
+
+      it 'should raise an exception' do
+        expect { mock_fs.write_file(file, data) }
+          .to raise_error error_class, error_message
+      end
+    end
+
+    wrap_deferred 'when initialized with root_path: value' do
+      describe 'with a path to a file outside the root path' do
+        let(:file) do
+          File.expand_path(
+            File.join(root_path, '..', 'invalid', 'path', 'to', 'file.txt')
+          )
+        end
+        let(:error_class) do
+          Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
+        end
+        let(:error_message) do
+          "unable to write file #{file} - directory not found"
+        end
+
+        it 'should raise an exception' do
+          expect { mock_fs.write_file(file, data) }
+            .to raise_error error_class, error_message
         end
       end
     end

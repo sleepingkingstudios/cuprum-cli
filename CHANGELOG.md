@@ -19,6 +19,7 @@
 - Implemented `Clock` dependency.
 - Implemented `FileSystem#copy_file` helper.
 - Improved handling of file parameters for `FileSystem::Mock`.
+- Updated `FileSystem#each_file` enumerated values to match the given pattern - values will only be converted to absolute paths if the input pattern is an absolute path.
 - Fixed a `FileSystem#each_file` bug when matching a template that included the root path.
 - Fixed a `FileSystem::Mock` bug that would wipe existing mock directories.
 - Fixed a `FileSystem::Mock` bug that did not include directories in `each_file`.

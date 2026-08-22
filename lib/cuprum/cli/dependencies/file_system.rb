@@ -75,8 +75,8 @@ module Cuprum::Cli::Dependencies
     #   @raise [FileAlreadyExistsError] if there is a file at the destination
     #     path and the force: option is false.
     def copy_file(source_path, destination_path, force: false, &block)
-      validate_file(source_path,      as: 'source_path')
-      validate_file(destination_path, as: 'destination_path')
+      validate_file_path(source_path,      as: 'source_path')
+      validate_file_path(destination_path, as: 'destination_path')
 
       if !force && file?(destination_path)
         raise FileAlreadyExistsError,
@@ -97,7 +97,7 @@ module Cuprum::Cli::Dependencies
     #
     # @return [String] the path to the created directory.
     def create_directory(path, recursive: false)
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       resolved = resolve_path(path)
 
@@ -111,6 +111,30 @@ module Cuprum::Cli::Dependencies
     end
     alias make_directory create_directory
 
+    # Removes the file at the requested path.
+    #
+    # @param path [String] the path to the file.
+    #
+    # @return [String] the path to the removed file.
+    def delete_file(path) # rubocop:disable Metrics/MethodLength
+      validate_file_path(path, as: 'path')
+
+      resolved = resolve_path(path)
+
+      if directory?(resolved)
+        raise FileIsADirectoryError,
+          "unable to delete file #{path} - file is a directory"
+      end
+
+      File.delete(resolved)
+
+      path
+    rescue Errno::ENOENT, Errno::EPERM
+      raise FileNotFoundError,
+        "unable to delete file #{path} - file not found"
+    end
+    alias remove_file delete_file
+
     # Checks if the requested directory exists.
     #
     # @param path [String] the path to the requested directory.
@@ -118,7 +142,7 @@ module Cuprum::Cli::Dependencies
     # @return [true, false] true if the directory exists and is a directory,
     #   otherwise false.
     def directory?(path)
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       path = resolve_path(path)
 
@@ -144,9 +168,7 @@ module Cuprum::Cli::Dependencies
     def each_file(pattern, &)
       return enum_for(:each_file, pattern) unless block_given?
 
-      path = resolve_path(pattern)
-
-      Dir[path].each(&)
+      Dir.glob(pattern, base: root_path, &)
 
       nil
     end
@@ -158,7 +180,7 @@ module Cuprum::Cli::Dependencies
     # @return [true, false] true if the file exists and is a file,
     #   otherwise false.
     def file?(path)
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       path = resolve_path(path)
 
@@ -252,6 +274,9 @@ module Cuprum::Cli::Dependencies
     rescue Errno::ENOENT
       raise Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError,
         "unable to create directory #{path} - directory not found"
+    rescue Errno::ENOTDIR
+      raise DirectoryIsAFileError,
+        "unable to create directory #{path} - directory is a file"
     end
 
     def handle_write_errors(file_or_path)
@@ -296,6 +321,14 @@ module Cuprum::Cli::Dependencies
       else
         raise ArgumentError, invalid_file_message(as:)
       end
+    end
+
+    def validate_file_path(path, as:)
+      tools.assertions.validate_presence(path, as:) if path.nil?
+
+      tools.assertions.validate_instance_of(path, as:, expected: String)
+
+      tools.assertions.validate_presence(path, as:)
     end
   end
 end

@@ -44,7 +44,7 @@ module Cuprum::Cli::Dependencies
 
     # (see Cuprum::Cli::Dependencies::FileSystem#create_directory)
     def create_directory(path, recursive: false) # rubocop:disable Metrics/MethodLength
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       *dir_names, dir_name = split_path(resolve_path(path))
 
@@ -66,9 +66,35 @@ module Cuprum::Cli::Dependencies
     end
     alias make_directory create_directory
 
+    # (see Cuprum::Cli::Dependencies::FileSystem#delete_file)
+    def delete_file(path) # rubocop:disable Metrics/MethodLength
+      validate_file_path(path, as: 'path')
+
+      resolved = resolve_path(path)
+
+      if directory?(resolved)
+        raise FileIsADirectoryError,
+          "unable to delete file #{path} - file is a directory"
+      end
+
+      unless file?(resolved)
+        raise FileNotFoundError,
+          "unable to delete file #{path} - file not found"
+      end
+
+      *relative, file = split_path(resolved)
+
+      directory = relative.empty? ? files : files.dig(*relative)
+
+      directory.delete(file)
+
+      path
+    end
+    alias remove_file delete_file
+
     # (see Cuprum::Cli::Dependencies::FileSystem#directory?)
     def directory?(path)
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       path = resolve_path(path)
       mock = resolve_mock(path)
@@ -78,17 +104,17 @@ module Cuprum::Cli::Dependencies
     alias directory_exists? directory?
 
     # (see Cuprum::Cli::Dependencies::FileSystem#each_file)
-    def each_file(pattern, &)
+    def each_file(pattern, &) # rubocop:disable Metrics/AbcSize
       return enum_for(:each_file, pattern) unless block_given?
 
-      if pattern.is_a?(String) && pattern.start_with?(root_path)
-        pattern = pattern[(root_path.length + 1)..]
-      end
+      absolute_path = pattern.is_a?(String) && pattern.start_with?(root_path)
+
+      pattern = pattern[(root_path.length + 1)..] if absolute_path
 
       [*expanded_dirs, *flattened_files].each do |file_path|
         next unless matches_pattern?(file_path:, pattern:)
 
-        yield File.join(root_path, file_path)
+        yield absolute_path ? File.join(root_path, file_path) : file_path
       end
 
       nil
@@ -100,11 +126,11 @@ module Cuprum::Cli::Dependencies
 
     # @return [Array<String>] a list of the defined file paths in the mock file
     #   system.
-    def flattened_files = flatten_files(files:)
+    def flattened_files = flatten_files(files:).sort
 
     # (see Cuprum::Cli::Dependencies::FileSystem#directory?)
     def file?(path)
-      tools.assertions.validate_name(path, as: 'path')
+      validate_file_path(path, as: 'path')
 
       path = resolve_path(path)
       mock = resolve_mock(path)

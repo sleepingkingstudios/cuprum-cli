@@ -12,148 +12,100 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
 
   subject(:file_system) { described_class.new(**options) }
 
-  deferred_context 'with valid file paths' do # rubocop:disable RSpec/MultipleMemoizedHelpers
-    let(:matching_entries) do
-      %w[
-        LICENSE.txt
-        spec
-        spec/examples.txt
-        spec/spec_helper.rb
-      ].map { |file_name| File.join(file_system.root_path, file_name) }
+  deferred_context 'with valid file paths' do
+    let(:fixtures_path) do
+      File.join(Cuprum::Cli.gem_path, 'tmp', 'file_system')
     end
-    let(:files_directory) { 'spec' }
-    let(:absolute_directory_path) do
-      File.join(Cuprum::Cli.gem_path, 'spec', 'cuprum', 'cli')
-    end
-    let(:absolute_file_path) do
-      File.join(Cuprum::Cli.gem_path, 'spec', 'spec_helper.rb')
-    end
+    let(:absolute_directory_path) { File.join(fixtures_path, 'root_dir') }
+    let(:absolute_file_path)      { File.join(fixtures_path, 'root_file.txt') }
     let(:qualified_directory_path) do
       File.join(
         '..',
-        File.split(Cuprum::Cli.gem_path).last,
-        'spec',
-        'cuprum',
-        'cli'
+        *fixtures_path.split(File::SEPARATOR)[-3...],
+        'root_dir'
       )
     end
     let(:qualified_file_path) do
       File.join(
         '..',
-        File.split(Cuprum::Cli.gem_path).last,
-        'spec',
-        'spec_helper.rb'
+        *fixtures_path.split(File::SEPARATOR)[-3...],
+        'root_file.txt'
       )
     end
     let(:relative_directory_path) do
-      File.join('spec', 'cuprum', 'cli')
+      File.join(*fixtures_path.split(File::SEPARATOR)[-2...], 'root_dir')
     end
     let(:relative_file_path) do
-      File.join('spec', 'spec_helper.rb')
+      File.join(*fixtures_path.split(File::SEPARATOR)[-2...], 'root_file.txt')
     end
-    let(:writeable_path) { 'tmp' }
 
-    before(:example) do |example|
-      next unless example.metadata.fetch(:replace_file_contents, false)
+    define_method :build_fixture do |fixture, contents, path = nil|
+      path ||= fixtures_path
+      path = File.join(path, fixture)
 
-      allow(File).to receive(:read).and_wrap_original do |original, path|
-        original.call(path) # Ensure path is valid.
+      if contents.is_a?(Hash)
+        FileUtils.mkdir_p(path)
 
-        path = path.sub(%r{\A#{file_system.root_path}/?}, '')
-
-        "Contents of #{path}"
+        contents.each { |key, value| build_fixture(key, value, path) }
+      else
+        File.write(path, contents)
       end
     end
+
+    define_method :read_fixture do |path|
+      path = path.sub('tmp/file_system/', '')
+
+      fixtures.dig(*path.split(File::SEPARATOR))
+    end
+
+    before(:example) do
+      fixtures.each { |fixture, contents| build_fixture(fixture, contents) }
+    end
+
+    before(:example) do
+      allow(Dir)
+        .to receive(:glob)
+        .and_wrap_original do |original, pattern, **options, &block|
+          original.call(pattern, **options, base: fixtures_path, &block)
+        end
+    end
+
+    after(:example) do
+      relative_path = fixtures_path.sub(%r{#{Cuprum::Cli.gem_path}/?}, '')
+
+      # :nocov:
+      unless relative_path.start_with?('tmp/')
+        raise "invalid temporary file path #{relative_path}"
+      end
+      # :nocov:
+
+      FileUtils.remove_dir(fixtures_path, true)
+    end
+
+    include_deferred 'with fixture files and directories'
   end
 
   deferred_context 'when initialized with root_path: value' do
     let(:root_path) do
-      if self.class.metadata.fetch(:writeable_root_path, false)
-        File.join(Cuprum::Cli.gem_path, 'tmp', 'files')
-      else
-        File.join(Cuprum::Cli.gem_path, 'spec', 'cuprum')
-      end
+      File.join(Cuprum::Cli.gem_path, 'tmp', 'file_system', 'root_dir')
     end
     let(:options) { super().merge(root_path:) }
     let(:qualified_directory_path) do
-      File.join('..', 'cuprum', 'cli')
+      File.join('..', 'root_dir', 'child_dir')
     end
     let(:qualified_file_path) do
-      File.join('..', 'cuprum', 'cli_spec.rb')
+      File.join('..', 'root_dir', 'child_file.txt')
     end
     let(:relative_directory_path) do
-      'cli'
+      'child_dir'
     end
     let(:relative_file_path) do
-      'cli_spec.rb'
-    end
-  end
-
-  deferred_context 'when created directories are cleaned up' do
-    define_method :resolve_to_absolute_path do |path|
-      path = File.join(file_system.root_path, path) unless path.start_with?('/')
-
-      File.expand_path(path)
-    end
-
-    around(:example) do |example|
-      example.call
-    ensure
-      next if path.nil?
-
-      dir_path = resolve_to_absolute_path(path)
-
-      next if dir_path == file_system.root_path
-
-      expanded_base = resolve_to_absolute_path(base_path)
-
-      dir_path  = dir_path[(1 + File.expand_path(expanded_base).length)..]
-      dir_names = dir_path.split(File::SEPARATOR)
-
-      dir_names.size.times do |index|
-        dir_name = dir_names[..index].join(File::SEPARATOR)
-        dir_name = File.expand_path(File.join(expanded_base, dir_name))
-
-        FileUtils.remove_dir(dir_name, force: true)
-      end
-    end
-  end
-
-  deferred_context 'when created files are cleaned up' do
-    define_method :resolve_to_absolute_path do |path|
-      path = File.join(file_system.root_path, path) unless path.start_with?('/')
-
-      File.expand_path(path)
-    end
-
-    around(:example) do |example|
-      example.call
-    ensure
-      created_files = defined?(file_paths_to_remove) ? file_paths_to_remove : []
-      created_files << file_path if defined?(file_path)
-      created_files << path      if defined?(path)
-
-      created_files.each do |file|
-        resolved = resolve_to_absolute_path(file)
-
-        FileUtils.remove_file(resolved, force: true)
-      end
+      'child_file.txt'
     end
   end
 
   let(:options)          { {} }
   let(:matching_entries) { [] }
-  let(:expected_files)   { matching_entries }
-
-  before(:context) do # rubocop:disable RSpec/BeforeAfterAll
-    # :nocov:
-    tmp_path = File.join(Cuprum::Cli.gem_path, 'tmp', 'files', 'nested')
-
-    FileUtils.mkdir_p(tmp_path)
-    # :nocov:
-  end
-
-  before(:example) { allow(Dir).to receive(:[]).and_return(expected_files) }
 
   describe '::DirectoryIsAFileError' do
     include_examples 'should define constant',
@@ -205,21 +157,23 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
   describe '#each_file' do
     let(:pattern) { '**/*.rb' }
 
-    it 'should delegate to Dir#[]' do
+    before(:example) { allow(Dir).to receive(:glob).and_return([]) }
+
+    it 'should delegate to Dir.glob' do
       file_system.each_file(pattern) { nil }
 
       expect(Dir)
-        .to have_received(:[])
-        .with(File.join(file_system.root_path, pattern))
+        .to have_received(:glob)
+        .with(pattern, base: file_system.root_path)
     end
 
     wrap_deferred 'when initialized with root_path: value' do
-      it 'should delegate to Dir#[]' do
+      it 'should delegate to Dir.glob' do
         file_system.each_file(pattern) { nil }
 
         expect(Dir)
-          .to have_received(:[])
-          .with(File.join(file_system.root_path, pattern))
+          .to have_received(:glob)
+          .with(pattern, base: file_system.root_path)
       end
     end
   end
