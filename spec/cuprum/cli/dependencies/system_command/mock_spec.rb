@@ -35,7 +35,7 @@ RSpec.describe Cuprum::Cli::Dependencies::SystemCommand::Mock do
     end
   end
 
-  # rubocop:disable RSpec/MultipleMemoizedHelpers
+  # rubocop:disable-next RSpec/MultipleMemoizedHelpers
   describe '#capture' do
     deferred_examples 'should capture the command' do
       it 'should return a passing result' do # rubocop:disable RSpec/ExampleLength
@@ -150,7 +150,6 @@ RSpec.describe Cuprum::Cli::Dependencies::SystemCommand::Mock do
       end
     end
   end
-  # rubocop:enable RSpec/MultipleMemoizedHelpers
 
   describe '#recorded_commands' do
     include_examples 'should define reader', :recorded_commands, []

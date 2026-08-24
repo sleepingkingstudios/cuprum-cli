@@ -105,28 +105,31 @@ The `FileSystem` dependency wraps the native file system and provides methods fo
 `#copy_file(source_path, destination_path, force: false) { |contents| }`
 : Copies the contents of the file at `source_path` to a new file at `destination_path`. If a block is given, uses the block to transform the contents of the file.
 
-`#create_directory(path, recursive: true)`
+`#create_directory(path, recursive: true)` (also `#make_directory`)
 : Creates a directory at the requested path. If `recursive` is true, creates intermediate directories, like the `-p` option for `mkdir`.
 
-`#delete_file(path)`
+`#delete_directory(path, force: false, recursive: false)` (also `#remove_directory`)
+: Removes the directory at the requested path. If `recursive` is true, removes nested empty directories; if `force` is true, removes nested files and directories.
+
+`#delete_file(path)` (also `#remove_file`)
 : Removes the file at the requested path.
 
-`#directory?(path)`
+`#directory?(path)` (also `#directory_exists?`)
 : Checks if the given path is a directory.
 
 `#each_file(pattern, &block)`
 : Iterates over the files matching the pattern and either returns an `Enumerable` over the matching file names or yields each file name to the given block.
 
-`#file?(path)`
+`#file?(path)` (also `#file_exists?`)
 : Checks if the given path is a file.
 
-`#read_file(file_or_path)`
+`#read_file(file_or_path)` (also `#read`)
 : Reads the contents of the given IO object, or the file at the given path.
 
 `#with_tempfile`
 : Creates a tempfile and passes it to the block.
 
-`#write_file(file_or_path, data)`
+`#write_file(file_or_path, data)` (also `#write`)
 : Writes the given contents to the IO object, or the file at the given path.
 
 For more information, see the [FileSystem reference](../reference/cuprum/cli/dependencies/file-system/).

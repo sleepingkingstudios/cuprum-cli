@@ -795,6 +795,230 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
         end
       end
 
+      describe '#delete_directory' do
+        deferred_examples 'should not delete the directory' do
+          it 'should not delete the directory' do
+            expect { safe_delete_directory }.not_to(
+              change { subject.directory?(path) }
+            )
+          end
+        end
+
+        deferred_examples 'should delete the directory' do
+          it { expect(delete_directory).to be == path }
+
+          it 'should delete the directory' do
+            expect { delete_directory }.to(
+              change { subject.directory?(path) }.to(be false)
+            )
+          end
+        end
+
+        deferred_examples 'should delete the directory for a valid path' do
+          include_deferred 'should handle a path that includes a file' do
+            include_deferred 'should not delete the directory'
+          end
+
+          include_deferred 'should handle a path with missing directory' do
+            include_deferred 'should not delete the directory'
+          end
+
+          include_deferred 'should handle a path with missing directory' do
+            include_deferred 'should not delete the directory'
+          end
+
+          context 'when the directory is empty' do
+            let(:path) { File.join(super(), 'empty_dir') }
+
+            include_deferred 'should delete the directory'
+          end
+
+          context 'when the directory contains empty directories' do
+            let(:path) { File.join(super(), 'dir_with_directories') }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotEmptyError
+            end
+            let(:error_message) do
+              "#{error_reason} - directory is not empty"
+            end
+
+            it 'should raise an exception' do
+              expect { delete_directory }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not delete the directory'
+
+            it 'should not change the directory contents' do
+              expect { safe_delete_directory }
+                .not_to(change { Dir[File.join(path, '**')] })
+            end
+
+            describe 'with force: true' do
+              let(:delete_options) { super().merge(force: true) }
+
+              include_deferred 'should delete the directory'
+            end
+
+            describe 'with recursive: true' do
+              let(:delete_options) { super().merge(recursive: true) }
+
+              include_deferred 'should delete the directory'
+            end
+          end
+
+          context 'when the directory contains files' do
+            let(:path) { File.join(super(), 'dir_with_files') }
+            let(:error_class) do
+              Cuprum::Cli::Dependencies::FileSystem::DirectoryNotEmptyError
+            end
+            let(:error_message) do
+              "#{error_reason} - directory is not empty"
+            end
+
+            it 'should raise an exception' do
+              expect { delete_directory }
+                .to raise_error(error_class, error_message)
+            end
+
+            include_deferred 'should not delete the directory'
+
+            it 'should not change the directory contents' do
+              expect { safe_delete_directory }
+                .not_to(change { Dir[File.join(path, '**')] })
+            end
+
+            describe 'with force: true' do
+              let(:delete_options) { super().merge(force: true) }
+
+              include_deferred 'should delete the directory'
+            end
+
+            describe 'with recursive: true' do
+              let(:delete_options) { super().merge(recursive: true) }
+
+              it 'should raise an exception' do
+                expect { delete_directory }
+                  .to raise_error(error_class, error_message)
+              end
+
+              include_deferred 'should not delete the directory'
+
+              it 'should not change the directory contents' do
+                expect { safe_delete_directory }
+                  .not_to(change { Dir[File.join(path, '**')] })
+              end
+            end
+          end
+        end
+
+        let(:path)           { nil }
+        let(:delete_options) { {} }
+        let(:error_reason)   { "unable to delete directory #{path}" }
+
+        define_method :delete_directory do
+          subject.delete_directory(path, **delete_options)
+        end
+        alias_method :call_method, :delete_directory
+
+        define_method :safe_delete_directory do
+          delete_directory
+        rescue StandardError
+          nil
+        end
+
+        it 'should define the method' do
+          expect(subject)
+            .to respond_to(:delete_directory)
+            .with(1).argument
+            .and_keywords(:force, :recursive)
+        end
+
+        it 'should alias the method' do
+          expect(subject)
+            .to have_aliased_method(:delete_directory)
+            .as(:remove_directory)
+        end
+
+        include_deferred 'should validate the path'
+
+        wrap_deferred 'with valid file paths' do
+          let(:directory_fixtures) do
+            {
+              'dir_with_directories' => {
+                'empty_child'     => {},
+                'non_empty_child' => {
+                  'empty_grandchild' => {}
+                }
+              },
+              'dir_with_files'       => {
+                'empty_child'     => {},
+                'non_empty_child' => {
+                  'file.txt' => 'Existing contents.'
+                }
+              },
+              'empty_dir'            => {}
+            }
+          end
+          let(:fixtures) do
+            root_path = defined?(self.root_path) ? self.root_path : Dir.pwd
+            base_path = fixtures_path
+
+            if base_path.start_with?('.')
+              base_path = File.expand_path(File.join(root_path, base_path))
+            end
+
+            relative_path = absolute_directory_path[(1 + base_path.size)...]
+
+            merge_fixtures(
+              super(),
+              *relative_path.split(File::SEPARATOR),
+              directory_fixtures
+            )
+          end
+
+          define_method :merge_fixtures do |fixtures, *path, value|
+            return fixtures.merge(value) if path.empty?
+
+            head, *tail = path
+
+            fixtures.merge(head => merge_fixtures(fixtures[head], *tail, value))
+          end
+
+          describe 'with an absolute path' do
+            let(:path) { absolute_directory_path }
+
+            include_deferred 'should delete the directory for a valid path'
+          end
+
+          describe 'with a qualified path' do
+            let(:path) { qualified_directory_path }
+
+            include_deferred 'should delete the directory for a valid path'
+          end
+
+          describe 'with a relative path' do
+            let(:path) { relative_directory_path }
+
+            include_deferred 'should delete the directory for a valid path'
+          end
+
+          wrap_deferred 'when initialized with root_path: value' do
+            describe 'with a relative path' do
+              let(:path) { File.join(relative_directory_path) }
+
+              include_deferred 'should delete the directory for a valid path'
+            end
+
+            describe 'with a qualified path' do
+              let(:path) { File.join(qualified_directory_path) }
+
+              include_deferred 'should delete the directory for a valid path'
+            end
+          end
+        end
+      end
+
       describe '#delete_file' do
         deferred_examples 'should not delete the file' do
           it 'should not delete the file' do

@@ -81,10 +81,8 @@ module Cuprum::Cli
     #
     #   @return [Cuprum::Result] the command result.
     def call(*, resolved_arguments: nil, resolved_options: nil, **)
-      @arguments =
-        resolved_arguments || self.class.resolve_arguments(*)
-      @options   =
-        resolved_options   || self.class.resolve_options(**)
+      @arguments = resolved_arguments || self.class.resolve_arguments(*)
+      @options   = resolved_options   || self.class.resolve_options(**)
 
       super()
     end

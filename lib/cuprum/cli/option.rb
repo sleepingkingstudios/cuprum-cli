@@ -39,9 +39,9 @@ module Cuprum::Cli # rubocop:disable Metrics/ModuleLength
       default:        nil,
       description:    nil,
       parameter_name: nil,
-      required:       false,
+      required:       false, # rubocop:disable Layout/ExtraSpacing
       type:           :string,
-      variadic:       false
+      variadic:       false # rubocop:disable Layout/ExtraSpacing
     )
       name     = name.to_sym
       aliases  = Array(aliases).compact.map { |obj| obj.to_s.tr('_', '-') }

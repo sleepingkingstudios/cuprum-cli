@@ -19,7 +19,7 @@ group :development, :test do
   gem 'rspec', '~> 3.13'
   gem 'rspec-sleeping_king_studios', '~> 2.8', '>= 2.8.3'
 
-  gem 'rubocop',       '~> 1.89'
+  gem 'rubocop',       '~> 1.90'
   gem 'rubocop-rspec', '~> 3.10'
 
   gem 'simplecov', '~> 0.22'

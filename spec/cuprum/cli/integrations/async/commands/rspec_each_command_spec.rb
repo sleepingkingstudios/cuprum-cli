@@ -39,7 +39,7 @@ do
 
   include_deferred 'should define --quiet option'
 
-  # rubocop:disable RSpec/MultipleMemoizedHelpers
+  # rubocop:disable-next RSpec/MultipleMemoizedHelpers
   describe '#call' do
     deferred_examples 'should call the RSpec command for each file' do
       let(:expected_options) do
@@ -616,5 +616,4 @@ do
       end
     end
   end
-  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end
