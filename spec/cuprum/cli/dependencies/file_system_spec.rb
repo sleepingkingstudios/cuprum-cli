@@ -90,6 +90,9 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
       File.join(Cuprum::Cli.gem_path, 'tmp', 'file_system', 'root_dir')
     end
     let(:options) { super().merge(root_path:) }
+    let(:absolute_directory_path) do
+      File.join(fixtures_path, 'root_dir', 'child_dir')
+    end
     let(:qualified_directory_path) do
       File.join('..', 'root_dir', 'child_dir')
     end
@@ -110,6 +113,12 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem do
   describe '::DirectoryIsAFileError' do
     include_examples 'should define constant',
       :DirectoryIsAFileError,
+      -> { be_a(Class).and(be < described_class::FileError) }
+  end
+
+  describe '::DirectoryNotEmptyError' do
+    include_examples 'should define constant',
+      :DirectoryNotEmptyError,
       -> { be_a(Class).and(be < described_class::FileError) }
   end
 

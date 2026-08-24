@@ -17,6 +17,9 @@ module Cuprum::Cli::Dependencies
     # Exception raised when attempting to access a file as a directory.
     class DirectoryIsAFileError < FileError; end
 
+    # Exception raised when attempting to delete a non-empty directory.
+    class DirectoryNotEmptyError < FileError; end
+
     # Exception raised when attempting to access a non-existent directory.
     class DirectoryNotFoundError < FileError; end
 
@@ -103,13 +106,41 @@ module Cuprum::Cli::Dependencies
 
       return path if directory?(resolved)
 
-      handle_create_errors(path) do
+      handle_create_directory_errors(path) do
         recursive ? FileUtils.mkdir_p(resolved) : FileUtils.mkdir(resolved)
       end
 
       path
     end
     alias make_directory create_directory
+
+    # Removes the directory at the requested path.
+    #
+    # Fails if the directory contains any files or child directories. The
+    # :recursive option enables removing empty child or descendent directories,
+    # while the :force option enables removing both files and directories.
+    #
+    # @param path [String] the path to the directory.
+    # @param force [true, false] if true, removes nested files and directories.
+    # @param recursive [true, false] if true, removes nested empty directories.
+    #
+    # @return [String] the path to the removed directory.
+    def delete_directory(path, force: false, recursive: false)
+      validate_file_path(path, as: 'path')
+
+      resolved = resolve_path(path)
+
+      handle_delete_directory_errors(path) do
+        if force || (recursive && empty_directories?(resolved))
+          FileUtils.remove_dir(resolved)
+        else
+          Dir.rmdir(resolved)
+        end
+      end
+
+      path
+    end
+    alias remove_directory delete_directory
 
     # Removes the file at the requested path.
     #
@@ -256,17 +287,21 @@ module Cuprum::Cli::Dependencies
 
       path = resolve_path(file_or_path)
 
-      handle_write_errors(file_or_path) { File.write(path, data) }
+      handle_write_file_errors(file_or_path) { File.write(path, data) }
     end
     alias write write_file
 
     private
 
+    def empty_directories?(dir)
+      Dir[File.join(dir, '**', '*')].all? { |dir| File.directory?(dir) }
+    end
+
     def empty_file_message(as:)
       tools.assertions.error_message_for('presence', as:)
     end
 
-    def handle_create_errors(path)
+    def handle_create_directory_errors(path)
       yield
     rescue Errno::EEXIST
       raise Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError,
@@ -279,7 +314,20 @@ module Cuprum::Cli::Dependencies
         "unable to create directory #{path} - directory is a file"
     end
 
-    def handle_write_errors(file_or_path)
+    def handle_delete_directory_errors(path)
+      yield
+    rescue Errno::ENOENT
+      raise DirectoryNotFoundError,
+        "unable to delete directory #{path} - directory not found"
+    rescue Errno::ENOTDIR
+      raise DirectoryIsAFileError,
+        "unable to delete directory #{path} - directory is a file"
+    rescue Errno::ENOTEMPTY
+      raise DirectoryNotEmptyError,
+        "unable to delete directory #{path} - directory is not empty"
+    end
+
+    def handle_write_file_errors(file_or_path)
       yield
     rescue Errno::EISDIR
       raise FileIsADirectoryError,

@@ -66,6 +66,34 @@ module Cuprum::Cli::Dependencies
     end
     alias make_directory create_directory
 
+    # (see Cuprum::Cli::Dependencies::FileSystem#delete_directory)
+    def delete_directory(path, force: false, recursive: false) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+      validate_file_path(path, as: 'path')
+
+      *dir_names, dir_name = split_path(resolve_path(path))
+
+      dir = dir_names.reduce(files) do |dir, dir_name|
+        require_directory(action: 'delete directory', dir: dir[dir_name], path:)
+
+        dir[dir_name]
+      end
+
+      require_directory(action: 'delete directory', dir: dir[dir_name], path:)
+
+      is_empty =
+        (recursive && empty_directories?(dir[dir_name])) || dir[dir_name].empty?
+
+      if force || is_empty
+        dir.delete(dir_name)
+
+        return path
+      end
+
+      raise DirectoryNotEmptyError,
+        "unable to delete directory #{path} - directory is not empty"
+    end
+    alias remove_directory delete_directory
+
     # (see Cuprum::Cli::Dependencies::FileSystem#delete_file)
     def delete_file(path) # rubocop:disable Metrics/MethodLength
       validate_file_path(path, as: 'path')
@@ -215,6 +243,14 @@ module Cuprum::Cli::Dependencies
 
     private
 
+    def empty_directories?(dir)
+      return false unless dir.is_a?(Hash)
+
+      return true if dir.empty?
+
+      dir.each_value.all? { |item| empty_directories?(item) }
+    end
+
     def expand_dirs(files:, flat: Set.new, path: '')
       files.each do |name, value|
         qualified_path = path.empty? ? name : File.join(path, name)
@@ -291,6 +327,16 @@ module Cuprum::Cli::Dependencies
           .match?(entry_name)
       else
         entry_name == pattern_string
+      end
+    end
+
+    def require_directory(action:, dir:, path:)
+      if io_stream?(dir)
+        raise DirectoryIsAFileError,
+          "unable to #{action} #{path} - directory is a file"
+      elsif dir.nil?
+        raise DirectoryNotFoundError,
+          "unable to #{action} #{path} - directory not found"
       end
     end
 

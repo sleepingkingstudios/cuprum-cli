@@ -18,33 +18,32 @@ RSpec.describe Cuprum::Cli::Dependencies::FileSystem::Mock do
   end
 
   deferred_context 'with valid file paths' do
+    let(:maybe_root_path) { defined?(root_path) ? root_path : Dir.pwd }
     let(:absolute_directory_path) do
-      File.join(mock_fs.root_path, 'root_dir', 'child_dir')
+      File.join(maybe_root_path, 'root_dir')
     end
     let(:absolute_file_path) do
-      File.join(mock_fs.root_path, 'root_dir', 'child_file.txt')
+      File.join(maybe_root_path, 'root_file.txt')
     end
     let(:qualified_directory_path) do
       File.join(
         '..',
-        File.split(mock_fs.root_path).last,
-        'root_dir',
-        'child_dir'
+        File.split(maybe_root_path).last,
+        'root_dir'
       )
     end
     let(:qualified_file_path) do
       File.join(
         '..',
-        File.split(mock_fs.root_path).last,
-        'root_dir',
-        'child_file.txt'
+        File.split(maybe_root_path).last,
+        'root_file.txt'
       )
     end
     let(:relative_directory_path) do
-      File.join('root_dir', 'child_dir')
+      'root_dir'
     end
     let(:relative_file_path) do
-      File.join('root_dir', 'child_file.txt')
+      'root_file.txt'
     end
 
     include_deferred 'when initialized with files'
