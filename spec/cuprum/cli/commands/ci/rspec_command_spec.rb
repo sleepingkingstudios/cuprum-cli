@@ -69,7 +69,7 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecCommand do # rubocop:disable RSpe
 
   include_deferred 'should define --quiet option'
 
-  # rubocop:disable RSpec/MultipleMemoizedHelpers
+  # rubocop:disable-next RSpec/MultipleMemoizedHelpers
   describe '#call' do
     deferred_examples 'should run the rspec command' do
       it 'should run the rspec command', :aggregate_failures do
@@ -357,5 +357,4 @@ RSpec.describe Cuprum::Cli::Commands::Ci::RSpecCommand do # rubocop:disable RSpe
       include_deferred 'should run the rspec command'
     end
   end
-  # rubocop:enable RSpec/MultipleMemoizedHelpers
 end

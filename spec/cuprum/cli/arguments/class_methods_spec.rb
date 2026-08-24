@@ -896,8 +896,8 @@ RSpec.describe Cuprum::Cli::Arguments::ClassMethods do
         end
 
         before(:example) do
-          described_class.argument  :color, default:  0x0, type: :integer
-          described_class.argument  :shape, default:  :circle
+          described_class.argument  :color, default: 0x0, type: :integer
+          described_class.argument  :shape, default: :circle
           described_class.arguments :sizes
           described_class.argument  :transparency, type: :boolean
         end
