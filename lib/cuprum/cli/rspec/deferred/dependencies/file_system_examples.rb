@@ -1296,6 +1296,17 @@ module Cuprum::Cli::RSpec::Deferred::Dependencies
             include_deferred 'should return or yield the matching file names'
           end
 
+          describe 'with a recursive globbed pattern with prefix' do
+            let(:pattern) { File.join('root_dir', '**') }
+            let(:expected_files) do
+              rxp = %r{\Aroot_dir/}
+
+              defined_files.grep(rxp)
+            end
+
+            include_deferred 'should return or yield the matching file names'
+          end
+
           describe 'with a pattern that includes the root path' do
             let(:pattern) { File.join(subject.root_path, '*.txt') }
             let(:expected_files) do
