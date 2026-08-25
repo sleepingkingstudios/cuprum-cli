@@ -24,6 +24,7 @@
 - Fixed a `FileSystem#each_file` bug when matching a template that included the root path.
 - Fixed a `FileSystem::Mock` bug that would wipe existing mock directories.
 - Fixed a `FileSystem::Mock` bug that did not include directories in `each_file`.
+- Fixed a `FileSystem::Mock` bug in handling globbed file patterns ending in `**`.
 
 ### Files
 

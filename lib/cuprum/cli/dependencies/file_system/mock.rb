@@ -295,12 +295,19 @@ module Cuprum::Cli::Dependencies
 
       return false unless entry_names.length >= prefix_count + suffix_count
 
-      entry_names[...prefix_count]
-        .zip(prefix_strings)
-        .concat(entry_names[-suffix_count...].zip(suffix_strings))
-        .all? do |entry_name, pattern_string|
-          matches_pattern_string?(entry_name:, pattern_string:)
-        end
+      matchers = entry_names[...prefix_count].zip(prefix_strings)
+
+      if suffix_count.zero?
+        # For a globbed pattern, if there is no suffix there must still be at
+        # least one entry to match the '**' pattern.
+        matchers.push([entry_names[prefix_count], '*'])
+      else
+        matchers.concat(entry_names[-suffix_count...].zip(suffix_strings))
+      end
+
+      matchers.all? do |entry_name, pattern_string|
+        matches_pattern_string?(entry_name:, pattern_string:)
+      end
     end
 
     def matches_pattern?(file_path:, pattern:)
