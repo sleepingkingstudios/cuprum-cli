@@ -91,6 +91,10 @@ instance_methods:
   slug: initialize
   inherited: true
   constructor: true
+- name: parameters
+  path: cuprum/cli/files/generator/i-parameters
+  slug: parameters
+  inherited: true
 - name: say
   path: cuprum/cli/options/verbose/i-say
   slug: say

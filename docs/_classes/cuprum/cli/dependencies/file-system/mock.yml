@@ -39,6 +39,10 @@ instance_methods:
   path: cuprum/cli/dependencies/file-system/mock/i-create-directory
   slug: create-directory
   inherited: false
+- name: delete_directory
+  path: cuprum/cli/dependencies/file-system/mock/i-delete-directory
+  slug: delete-directory
+  inherited: false
 - name: delete_file
   path: cuprum/cli/dependencies/file-system/mock/i-delete-file
   slug: delete-file

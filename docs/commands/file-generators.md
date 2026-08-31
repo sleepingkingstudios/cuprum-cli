@@ -190,7 +190,7 @@ Additionally, `Cuprum::Cli` also allows [filtering outputs](#filtering-outputs) 
 
 ## Templates
 
-`Cuprum::Cli` uses `Template` objects internally to determine the contents of generated files. A template may represent [a file on the file system](#file-templates) or may wrap [a raw template value](#string-templates). In addition, each template defines an optional [engine](#engine), which is used to process the raw template and the [generator parameters](#generating-files) to build the final contents of the output file.
+`Cuprum::Cli` uses `Template` objects internally to determine the contents of generated files. A template may represent [a file on the file system](#file-templates) or may wrap [a raw template value](#string-templates). In addition, each template defines an optional [engine](#engine), which is used to process the raw template and the [generator parameters](#generator-parameters) to build the final contents of the output file.
 
 You can also define custom template classes by defining a subclass of `Cuprum::Cli::Files::Template`. The subclass must define a `#call` method that either returns a `String` (the raw template) or a failing `Cuprum::Result` with a `Cuprum::Error`. For example, you could define a template that retrieves the contents from a web url:
 
@@ -254,7 +254,7 @@ You can also manually generate a template using `StringTemplate.new(engine:, raw
 
 ### Template Engines
 
-Each template defines an optional `#engine` property. When generating the file contents, the template engine is matched against the definitions in `Cuprum::Cli::Files::Engines`. If a matching definition is found, that engine is used to generate the file contents using the raw template and the generator parameters.
+Each template defines an optional `#engine` property. When generating the file contents, the template engine is matched against the definitions in `Cuprum::Cli::Files::Engines`. If a matching definition is found, that engine is used to generate the file contents using the raw template and the [generator parameters](#generator-parameters).
 
 ```ruby
 engine = Cuprum::Cli::Files::Engines.fetch(Cuprum::Cli::Files::Engines::ERB)
@@ -347,9 +347,30 @@ In addition to any [custom options](#generator-options) defined for the generato
 
 ### Generating Files
 
-The contents of each generated file depends on four things: the [raw template](#templates) and the [template engine](#template-engines) configured for the output, the parameters parsed from the [file path](#file-path), and the options passed to the generator. When the generator is called, the raw template and the combined options are passed to the engine, and the resulting text will be used as the contents of the generated file.
+The contents of each generated file depends on three things: the [raw template](#templates) and the [template engine](#template-engines) configured for the output, and the [generator parameters](#generator-parameters). When the generator is called, the raw template and the parameters are passed to the engine, and the resulting text will be used as the contents of the generated file.
 
 `Cuprum::Cli` has one default engine which [generates ERB content](#erb-engine) using the <a href="https://herb-tools.dev/" target="_blank">Herb toolchain</a>. All other templates are treated as plain text, and the exact contents of the template will be used as the contents of the generated file.
+
+[Back to Top](#)
+
+#### Generator Parameters
+
+When generating a file, both the generated file name (via the [defined output](#generator-outputs)) and the file contents (via the [template engine](#template-engines)) can accept parameterized values. By default, these values are filled from the following sources:
+
+- The parameters parsed from the [file path](#file-path).
+- The [options](#generator-options) passed to the generator.
+
+To override this behavior, define a generator subclass and override the `#parameters` method. For example, to make the current timestamp available when generating the file, you could use the following:
+
+```ruby
+class GeneratorWithTimestamp < Cuprum::Cli::Files::Generator
+  # Define outputs here.
+
+  def parameters
+    super.merge(timestamp: Time.now.utc.iso8601)
+  end
+end
+```
 
 [Back to Top](#)
 
