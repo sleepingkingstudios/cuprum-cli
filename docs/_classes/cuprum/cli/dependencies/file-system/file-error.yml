@@ -12,6 +12,9 @@ direct_subclasses:
 - name: Cuprum::Cli::Dependencies::FileSystem::DirectoryIsAFileError
   slug: directory-is-a-file-error
   path: cuprum/cli/dependencies/file-system/directory-is-a-file-error
+- name: Cuprum::Cli::Dependencies::FileSystem::DirectoryNotEmptyError
+  slug: directory-not-empty-error
+  path: cuprum/cli/dependencies/file-system/directory-not-empty-error
 - name: Cuprum::Cli::Dependencies::FileSystem::DirectoryNotFoundError
   slug: directory-not-found-error
   path: cuprum/cli/dependencies/file-system/directory-not-found-error
