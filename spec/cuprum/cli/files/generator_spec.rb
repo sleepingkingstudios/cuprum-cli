@@ -946,8 +946,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
         if template_path.end_with?('.erb')
           command  = Cuprum::Cli::Files::Engines::RenderErb.new
-          params   = generator.file_parameters.merge(generator.options)
-          template = command.call(template, **params).value
+          template = command.call(template, **generator.parameters).value
         end
 
         template
@@ -1146,6 +1145,34 @@ RSpec.describe Cuprum::Cli::Files::Generator do
               include_deferred 'should generate the output files'
             end
           end
+        end
+
+        context 'with a subclass that overrides #parameters' do
+          let(:template)       { File.join(templates_directory, 'docs.md.erb') }
+          let(:output_path)    { '%<file_path>s' }
+          let(:output_options) { super().merge(template:) }
+          let(:expected_value) { ['override/path/to/file.txt'] }
+          let(:expected_output_files) do
+            template_path = File.join(templates_directory, 'docs.md.erb')
+
+            {
+              'override/path/to/file.txt' => render_template(template_path)
+            }
+          end
+
+          before(:example) do
+            described_class.define_method :parameters do
+              super().merge(file_path: 'override/path/to/file.txt')
+            end
+          end
+
+          it 'should return a passing result' do
+            expect(generator.call)
+              .to be_a_passing_result
+              .with_value(expected_value)
+          end
+
+          include_deferred 'should generate the output files'
         end
       end
 
@@ -1596,6 +1623,40 @@ RSpec.describe Cuprum::Cli::Files::Generator do
     end
 
     include_examples 'should define reader', :options, -> { expected }
+
+    context 'when initialized with options: value' do
+      let(:custom_path)         { 'custom_path' }
+      let(:constructor_options) { super().merge(custom_path:) }
+      let(:expected)            { super().merge(custom_path:) }
+
+      before(:example) { described_class.option :custom_path }
+
+      include_deferred 'with a generator class'
+
+      it { expect(generator.options).to eq expected }
+    end
+  end
+
+  describe '#parameters' do
+    let(:expected) { generator.file_parameters.merge(generator.options) }
+
+    include_examples 'should define reader', :parameters, -> { expected }
+
+    context 'when initialized with options: value' do
+      let(:custom_path)         { 'custom_path' }
+      let(:constructor_options) { super().merge(custom_path:) }
+      let(:expected)            { super().merge(custom_path:) }
+
+      before(:example) { described_class.option :custom_path }
+
+      include_deferred 'with a generator class'
+
+      it { expect(generator.parameters).to eq expected }
+    end
+
+    wrap_deferred 'when initialized with file_path: value' do
+      it { expect(generator.parameters).to eq expected }
+    end
   end
 
   describe '#resolve_output_path' do
@@ -1743,6 +1804,24 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
         it { expect(resolved_path).to be == expected }
       end
+    end
+
+    context 'with a subclass that overrides #parameters' do
+      let(:custom_path) { 'custom_file.md' }
+      let(:output_path) { 'lib/path/to/%<custom_path>s' }
+      let(:expected)    { 'lib/path/to/custom_file.md' }
+
+      before(:example) do
+        path = custom_path
+
+        described_class.define_method :parameters do
+          super().merge(custom_path: path)
+        end
+      end
+
+      include_deferred 'with a generator class'
+
+      it { expect(resolved_path).to be == expected }
     end
   end
 

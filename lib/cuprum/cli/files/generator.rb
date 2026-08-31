@@ -234,6 +234,11 @@ module Cuprum::Cli::Files
         end
     end
 
+    # @return [Hash] parameters used to resolve output file paths and contents.
+    def parameters
+      file_parameters.merge(options)
+    end
+
     private
 
     def build_file_template(template_path)
@@ -365,8 +370,6 @@ module Cuprum::Cli::Files
     end
 
     def render_template(template:)
-      parameters = file_parameters.merge(options)
-
       Cuprum::Cli::Files::Engines::RenderTemplate
         .new(file_system:)
         .call(template, **parameters)
@@ -384,9 +387,7 @@ module Cuprum::Cli::Files
     end
 
     def resolve_output_path(output) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
-      params = file_parameters.merge(options).compact
-
-      format(output.path, params).gsub(%r{//+}, '/')
+      format(output.path, parameters.compact).gsub(%r{//+}, '/')
     rescue ArgumentError => exception
       raise unless exception.message.include?('malformed format string')
 
