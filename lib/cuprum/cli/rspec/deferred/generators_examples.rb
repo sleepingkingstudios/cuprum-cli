@@ -24,7 +24,7 @@ module Cuprum::Cli::RSpec::Deferred
         let(:expected_parameters) do
           next super() if defined?(super())
 
-          subject.file_parameters.merge(subject.options)
+          subject.parameters
         end
         let(:expected_file_path) do
           next super() if defined?(super())
