@@ -28,6 +28,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
 
   example_class 'Spec::Point', Data.define(:x, :y)
 
+  # rubocop:disable-next RSpec/DescribedClass
   example_class 'Spec::GeneratorWithParameters', Cuprum::Cli::Files::Generator \
   do |klass|
     klass.option :point, type: Spec::Point, required: true
@@ -35,7 +36,7 @@ RSpec.describe Cuprum::Cli::Files::Generator do
     klass.output 'point.yml', template: 'templates/point.yml.erb'
 
     klass.define_method :distance do
-      Math.sqrt(point.x ** 2 + point.y ** 2).round(1).to_s
+      Math.sqrt((point.x**2) + (point.y**2)).round(1).to_s
     end
 
     klass.define_method :parameters do

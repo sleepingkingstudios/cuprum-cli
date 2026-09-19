@@ -13,7 +13,7 @@ module Cuprum::Cli::RSpec::Deferred
       describe "should define option #{option_name.inspect}" do
         boolean_option =
           option_options[:type] == :boolean && !option_options[:variadic]
-        expect_method  =
+        expect_method =
           option_options
           .fetch(:define_method, !boolean_option)
         expect_predicate =
