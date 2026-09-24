@@ -186,7 +186,7 @@ module Cuprum::Cli::Files
       def resolve_template(maybe_template)
         return if maybe_template.nil?
 
-        Cuprum::Cli::Files::Template.build(maybe_template)
+        Cuprum::Cli::Files::Templates.resolve(maybe_template)
       end
     end
 
