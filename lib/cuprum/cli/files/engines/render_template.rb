@@ -21,10 +21,7 @@ module Cuprum::Cli::Files::Engines
         template = template.with(file_system:)
       end
 
-      engine       = template.engine
-      raw_template = step { template.call }
-
-      render_template(engine:, parameters:, raw_template:)
+      template.call(**parameters)
     end
 
     def render_template(engine:, parameters:, raw_template:)

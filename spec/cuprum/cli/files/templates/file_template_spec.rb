@@ -1,9 +1,17 @@
 # frozen_string_literal: true
 
 require 'cuprum/cli/files/templates/file_template'
+require 'cuprum/cli/rspec/deferred/templates_examples'
 
 RSpec.describe Cuprum::Cli::Files::Templates::FileTemplate do
+  include Cuprum::Cli::RSpec::Deferred::TemplatesExamples
+
   subject(:template) { described_class.new(file_path:, **options) }
+
+  deferred_context 'when initialized with file_system: value' do
+    let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
+    let(:options)     { super().merge(file_system:) }
+  end
 
   let(:file_path) { 'templates/docs.md.erb' }
   let(:options)   { {} }
@@ -41,9 +49,9 @@ RSpec.describe Cuprum::Cli::Files::Templates::FileTemplate do
     it { expect(described_class.members).to be == expected }
   end
 
-  describe '#call' do
-    it { expect(template).to respond_to(:call).with(0).arguments }
+  include_deferred 'should implement the Template interface'
 
+  describe '#call' do
     context 'when the template file does not exist' do
       let(:expected_error) do
         Cuprum::Cli::Files::Errors::MissingTemplate.new(
@@ -52,73 +60,59 @@ RSpec.describe Cuprum::Cli::Files::Templates::FileTemplate do
         )
       end
 
-      it 'should return a failing result' do
+      it 'should return a failing result with a missing template error' do
         expect(template.call)
           .to be_a_failing_result
           .with_error(expected_error)
       end
-    end
 
-    context 'when the template file exists' do
-      let(:file_path) do
-        File.join(
-          Cuprum::Cli.gem_path,
-          'spec',
-          'support',
-          'templates',
-          'docs.md.erb'
-        )
-      end
-      let(:expected_value) { File.read(file_path) }
+      describe 'with parameters' do
+        let(:parameters) { { extra_parameter: 'extra value' } }
 
-      it 'should return a passing result' do
-        expect(template.call)
-          .to be_a_passing_result
-          .with_value(expected_value)
-      end
-    end
-
-    context 'when initialized with file_system: value' do
-      let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
-      let(:options)     { super().merge(file_system:) }
-
-      context 'when the template file does not exist' do
-        let(:expected_error) do
-          Cuprum::Cli::Files::Errors::MissingTemplate.new(
-            message:       'unable to generate file',
-            template_path: file_path
-          )
-        end
-
-        it 'should return a failing result' do
+        it 'should return a failing result with a missing template error' do
           expect(template.call)
             .to be_a_failing_result
             .with_error(expected_error)
         end
       end
+    end
 
-      context 'when the template file exists' do
-        let(:contents) do
-          <<~MARKDOWN
-            # Greetings, Starfighter
+    context 'when the template file exists' do
+      let(:raw_value) do
+        <<~MARKDOWN
+          # Greetings, Starfighter
 
-            You have been recruited by the Star League to defend the frontier
-            against Xur and the Ko-Dan armada!
-          MARKDOWN
-        end
-        let(:expected_value) { contents }
+          You have been recruited by the Star League to defend the frontier
+          against Xur and the Ko-Dan armada!
+        MARKDOWN
+      end
+      let(:template_name)  { file_path }
+      let(:expected_value) { raw_value }
 
-        before(:example) do
-          file_system.create_directory('templates')
-          file_system.write_file(file_path, contents)
-        end
+      before(:example) do
+        file_system.create_directory('templates')
+        file_system.write_file(file_path, raw_value)
+      end
 
-        it 'should return a passing result' do
-          expect(template.call)
+      include_deferred 'when initialized with file_system: value'
+
+      it 'should return a passing result with the rendered template' do
+        expect(template.call)
+          .to be_a_passing_result
+          .with_value(raw_value)
+      end
+
+      describe 'with parameters' do
+        let(:parameters) { { extra_parameter: 'extra value' } }
+
+        it 'should return a passing result with the rendered template' do
+          expect(template.call(**parameters))
             .to be_a_passing_result
-            .with_value(expected_value)
+            .with_value(raw_value)
         end
       end
+
+      include_deferred 'should apply the configured engine'
     end
   end
 
@@ -142,11 +136,56 @@ RSpec.describe Cuprum::Cli::Files::Templates::FileTemplate do
       :file_system,
       -> { Cuprum::Cli::Dependencies.provider.get('file_system') }
 
-    context 'when initialized with file_system: value' do
-      let(:file_system) { Cuprum::Cli::Dependencies::FileSystem::Mock.new }
-      let(:options)     { super().merge(file_system:) }
-
+    wrap_deferred 'when initialized with file_system: value' do
       it { expect(template.file_system).to be file_system }
     end
+  end
+
+  describe '#raw_value' do
+    context 'when the template file does not exist' do
+      let(:expected_error) do
+        Cuprum::Cli::Files::Errors::MissingTemplate.new(
+          message:       'unable to generate file',
+          template_path: file_path
+        )
+      end
+
+      it 'should return a failing result' do
+        expect(template.send(:raw_value))
+          .to be_a_failing_result
+          .with_error(expected_error)
+      end
+    end
+
+    context 'when the template file exists' do
+      let(:contents) do
+        <<~MARKDOWN
+          # Greetings, Starfighter
+
+          You have been recruited by the Star League to defend the frontier
+          against Xur and the Ko-Dan armada!
+        MARKDOWN
+      end
+      let(:expected_value) { contents }
+
+      before(:example) do
+        file_system.create_directory('templates')
+        file_system.write_file(file_path, contents)
+      end
+
+      include_deferred 'when initialized with file_system: value'
+
+      it 'should return a passing result' do
+        expect(template.send(:raw_value))
+          .to be_a_passing_result
+          .with_value(expected_value)
+      end
+    end
+  end
+
+  describe '#template_name' do
+    include_examples 'should define private reader',
+      :template_name,
+      -> { file_path }
   end
 end

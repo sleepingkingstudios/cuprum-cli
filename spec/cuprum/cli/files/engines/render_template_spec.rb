@@ -53,7 +53,8 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderTemplate do
         let(:expected_error) do
           Cuprum::Cli::Files::Errors::MissingParameter.new(
             message:        'unable to render ERB template',
-            parameter_name: :greeting
+            parameter_name: :greeting,
+            template_name:  'templates/docs.md.erb'
           )
         end
 

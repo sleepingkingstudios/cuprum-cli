@@ -42,8 +42,9 @@ module Cuprum::Cli::Files::Templates
       super(engine:, file_path:, file_system:, **)
     end
 
-    # (see Cuprum::Cli::Files::Template#call)
-    def call
+    private
+
+    def raw_value
       success(file_system.read_file(file_path))
     rescue Cuprum::Cli::Dependencies::FileSystem::FileNotFoundError
       error = Cuprum::Cli::Files::Errors::MissingTemplate.new(
@@ -52,6 +53,8 @@ module Cuprum::Cli::Files::Templates
       )
       failure(error)
     end
+
+    def template_name = file_path
   end
   # rubocop:enable Metrics/BlockLength
 end

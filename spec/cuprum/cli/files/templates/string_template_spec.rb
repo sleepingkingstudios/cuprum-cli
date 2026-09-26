@@ -48,8 +48,7 @@ RSpec.describe Cuprum::Cli::Files::Templates::StringTemplate do
     end
 
     describe 'with parameters' do
-      let(:file_path)  { 'path/to/file.md' }
-      let(:parameters) { { file_path: } }
+      let(:parameters) { { extra_parameter: 'extra value' } }
 
       it 'should return a passing result with the rendered template' do
         expect(template.call(**parameters))
@@ -59,17 +58,6 @@ RSpec.describe Cuprum::Cli::Files::Templates::StringTemplate do
     end
 
     include_deferred 'should apply the configured engine'
-  end
-
-  describe '#engine' do
-    include_examples 'should define reader', :engine, nil
-
-    context 'when initialized with engine: value' do
-      let(:engine)  { Cuprum::Cli::Files::Engines::ERB }
-      let(:options) { super().merge(engine:) }
-
-      it { expect(template.engine).to be engine }
-    end
   end
 
   describe '#raw_template' do

@@ -21,8 +21,7 @@ module Cuprum::Cli::RSpec::Deferred
         end
 
         describe 'with extra parameters' do
-          let(:file_path)  { 'path/to/file.md' }
-          let(:parameters) { { file_path: } }
+          let(:parameters) { { extra_parameter: 'extra value' } }
 
           it 'should return a passing result with the rendered template' do
             expect(template.call(**parameters))
