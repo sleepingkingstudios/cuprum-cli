@@ -370,9 +370,11 @@ module Cuprum::Cli::Files
     end
 
     def render_template(template:)
-      Cuprum::Cli::Files::Engines::RenderTemplate
-        .new(file_system:)
-        .call(template, **parameters)
+      if template.members.include?(:file_system)
+        template = template.with(file_system:)
+      end
+
+      template.call(**parameters)
     end
 
     def report_file_contents(contents)
