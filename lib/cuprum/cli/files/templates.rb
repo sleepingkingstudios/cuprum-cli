@@ -18,11 +18,14 @@ module Cuprum::Cli::Files
       #   StringTemplate with the input as the raw template value.
       # - For all other values, raises an ArgumentError.
       #
-      # @param raw_template [String] the unprocessed template string.
+      # @param maybe_template [Cuprum::Cli::Files::Template, String] the
+      #   template or unprocessed template string.
       #
-      # @return [Template] the generated template.
+      # @return [Cuprum::Cli::Files::Template] the generated template.
       def resolve(maybe_template)
-        return maybe_template if maybe_template.is_a?(Template)
+        if maybe_template.is_a?(Cuprum::Cli::Files::Template)
+          return maybe_template
+        end
 
         if maybe_template.is_a?(String)
           return build_template_from_string(maybe_template)

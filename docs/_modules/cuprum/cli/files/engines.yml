@@ -5,7 +5,6 @@ type: module
 files:
 - lib/cuprum/cli/files/engines.rb
 - lib/cuprum/cli/files/engines/render_erb.rb
-- lib/cuprum/cli/files/engines/render_template.rb
 parent_path: cuprum/cli/files
 short_description: Namespace for commands that process raw templates into file contents.
 class_methods:
@@ -25,7 +24,5 @@ constants:
 defined_classes:
 - name: RenderErb
   slug: render-erb
-- name: RenderTemplate
-  slug: render-template
 data_path: cuprum/cli/files/engines
 version: "*"

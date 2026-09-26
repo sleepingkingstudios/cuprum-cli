@@ -33,8 +33,6 @@ module Cuprum::Cli::Files
           return failure(unknown_engine_error)
         end
 
-        # byebug
-
         engine_class.new(template_name:).call(template, **parameters)
       end
 

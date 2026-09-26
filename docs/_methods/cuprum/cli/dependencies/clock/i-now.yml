@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Dependencies::Clock#now
+parent_path: cuprum/cli/dependencies/clock
+signature: get_time
+slug: now
+constructor: false
+data_path: cuprum/cli/dependencies/clock/i-now
+returns:
+- description: the current time in the UTC time zone.
+  type:
+  - name: Time
+version: "*"

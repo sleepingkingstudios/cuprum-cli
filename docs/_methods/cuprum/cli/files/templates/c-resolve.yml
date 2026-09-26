@@ -1,0 +1,32 @@
+---
+name: Cuprum::Cli::Files::Templates.resolve
+parent_path: cuprum/cli/files/templates
+signature: resolve(maybe_template)
+slug: resolve
+constructor: false
+data_path: cuprum/cli/files/templates/c-resolve
+description: |-
+  - If the input is a Template, returns the input.
+  - If the input is a single-line String, generates and returns a
+    FileTemplate with the input as the file path.
+  - If the input is a multi-line String, generates and returns a
+    StringTemplate with the input as the raw template value.
+  - For all other values, raises an ArgumentError.
+params:
+- description: |-
+    the
+    template or unprocessed template string.
+  name: maybe_template
+  type:
+  - name: Cuprum::Cli::Files::Template
+  - name: String
+raises:
+- description: ''
+  type:
+  - name: ArgumentError
+returns:
+- description: the generated template.
+  type:
+  - name: Cuprum::Cli::Files::Template
+short_description: Converts a raw input string to a template object.
+version: "*"
