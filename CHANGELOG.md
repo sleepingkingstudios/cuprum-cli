@@ -29,6 +29,7 @@
 ### Files
 
 - Implemented file generators, a more robust solution for generating files or groups of files.
+  - Implemented file templates for defining the outputs of generators.
 - Refactored `Errors::Files` to `Files::Errors`.
 
 ## Integrations

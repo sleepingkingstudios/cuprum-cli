@@ -1,103 +1,14 @@
 # frozen_string_literal: true
 
 require 'cuprum/cli/files/template'
+require 'cuprum/cli/rspec/deferred/templates_examples'
 
 RSpec.describe Cuprum::Cli::Files::Template do
+  include Cuprum::Cli::RSpec::Deferred::TemplatesExamples
+
   subject(:template) { described_class.new(**options) }
 
   let(:options) { {} }
-
-  describe '.build' do
-    it { expect(described_class).to respond_to(:build).with(1).argument }
-
-    describe 'with nil' do
-      let(:error_message) do
-        tools.assertions.error_message_for(:presence, as: 'template')
-      end
-
-      it 'should raise an exception' do
-        expect { described_class.build(nil) }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with an Object' do
-      let(:error_message) do
-        'template must be a Template or file path'
-      end
-
-      it 'should raise an exception' do
-        expect { described_class.build(Object.new.freeze) }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with an empty String' do
-      let(:error_message) do
-        tools.assertions.error_message_for(:presence, as: 'template')
-      end
-
-      it 'should raise an exception' do
-        expect { described_class.build('') }
-          .to raise_error ArgumentError, error_message
-      end
-    end
-
-    describe 'with a single-line String' do
-      let(:file_path) { 'templates/docs.md.erb' }
-      let(:expected_attributes) do
-        {
-          engine:    Cuprum::Cli::Files::Engines::ERB,
-          file_path:
-        }
-      end
-
-      it 'should build a FileTemplate' do
-        expect(described_class.build(file_path))
-          .to be_a(Cuprum::Cli::Files::Templates::FileTemplate)
-          .and have_attributes(**expected_attributes)
-      end
-    end
-
-    describe 'with a multi-line String' do
-      let(:raw_template) do
-        <<~MARKDOWN
-          # Greetings, Starfighter
-
-          You have been recruited by the Star League to defend the frontier
-          against Xur and the Ko-Dan armada!
-        MARKDOWN
-      end
-      let(:expected_attributes) do
-        {
-          engine:       nil,
-          raw_template:
-        }
-      end
-
-      it 'should build a StringTemplate' do
-        expect(described_class.build(raw_template))
-          .to be_a(Cuprum::Cli::Files::Templates::StringTemplate)
-          .and have_attributes(**expected_attributes)
-      end
-    end
-
-    describe 'with a Template instance' do
-      let(:raw_template) do
-        <<~MARKDOWN
-          # Greetings, Starfighter
-
-          You have been recruited by the Star League to defend the frontier
-          against Xur and the Ko-Dan armada!
-        MARKDOWN
-      end
-      let(:template) do
-        Cuprum::Cli::Files::Templates::StringTemplate.build(raw_template)
-      end
-
-      it { expect(described_class.build(template)).to be template }
-    end
-  end
 
   describe '.members' do
     let(:expected) { %i[engine] }
@@ -105,28 +16,76 @@ RSpec.describe Cuprum::Cli::Files::Template do
     it { expect(described_class.members).to be == expected }
   end
 
+  include_deferred 'should implement the Template interface'
+
   describe '#call' do
     let(:expected_error) do
       Cuprum::Errors::CommandNotImplemented.new(command: template)
     end
 
-    it { expect(template).to respond_to(:call).with(0).arguments }
-
-    it 'should return a failing result' do
+    it 'should return a failing result with a command not implemented error' do
       expect(template.call)
         .to be_a_failing_result
         .with_error(expected_error)
     end
+
+    context 'with a template subclass' do
+      subject(:template) { described_class.new(raw_value:, **options) }
+
+      let(:described_class) { Spec::CustomTemplate }
+      let(:raw_value)       { 'Greetings, programs!' }
+      let(:expected_value)  { raw_value }
+
+      example_constant 'Spec::CustomTemplate' do
+        Cuprum::Cli::Files::Template.define(:raw_value) # rubocop:disable RSpec/DescribedClass
+      end
+
+      it 'should return a passing result with the rendered template' do
+        expect(template.call)
+          .to be_a_passing_result
+          .with_value(raw_value)
+      end
+
+      describe 'with parameters' do
+        let(:file_path)  { 'path/to/file.md' }
+        let(:parameters) { { file_path: } }
+
+        it 'should return a passing result with the rendered template' do
+          expect(template.call(**parameters))
+            .to be_a_passing_result
+            .with_value(raw_value)
+        end
+      end
+
+      include_deferred 'should apply the configured engine'
+
+      context 'when the template subclass defines a template name' do
+        let(:template_name) { 'spec.example_template' }
+
+        before(:example) do
+          name = template_name
+
+          Spec::CustomTemplate.class_exec do
+            define_method :template_name do
+              name
+            end
+          end
+        end
+
+        include_deferred 'should apply the configured engine'
+      end
+    end
   end
 
-  describe '#engine' do
-    include_examples 'should define reader', :engine, nil
+  describe '#raw_value' do
+    let(:expected_error) do
+      Cuprum::Errors::CommandNotImplemented.new(command: template)
+    end
 
-    context 'when initialized with engine: value' do
-      let(:engine)  { Cuprum::Cli::Files::Engines::ERB }
-      let(:options) { super().merge(engine:) }
-
-      it { expect(template.engine).to be engine }
+    it 'should return a failing result' do
+      expect(template.send(:raw_value))
+        .to be_a_failing_result
+        .with_error(expected_error)
     end
   end
 end

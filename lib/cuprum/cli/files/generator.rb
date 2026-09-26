@@ -186,7 +186,7 @@ module Cuprum::Cli::Files
       def resolve_template(maybe_template)
         return if maybe_template.nil?
 
-        Cuprum::Cli::Files::Template.build(maybe_template)
+        Cuprum::Cli::Files::Templates.resolve(maybe_template)
       end
     end
 
@@ -370,9 +370,11 @@ module Cuprum::Cli::Files
     end
 
     def render_template(template:)
-      Cuprum::Cli::Files::Engines::RenderTemplate
-        .new(file_system:)
-        .call(template, **parameters)
+      if template.members.include?(:file_system)
+        template = template.with(file_system:)
+      end
+
+      template.call(**parameters)
     end
 
     def report_file_contents(contents)

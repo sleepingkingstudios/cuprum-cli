@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 require 'cuprum/cli/files/templates/string_template'
+require 'cuprum/cli/rspec/deferred/templates_examples'
 
 RSpec.describe Cuprum::Cli::Files::Templates::StringTemplate do
+  include Cuprum::Cli::RSpec::Deferred::TemplatesExamples
+
   subject(:template) { described_class.new(raw_template:, **options) }
 
   let(:raw_template) do
@@ -31,28 +34,37 @@ RSpec.describe Cuprum::Cli::Files::Templates::StringTemplate do
     it { expect(described_class.members).to be == expected }
   end
 
-  describe '#call' do
-    it { expect(template).to respond_to(:call).with(0).arguments }
+  include_deferred 'should implement the Template interface'
 
-    it 'should return a passing result' do
+  describe '#call' do
+    let(:raw_value)      { 'Greetings, programs!' }
+    let(:raw_template)   { raw_value }
+    let(:expected_value) { raw_value }
+
+    it 'should return a passing result with the rendered template' do
       expect(template.call)
         .to be_a_passing_result
-        .with_value(raw_template)
+        .with_value(raw_value)
     end
-  end
 
-  describe '#engine' do
-    include_examples 'should define reader', :engine, nil
+    describe 'with parameters' do
+      let(:parameters) { { extra_parameter: 'extra value' } }
 
-    context 'when initialized with engine: value' do
-      let(:engine)  { Cuprum::Cli::Files::Engines::ERB }
-      let(:options) { super().merge(engine:) }
-
-      it { expect(template.engine).to be engine }
+      it 'should return a passing result with the rendered template' do
+        expect(template.call(**parameters))
+          .to be_a_passing_result
+          .with_value(raw_value)
+      end
     end
+
+    include_deferred 'should apply the configured engine'
   end
 
   describe '#raw_template' do
     include_examples 'should define reader', :raw_template, -> { raw_template }
+  end
+
+  describe '#raw_value' do
+    it { expect(template.send(:raw_value)).to be raw_template }
   end
 end

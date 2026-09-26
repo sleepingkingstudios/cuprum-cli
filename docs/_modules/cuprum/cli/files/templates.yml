@@ -8,6 +8,11 @@ files:
 - lib/cuprum/cli/files/templates/string_template.rb
 parent_path: cuprum/cli/files
 short_description: Namespace for template files and implementations.
+class_methods:
+- name: resolve
+  path: cuprum/cli/files/templates/c-resolve
+  slug: resolve
+  inherited: false
 constants:
 - name: FileTemplate
   path: cuprum/cli/files/templates/file-template
