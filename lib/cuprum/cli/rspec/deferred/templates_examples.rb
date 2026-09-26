@@ -11,17 +11,18 @@ module Cuprum::Cli::RSpec::Deferred
 
     deferred_examples 'should apply the configured engine' do
       context 'when initialized with engine: ERB' do
-        let(:engine)  { Cuprum::Cli::Files::Engines::ERB }
-        let(:options) { super().merge(engine:) }
+        let(:engine)     { Cuprum::Cli::Files::Engines::ERB }
+        let(:options)    { super().merge(engine:) }
+        let(:parameters) { defined?(super()) ? super() : {} }
 
         it 'should return a passing result with the rendered template' do
-          expect(template.call)
+          expect(template.call(**parameters))
             .to be_a_passing_result
             .with_value(raw_value)
         end
 
         describe 'with extra parameters' do
-          let(:parameters) { { extra_parameter: 'extra value' } }
+          let(:parameters) { super().merge(extra_parameter: 'extra value') }
 
           it 'should return a passing result with the rendered template' do
             expect(template.call(**parameters))
@@ -52,15 +53,17 @@ module Cuprum::Cli::RSpec::Deferred
             end
 
             it 'should return a failing result' do
-              expect(template.call)
+              expect(template.call(**parameters))
                 .to be_a_failing_result
                 .with_error(expected_error)
             end
           end
 
           describe 'with a parameter of invalid type' do
-            let(:raw_value)  { "<h1><%= greetings.join(', ') %></h1>" }
-            let(:parameters) { { greetings: 'Greetings, starfighter!' } }
+            let(:raw_value) { "<h1><%= greetings.join(', ') %></h1>" }
+            let(:parameters) do
+              super().merge(greetings: 'Greetings, starfighter!')
+            end
             let(:expected_template_name) do
               next unless defined?(template_name)
 
@@ -92,7 +95,9 @@ module Cuprum::Cli::RSpec::Deferred
           end
 
           describe 'with valid parameters' do
-            let(:parameters) { { greeting: 'Greetings, starfighter!' } }
+            let(:parameters) do
+              super().merge(greeting: 'Greetings, starfighter!')
+            end
             let(:expected_value) do
               "<h1>#{parameters[:greeting]}</h1>"
             end
@@ -106,10 +111,10 @@ module Cuprum::Cli::RSpec::Deferred
 
           describe 'with extra parameters' do
             let(:parameters) do
-              {
+              super().merge(
                 extra_parameter: 'extra value',
                 greeting:        'Greetings, starfighter!'
-              }
+              )
             end
             let(:expected_value) do
               "<h1>#{parameters[:greeting]}</h1>"
@@ -125,8 +130,9 @@ module Cuprum::Cli::RSpec::Deferred
       end
 
       context 'when initialized with engine: an unknown engine' do
-        let(:engine)  { 'spec.undefined.engine' }
-        let(:options) { super().merge(engine:) }
+        let(:engine)     { 'spec.undefined.engine' }
+        let(:options)    { super().merge(engine:) }
+        let(:parameters) { defined?(super()) ? super() : {} }
         let(:expected_error) do
           details = "unknown template engine #{engine.inspect}"
 
@@ -137,7 +143,7 @@ module Cuprum::Cli::RSpec::Deferred
         end
 
         it 'should return a failing result with a template error' do
-          expect(template.call)
+          expect(template.call(**parameters))
             .to be_a_failing_result
             .with_error(expected_error)
         end
