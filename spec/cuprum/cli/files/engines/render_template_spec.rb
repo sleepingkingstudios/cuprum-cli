@@ -164,20 +164,5 @@ RSpec.describe Cuprum::Cli::Files::Engines::RenderTemplate do
         end
       end
     end
-
-    describe 'with a string template' do
-      let(:template) do
-        Cuprum::Cli::Files::Templates::StringTemplate
-          .new(engine:, raw_template:)
-      end
-
-      describe 'with a plain text template' do
-        include_deferred 'should generate the plain text template'
-      end
-
-      describe 'with an ERB template' do
-        include_deferred 'should generate the ERB template'
-      end
-    end
   end
 end

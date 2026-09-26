@@ -22,7 +22,8 @@ module Cuprum::Cli::Files::Templates
       other.extend(const_get(:ClassMethods))
     end
 
-    # (see Cuprum::Cli::Files::Template#call)
-    def call = success(raw_template)
+    private
+
+    def raw_value = raw_template
   end
 end
