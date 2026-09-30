@@ -5,6 +5,7 @@ type: module
 files:
 - lib/cuprum/cli/files/templates.rb
 - lib/cuprum/cli/files/templates/file_template.rb
+- lib/cuprum/cli/files/templates/basic_template.rb
 - lib/cuprum/cli/files/templates/string_template.rb
 parent_path: cuprum/cli/files
 short_description: Namespace for template files and implementations.
@@ -14,6 +15,10 @@ class_methods:
   slug: resolve
   inherited: false
 constants:
+- name: BasicTemplate
+  path: cuprum/cli/files/templates/basic-template
+  slug: basic-template
+  inherited: false
 - name: FileTemplate
   path: cuprum/cli/files/templates/file-template
   slug: file-template
