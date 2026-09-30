@@ -5,6 +5,7 @@ type: module
 files:
 - lib/cuprum/cli/files/generators.rb
 - lib/cuprum/cli/files/generators/ruby_generator.rb
+- lib/cuprum/cli/files/generators/basic_generator.rb
 - lib/cuprum/cli/files/generators/rspec_generator.rb
 parent_path: cuprum/cli/files
 short_description: Namespace for pre-defined file generators.
@@ -14,6 +15,8 @@ constants:
   slug: templates-path
   inherited: false
 defined_classes:
+- name: BasicGenerator
+  slug: basic-generator
 - name: RSpecGenerator
   slug: r-spec-generator
 - name: RubyGenerator

@@ -5,6 +5,7 @@ require 'cuprum/cli/files'
 module Cuprum::Cli::Files
   # Namespace for template files and implementations.
   module Templates
+    autoload :BasicTemplate,  'cuprum/cli/files/templates/basic_template'
     autoload :FileTemplate,   'cuprum/cli/files/templates/file_template'
     autoload :StringTemplate, 'cuprum/cli/files/templates/string_template'
 

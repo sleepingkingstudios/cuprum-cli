@@ -1,0 +1,40 @@
+---
+name: Cuprum::Cli::Files::Templates::BasicTemplate
+parent_path: cuprum/cli/files/templates
+slug: basic-template
+short_description: Data class representing a template that returns the input contents.
+value: |-
+  Cuprum::Cli::Files::Template.define do
+    private
+
+    def process(contents: nil, **parameters)
+      step { validate_contents(contents) }
+
+      apply_engine(contents, **parameters)
+    end
+
+    def tools
+      SleepingKingStudios::Tools::Toolbelt.instance
+    end
+
+    def validate_contents(contents) # rubocop:disable Metrics/MethodLength
+      validator = tools.assertions.aggregator_class.new
+
+      validator.validate_presence(contents, as: 'contents')
+      validator.validate_instance_of(
+        contents,
+        as:       'contents',
+        expected: String
+      )
+
+      return Cuprum::Result.new if validator.empty?
+
+      error = Cuprum::Errors::InvalidParameters.new(
+        command_class: self.class,
+        failures:      validator.each.to_a
+      )
+      failure(error)
+    end
+  end
+data_path: cuprum/cli/files/templates/basic-template
+version: "*"
