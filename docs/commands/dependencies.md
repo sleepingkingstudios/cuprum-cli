@@ -192,7 +192,7 @@ standard_io.combined_stream.string
 
 The `SystemCommand` dependency is used to execute shell commands and capture the status and output. It defines the following methods:
 
-`#capture(command,.arguments: [], environment: {}, options: {})`
+`#capture(command, arguments: [], environment: {}, options: {})`
 : Executes the system command and returns the captured output.
 
 `#spawn(command, arguments: [], enviroment:, options: {})`
@@ -259,6 +259,6 @@ end
 
 As you can see, we inject a mock in place of the `StandardIo` dependency by passing the mock to the command constructor. We can then write assertions against the error and output streams.
 
-Using a mock also ensures that the spec won't pollute the test output with extra text; likewise, a mock for [FileSystem](#filesystemmock) prevents the test from making any changes to the actual file system, while a moc for [SystemCommand](#systemcommandmock) ensures that the test doesn't make any actual shell commands.
+Using a mock also ensures that the spec won't pollute the test output with extra text; likewise, a mock for [FileSystem](#filesystemmock) prevents the test from making any changes to the actual file system, while a mock for [SystemCommand](#systemcommandmock) ensures that the test doesn't make any actual shell commands.
 
 [Back to Top](#)
