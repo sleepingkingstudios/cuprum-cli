@@ -152,7 +152,50 @@ module Cuprum::Cli
       #   short_name will be "do_something".
       #
       # @return [String] the short name for the command.
-      def short_name = full_name&.split(':')&.last
+      def short_name
+        full_name&.split(':')&.last
+      end
+
+      # Sets the description for the command.
+      #
+      # @param value [String] the description to set.
+      #
+      # @return [self]
+      #
+      # @see #description
+      def with_description(value)
+        description(value)
+
+        self
+      end
+
+      # Sets the full description for the command and returns the command.
+      #
+      # @param value [String] the full description to set.
+      #
+      # @return [self]
+      #
+      # @see #full_description
+      def with_full_description(value)
+        full_description(value)
+
+        self
+      end
+
+      # Sets the full name for the command and returns the command.
+      #
+      # The full name must be in snake_case format joined by ":".
+      #
+      # @param value [String] the full name to set.
+      #
+      # @return [self]
+      #
+      # @see #full_name
+      def with_full_name(value)
+        full_name(value)
+
+        self
+      end
 
       protected
 

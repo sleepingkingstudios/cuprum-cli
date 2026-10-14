@@ -77,6 +77,30 @@ module Cuprum::Cli::RSpec::Deferred
       describe '.short_name' do
         include_examples 'should define class reader', :short_name
       end
+
+      describe '.with_description' do
+        it 'should define the class method' do
+          expect(described_class)
+            .to respond_to(:with_description)
+            .with(1).argument
+        end
+      end
+
+      describe '.with_full_description' do
+        it 'should define the class method' do
+          expect(described_class)
+            .to respond_to(:with_full_description)
+            .with(1).argument
+        end
+      end
+
+      describe '.with_full_name' do
+        it 'should define the class method' do
+          expect(described_class)
+            .to respond_to(:with_full_name)
+            .with(1).argument
+        end
+      end
     end
 
     deferred_examples 'should define metadata for the command' do
@@ -849,6 +873,223 @@ module Cuprum::Cli::RSpec::Deferred
           end
 
           it { expect(described_class.short_name).to be == expected }
+        end
+      end
+
+      describe '.with_description' do
+        describe 'with nil' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: 'description')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_description(nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an Object' do
+          let(:error_message) do
+            tools.assertions.error_message_for('name', as: 'description')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_description(Object.new.freeze) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an empty String' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: 'description')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_description('') }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with a non-empty String' do
+          let(:value) do
+            'No one is quite sure what this does.'
+          end
+
+          it 'should return the command class' do
+            expect(described_class.with_description(value))
+              .to be described_class
+          end
+
+          it 'should set the description' do
+            expect { described_class.with_description(value) }
+              .to change(described_class, :description)
+              .to be == value
+          end
+        end
+      end
+
+      describe '.with_full_description' do
+        describe 'with nil' do
+          let(:error_message) do
+            tools
+              .assertions
+              .error_message_for('presence', as: 'full_description')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_full_description(nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an Object' do
+          let(:error_message) do
+            tools.assertions.error_message_for('name', as: 'full_description')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_full_description(Object.new.freeze) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an empty String' do
+          let(:error_message) do
+            tools
+              .assertions
+              .error_message_for('presence', as: 'full_description')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_full_description('') }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with a non-empty String' do
+          let(:value) do
+            <<~DESC
+              No one is quite sure what this does.
+
+              ...but it sure looks cool!
+            DESC
+          end
+
+          it 'should return the command class' do
+            expect(described_class.with_full_description(value))
+              .to be described_class
+          end
+
+          it 'should set the full description' do
+            expect { described_class.with_full_description(value) }
+              .to change(described_class, :full_description)
+              .to be == value
+          end
+        end
+
+        context 'when the command has a description' do
+          let(:description) do
+            'No one is quite sure what this does.'
+          end
+
+          before(:example) do
+            described_class.description(description)
+          end
+
+          describe 'with a non-empty String' do
+            let(:value) do
+              <<~DESC
+                No one is quite sure what this does.
+
+                ...but it sure looks cool!
+              DESC
+            end
+
+            it 'should return the command class' do
+              expect(described_class.with_full_description(value))
+                .to be described_class
+            end
+
+            it 'should set the full description' do
+              expect { described_class.with_full_description(value) }
+                .to change(described_class, :full_description)
+                .to be == value
+            end
+          end
+        end
+      end
+
+      describe '.with_full_name' do
+        describe 'with nil' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: 'full_name')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_full_name(nil) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an Object' do
+          let(:error_message) do
+            tools.assertions.error_message_for('name', as: 'full_name')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_full_name(Object.new.freeze) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an empty String' do
+          let(:error_message) do
+            tools.assertions.error_message_for('presence', as: 'full_name')
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_full_name('') }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an invalid String' do
+          let(:error_message) do
+            'full_name does not match format category:sub_category:do_something'
+          end
+
+          it 'should raise an exception' do
+            expect { described_class.with_full_name(described_class.name) }
+              .to raise_error ArgumentError, error_message
+          end
+        end
+
+        describe 'with an valid String' do
+          let(:value) { 'do_something' }
+
+          it 'should return the command class' do
+            expect(described_class.with_full_name(value)).to be described_class
+          end
+
+          it 'should set the full name' do
+            expect { described_class.with_full_name(value) }
+              .to change(described_class, :full_name)
+              .to be == value
+          end
+        end
+
+        describe 'with an valid scoped String' do
+          let(:value) { 'category:sub_category:do_something' }
+
+          it 'should return the command class' do
+            expect(described_class.with_full_name(value)).to be described_class
+          end
+
+          it 'should set the full name' do
+            expect { described_class.full_name(value) }
+              .to change(described_class, :full_name)
+              .to be == value
+          end
         end
       end
     end
