@@ -19,7 +19,7 @@ module Cuprum::Cli
     class AbstractCommandError < StandardError; end
 
     # Class methods to extend when including Metadata.
-    module ClassMethods
+    module ClassMethods # rubocop:disable Metrics/ModuleLength
       # Marks the command as abstract.
       def abstract = @abstract = true
 
@@ -102,7 +102,7 @@ module Cuprum::Cli
       #
       #   @return [String] the set full name.
       def full_name(value = UNDEFINED) # rubocop:disable Metrics/MethodLength
-        return defined_full_name if value == UNDEFINED
+        return @full_name || defined_full_name if value == UNDEFINED
 
         if abstract?
           raise AbstractCommandError, abstract_command_message('set full_name')
@@ -117,6 +117,12 @@ module Cuprum::Cli
         )
 
         @full_name = value
+      end
+
+      # @return [true, false] true if the command defines a custom name;
+      #   otherwise false.
+      def full_name?
+        !@full_name.nil?
       end
 
       # The namespace for the command.
@@ -152,7 +158,50 @@ module Cuprum::Cli
       #   short_name will be "do_something".
       #
       # @return [String] the short name for the command.
-      def short_name = full_name&.split(':')&.last
+      def short_name
+        full_name&.split(':')&.last
+      end
+
+      # Sets the description for the command.
+      #
+      # @param value [String] the description to set.
+      #
+      # @return [self]
+      #
+      # @see #description
+      def with_description(value)
+        description(value)
+
+        self
+      end
+
+      # Sets the full description for the command and returns the command.
+      #
+      # @param value [String] the full description to set.
+      #
+      # @return [self]
+      #
+      # @see #full_description
+      def with_full_description(value)
+        full_description(value)
+
+        self
+      end
+
+      # Sets the full name for the command and returns the command.
+      #
+      # The full name must be in snake_case format joined by ":".
+      #
+      # @param value [String] the full name to set.
+      #
+      # @return [self]
+      #
+      # @see #full_name
+      def with_full_name(value)
+        full_name(value)
+
+        self
+      end
 
       protected
 
@@ -182,13 +231,13 @@ module Cuprum::Cli
       end
 
       def defined_full_name
-        return @full_name if @full_name ||= default_name
+        return @defined_full_name if @defined_full_name ||= default_name
 
         return unless superclass.respond_to?(:defined_full_name, true)
 
         return if superclass.name == 'Cuprum::Cli::Command'
 
-        superclass.defined_full_name
+        superclass.full_name
       end
 
       private
