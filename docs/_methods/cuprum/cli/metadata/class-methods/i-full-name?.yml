@@ -1,0 +1,15 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#full_name?
+parent_path: cuprum/cli/metadata/class-methods
+signature: full_name?
+slug: full-name?
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-full-name?
+returns:
+- description: |-
+    true if the command defines a custom name;
+    otherwise false.
+  type:
+  - name: 'true'
+  - name: 'false'
+version: "*"

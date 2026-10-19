@@ -89,11 +89,17 @@ Cuprum::Cli.initializer.call
 
 registry = Cuprum::Cli::Integrations::Thor::Registry.new
 
+# Register an individual command.
 registry.register Cuprum::Cli::Commands::Ci::RSpecCommand
+
+# Register a command with configuration options.
 registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
   full_name:   'ci:rspec:sinatra4',
   description: 'Runs the RSpec tests against Sinatra 4.X',
   options:     { gemfile: 'gemfiles/sinatra_4.gemfile' }
+
+# Register a group of commands.
+registry.register Cuprum::Cli::Commands::File.commands
 ```
 
 Finally, you can call the commands from your CLI tool:
@@ -104,6 +110,10 @@ ci
 --
 thor ci:rspec ...FILE_PATTERNS       # Runs an RSpec command.
 thor ci:rspec:sinatra4 ...FILE_PATTERNS  # Runs the RSpec tests against Sinatra 4.X
+
+file
+----
+thor file:new FILE_PATH  # Generates a new templated file or files.
 ```
 
 ### Defining Commands

@@ -15,7 +15,7 @@ registry = Cuprum::Cli::Integrations::Thor::Registry.new
 # CI Commands
 ################################################################################
 
-registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
+registry.register Cuprum::Cli::Commands::Ci.commands,
   options: {
     gemfile: 'gemfiles/default.gemfile'
   }
@@ -33,10 +33,9 @@ registry.register Cuprum::Cli::Commands::Ci::RSpecCommand,
     env:     { integration: 'thor' },
     gemfile: 'gemfiles/integrations_thor.gemfile'
   }
-registry.register Cuprum::Cli::Integrations::Async::Commands::RSpecEachCommand
 
 ################################################################################
 # File Commands
 ################################################################################
 
-registry.register Cuprum::Cli::Commands::File::NewCommand
+registry.register Cuprum::Cli::Commands::File.commands

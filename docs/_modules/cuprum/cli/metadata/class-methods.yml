@@ -35,6 +35,10 @@ instance_methods:
   path: cuprum/cli/metadata/class-methods/i-full-name
   slug: full-name
   inherited: false
+- name: full_name?
+  path: cuprum/cli/metadata/class-methods/i-full-name?
+  slug: full-name?
+  inherited: false
 - name: namespace
   path: cuprum/cli/metadata/class-methods/i-namespace
   slug: namespace
@@ -46,6 +50,18 @@ instance_methods:
 - name: short_name
   path: cuprum/cli/metadata/class-methods/i-short-name
   slug: short-name
+  inherited: false
+- name: with_description
+  path: cuprum/cli/metadata/class-methods/i-with-description
+  slug: with-description
+  inherited: false
+- name: with_full_description
+  path: cuprum/cli/metadata/class-methods/i-with-full-description
+  slug: with-full-description
+  inherited: false
+- name: with_full_name
+  path: cuprum/cli/metadata/class-methods/i-with-full-name
+  slug: with-full-name
   inherited: false
 data_path: cuprum/cli/metadata/class-methods
 version: "*"

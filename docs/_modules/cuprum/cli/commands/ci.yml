@@ -9,6 +9,11 @@ files:
 - lib/cuprum/cli/commands/ci/rspec_each_command.rb
 parent_path: cuprum/cli/commands
 short_description: Namespace for commands used in continuous integration.
+class_methods:
+- name: commands
+  path: cuprum/cli/commands/ci/c-commands
+  slug: commands
+  inherited: false
 constants:
 - name: Report
   path: cuprum/cli/commands/ci/report

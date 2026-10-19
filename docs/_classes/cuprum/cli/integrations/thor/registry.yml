@@ -16,9 +16,9 @@ instance_methods:
   slug: commands
   inherited: true
 - name: register
-  path: cuprum/cli/integrations/thor/registry/i-register
+  path: cuprum/cli/registry/i-register
   slug: register
-  inherited: false
+  inherited: true
 data_path: cuprum/cli/integrations/thor/registry
 constructor: false
 inherited_classes:
