@@ -25,18 +25,18 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Registry do
 
         before(:example) { registry.register(command, **config) }
 
-        it { expect(registered).to be_a(Class).and(be < command) }
+        it { expect(registered.first).to be_a(Class).and(be < command) }
 
         it 'should configure the command argument values' do
-          expect(registered.argument_values).to be == expected_arguments
+          expect(registered.first.argument_values).to be == expected_arguments
         end
 
         it 'should configure the command full name' do
-          expect(registered.full_name).to be == expected_full_name
+          expect(registered.first.full_name).to be == expected_full_name
         end
 
         it 'should configure the command option values' do
-          expect(registered.option_values).to be == expected_options
+          expect(registered.first.option_values).to be == expected_options
         end
       end
     end
@@ -47,7 +47,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Registry do
       Cuprum::Cli::Integrations::Thor::Task::Builder
     end
     let(:builder)    { @builder } # rubocop:disable RSpec/InstanceVariable
-    let(:registered) { builder.command_class }
+    let(:registered) { [] }
 
     example_class 'Spec::CustomCommand', Cuprum::Cli::Command do |klass|
       klass.description 'A custom command.'
@@ -57,8 +57,10 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Registry do
       allow(builder_class)
         .to receive(:new)
         .and_wrap_original do |original, command|
-          @builder = original.call(command).tap do |builder|
-            allow(builder).to receive(:build)
+          (@builder ||= original.call(command)).tap do |builder|
+            allow(builder).to receive(:build) do
+              registered << command
+            end
           end
         end
     end
@@ -74,7 +76,7 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Registry do
     it 'should generate the command' do
       registry.register(command)
 
-      expect(builder.command_class).to be command
+      expect(registered).to eq([command])
     end
 
     describe 'with arguments: value' do
@@ -102,6 +104,36 @@ RSpec.describe Cuprum::Cli::Integrations::Thor::Registry do
       let(:config)  { super().merge(options:) }
 
       include_deferred 'should configure the command'
+    end
+
+    describe 'with multiple command classes' do
+      let(:commands) do
+        [
+          Class
+            .new(Spec::CustomCommand)
+            .with_full_name('spec:example:command_one'),
+          Class
+            .new(Spec::CustomCommand)
+            .with_full_name('spec:example:command_two'),
+          Class
+            .new(Spec::CustomCommand)
+            .with_full_name('spec:example:command_three')
+        ]
+      end
+
+      it 'should build the Thor commands' do
+        registry.register(commands)
+
+        commands.map(&:full_name).each do |full_name|
+          expect(builder).to have_received(:build).with(full_name:)
+        end
+      end
+
+      it 'should generate the commands' do
+        registry.register(commands)
+
+        expect(registered).to eq(commands)
+      end
     end
   end
 end
