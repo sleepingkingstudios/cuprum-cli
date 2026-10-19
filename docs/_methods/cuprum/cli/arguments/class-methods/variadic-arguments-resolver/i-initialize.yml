@@ -1,0 +1,12 @@
+---
+name: Cuprum::Cli::Arguments::ClassMethods::VariadicArgumentsResolver#initialize
+parent_path: cuprum/cli/arguments/class-methods/variadic-arguments-resolver
+signature: initialize(defined_arguments)
+slug: initialize
+constructor: true
+data_path: cuprum/cli/arguments/class-methods/variadic-arguments-resolver/i-initialize
+returns:
+- description: a new instance of VariadicArgumentsResolver
+  type:
+  - name: VariadicArgumentsResolver
+version: "*"

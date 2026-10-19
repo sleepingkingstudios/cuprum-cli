@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Commands::File.commands
+parent_path: cuprum/cli/commands/file
+signature: commands
+slug: commands
+constructor: false
+data_path: cuprum/cli/commands/file/c-commands
+returns:
+- description: the default commands defined for file management.
+  type:
+  - name: Array
+    items:
+    - name: Class
+version: "*"

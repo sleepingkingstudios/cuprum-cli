@@ -39,6 +39,10 @@
 - Fixed error handling for `Thor` integration.
 - Enabled passing variadic options through `Thor` tasks.
 
+## Registries
+
+- Added support for registering groups of commands.
+
 ## 0.1.0
 
 Initial version.
