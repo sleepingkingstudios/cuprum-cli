@@ -314,7 +314,7 @@ In addition to the option name, which must be a non-empty `String` or `Symbol`, 
 :aliases
 : Aliases for the option when parsing options from the command line.
 
-default
+:default
 : The default value for the option. If given and the value of the option is `nil`, sets the option value to the default value. Can either be any object or a `Proc` used to set the value when the command is called.
 
 :define_method

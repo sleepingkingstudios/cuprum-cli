@@ -10,6 +10,7 @@
 - [Features](#features)
   - [Commands](#commands)
   - [Built-In Commands](#built-in-commands)
+  - [File Generation](#file-generation)
   - [Integrations](#integrations)
 - [Reference](#reference)
 
@@ -162,6 +163,8 @@ The core component in `Cuprum::Cli` is the `Command`.
   </li>
 </ul>
 
+[Back to Top](#)
+
 ### Built-In Commands
 
 `Cuprum::Cli` provides some [pre-defined commands](./commands/built-in) for building CLI applications and tools.
@@ -195,14 +198,47 @@ The core component in `Cuprum::Cli` is the `Command`.
         <br>
         A command for generating a new source file or files based on defined templates. Automatically handles intermediate directories and supports multiple file generation (such as spec files or view component templates).
       </li>
-      <li>
-        <a href="./commands/file-generators">File Generators</a>
-        <br>
-        Generators are used by the <a href="./commands/built-in#new-file-command">New File command</a> to define the output files generated for a given input path and options.
-      </li>
     </ul>
   </li>
 </ul>
+
+[Back to Top](#)
+
+### File Generation
+
+In addition to the <a href="./commands/built-in#new-file-command">New File Command</a>, `Cuprum::Cli` provides tools for custom file generation using a flexible template system.
+
+<ul>
+  <li>
+    <a href="./files#engines">Engines</a>
+    <br>
+    Engines are used to process raw templates and parameters into finalized text.
+  </li>
+  <li>
+    <a href="./files#templates">Templates</a>
+    <br>
+    Templates are used to generate output text from a given source and parameters.
+    <ul>
+      <li>
+        <a href="./files#file-templates">File Templates</a>
+        <br>
+        A <code>FileTemplate</code> reads its contents from the local filesystem.
+      </li>
+      <li>
+        <a href="./files#string-templates">String Templates</a>
+        <br>
+        A <code>StringTemplate</code> is initialized with a raw template `String` that is used as the contents when the template is rendered.
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="./files#generators">Generators</a>
+    <br>
+    Generators are used to write generated files to the file system. Each generator defines one or more outputs with corresponding template, as well as configuration options and an optional file matcher.
+  </li>
+</ul>
+
+[Back to Top](#)
 
 ### Integrations
 

@@ -115,7 +115,7 @@ Additionally, the command supports any number of additional options, which are p
 
 #### Generators
 
-`Cuprum::Cli` uses [generator classes](./file-generators) to define the files created by the `file:new` command.
+`Cuprum::Cli` uses [generator classes](../files#generators) to define the files created by the `file:new` command.
 
 Each generator defines a pattern or patterns that are used when determining which generator is called for a given request. It also defines a set of output files - these are the files generated when the generator is called. A generator can have multiple outputs, allowing `Cuprum::Cli` to create multiple files from a single command, such as a source file and the associated spec.
 
@@ -123,12 +123,12 @@ Finally, generators can define additional options that are used when building th
 
 `Cuprum::Cli` defines two built-in generators:
 
-- The [Ruby](./file-generators#ruby-generator) generator creates a Ruby source file and corresponding RSpec spec file.
-- The [RSpec](./file-generators#rspec-generator) generator creates an RSpec spec file.
+- The [Ruby](#ruby-generator) generator creates a Ruby source file and corresponding RSpec spec file.
+- The [RSpec](#rspec-generator) generator creates an RSpec spec file.
 
 [Back to Top](#)
 
-##### Generator Matching
+#### Generator Matching
 
 When the `file:new` command is called, the first step is to find the matching generator for that input path and options. Each generators defines a matching pattern or patterns.
 
@@ -140,15 +140,17 @@ If there is more than one generator that matches the file path and options, the 
 
 If there are no matching generators, the `file:new` command returns with an error.
 
-[Back to Top](#)
+#### Generator Outputs
 
-##### Generator Outputs
-
-Each generator defines one or more outputs. When that generator is called, it creates a new file for each of those outputs, using the file path and template defined for that output. For example, the [Ruby](./file-generators#ruby-generator) generator defines one output for the Ruby file and one output for the RSpec file.
+Each generator defines one or more outputs. When that generator is called, it creates a new file for each of those outputs, using the file path and template defined for that output. For example, the [Ruby](#ruby-generator) generator defines one output for the Ruby file and one output for the RSpec file.
 
 `Cuprum::Cli` automatically extracts a number of properties from the given input path, such as the file name, file extension, and directory path. These properties can be used to customize the output path or the contents of the generated file, along with the options passed by the user to `file:new`.
 
-For example, for the input path `lib/space/rocket.rb` and option `--parent-class=Vehicle`, the Ruby generator creates the following files.
+You can also [filter the output files](../files#filtering-outputs) generated when the generator is called.
+
+#### Ruby Generator
+
+The `RubyGenerator` creates a Ruby source file at the given file path, with contents that define a new class or module whose name matches the file path. Additionally, it creates a spec file in the `spec` directory that describes the newly created class. For the input path `lib/space/rocket.rb` and option `--parent-class=Vehicle`, the generator creates the following files.
 
 In `lib/space/rocket.rb`:
 
@@ -176,6 +178,39 @@ RSpec.describe Space::Rocket do
 end
 ```
 
-Some generators allow you to pass a custom template for a specific output, or even disable that output entirely. For example, if you pass the `--skip-rspec` option to the Ruby template, the generator will not create the RSpec file.
+`RubyGenerator` defines the following options:
+
+`:parent_class`
+: If given, instead of defining a `Module`, the generated Ruby file defines a `Class` that inherits from the given parent class.
+
+`:rspec`
+: Pass `rspec: false` to disable generating the RSpec file (on the command line, `--skip-rspec`).
+
+`:rspec_template`
+: The path to the template used to generate the RSpec file.
+
+`:ruby`
+: Pass `ruby: false` to disable generating the Ruby file (on the command line, `--skip-ruby`).
+
+`:ruby_template`
+: The path to the template used to generate the Ruby file.
+
+[Back to Top](#)
+
+#### RSpec Generator
+
+The `RSpecGenerator` creates an RSpec spec file at the given file path, with contents that describe a class or module whose name matches the file path. For the input path `spec/space/rocket_spec.rb`, the generator creates the following files:
+
+In `spec/space/rocket_spec.rb`:
+
+```ruby
+# frozen_string_literal: true
+
+require 'space/rocket'
+
+RSpec.describe Space::Rocket do
+  pending
+end
+```
 
 [Back to Top](#)
