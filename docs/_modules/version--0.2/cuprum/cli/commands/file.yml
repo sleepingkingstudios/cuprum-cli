@@ -1,0 +1,19 @@
+---
+name: Cuprum::Cli::Commands::File
+slug: file
+type: module
+files:
+- lib/cuprum/cli/commands/file.rb
+- lib/cuprum/cli/commands/file/new_command.rb
+parent_path: cuprum/cli/commands
+short_description: Namespace for commands that create or manage files.
+class_methods:
+- name: commands
+  path: cuprum/cli/commands/file/c-commands
+  slug: commands
+  inherited: false
+defined_classes:
+- name: NewCommand
+  slug: new-command
+data_path: cuprum/cli/commands/file
+version: '0.2'

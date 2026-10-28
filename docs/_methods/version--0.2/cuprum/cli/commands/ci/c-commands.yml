@@ -1,0 +1,14 @@
+---
+name: Cuprum::Cli::Commands::Ci.commands
+parent_path: cuprum/cli/commands/ci
+signature: commands
+slug: commands
+constructor: false
+data_path: cuprum/cli/commands/ci/c-commands
+returns:
+- description: the default commands defined for running CI steps.
+  type:
+  - name: Array
+    items:
+    - name: Class
+version: '0.2'
