@@ -1,0 +1,31 @@
+---
+name: Cuprum::Cli::Files::Templates
+slug: templates
+type: module
+files:
+- lib/cuprum/cli/files/templates.rb
+- lib/cuprum/cli/files/templates/file_template.rb
+- lib/cuprum/cli/files/templates/basic_template.rb
+- lib/cuprum/cli/files/templates/string_template.rb
+parent_path: cuprum/cli/files
+short_description: Namespace for template files and implementations.
+class_methods:
+- name: resolve
+  path: cuprum/cli/files/templates/c-resolve
+  slug: resolve
+  inherited: false
+constants:
+- name: BasicTemplate
+  path: cuprum/cli/files/templates/basic-template
+  slug: basic-template
+  inherited: false
+- name: FileTemplate
+  path: cuprum/cli/files/templates/file-template
+  slug: file-template
+  inherited: false
+- name: StringTemplate
+  path: cuprum/cli/files/templates/string-template
+  slug: string-template
+  inherited: false
+data_path: cuprum/cli/files/templates
+version: '0.2'

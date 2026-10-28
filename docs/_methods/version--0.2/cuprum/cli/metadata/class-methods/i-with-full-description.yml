@@ -1,0 +1,24 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#with_full_description
+parent_path: cuprum/cli/metadata/class-methods
+signature: with_full_description(value)
+slug: with-full-description
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-with-full-description
+metadata:
+  see:
+  - label: "#full_description"
+    path: cuprum/cli/metadata/class-methods#instance-method-full-description
+    text:
+    type: reference
+params:
+- description: the full description to set.
+  name: value
+  type:
+  - name: String
+returns:
+- description: ''
+  type:
+  - name: self
+short_description: Sets the full description for the command and returns the command.
+version: '0.2'

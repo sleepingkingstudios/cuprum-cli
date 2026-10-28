@@ -1,0 +1,143 @@
+---
+name: Cuprum::Cli::Registry#register
+parent_path: cuprum/cli/registry
+signature: register(*commands, **config, &block)
+slug: register
+aliases:
+- add
+constructor: false
+data_path: cuprum/cli/registry/i-register
+description: |-
+  If given a block, transforms the command using the block. This can be
+  used to customize the commands, such as applying a custom prefix or
+  configuration options. If the block instead returns nil, that command
+  will not be registered.
+metadata:
+  examples:
+  - name: Register a command
+    text: |-
+      registry.register(ExampleCommand)
+
+      registry.commands.key?('example')
+      #=> true
+  - name: Register a command with configuration options
+    text: |-
+      registry.register ExampleCommand,
+        full_name: 'scope:custom_command',
+        options:   { option: 'value' }
+
+      registry.commands.key?('example')
+      #=> false
+      registry.commands.key?('scope:custom_command')
+      #=> true
+      registry.commands['scope:example_command'].option_values
+      #=> { option: 'value' }
+  - name: Register multiple commands with configuration options
+    text: |-
+      registry.register FirstCommand,
+        SecondCommand,
+        ThirdCommand,
+        options: { shared: 'value' }
+
+      registry.commands.key?('first')
+      #=> true
+      registry.commands.key?('second')
+      #=> true
+      registry.commands.key?('third')
+      #=> true
+      registry.commands['first'].option_values
+      #=> { shared: 'value' }
+  - name: Register multiple commands and configure with a block
+    text: |-
+      registry.register(FirstCommand, SecondCommand, ThirdCommand) do |command|
+        full_name = "scope:#{command.full_name}"
+
+        command.with_full_name(full_name)
+      end
+
+      registry.commands.key?('scope:first')
+      #=> true
+      registry.commands.key?('scope:second')
+      #=> true
+      registry.commands.key?('scope:third')
+      #=> true
+  - name: Register multiple commands and filter with a block
+    text: |-
+      commands = [OneCommand, TwoCommand, ThreeCommand]
+
+      registry.register(commands) do |command|
+        next unless command.full_name.start_with?('t')
+
+        command
+      end
+
+      registry.commands.key?('one')
+      #=> false
+      registry.commands.key?('two')
+      #=> true
+      registry.commands.key?('three')
+      #=> true
+options:
+- name: config
+  opts:
+  - description: |-
+      arguments to pass to the command on
+      initialization.
+    name: arguments
+    type:
+    - name: Array
+  - description: the description for the command.
+    name: description
+    type:
+    - name: String
+  - description: |-
+      the full description for the
+      command.
+    name: full_description
+    type:
+    - name: String
+  - description: |-
+      the name under which to register the
+      command. Defaults to the value of command.full_name.
+    name: full_name
+    type:
+    - name: String
+  - description: |-
+      options to pass to the command on
+      initialization.
+    name: options
+    type:
+    - name: Hash
+params:
+- description: the command classes to register.
+  name: commands
+  type:
+  - name: Array
+    items:
+    - name: Class
+- description: options for configuring the command.
+  name: config
+  type:
+  - name: Hash
+raises:
+- description: if a command is already registered with that name.
+  type:
+  - name: NameError
+returns:
+- description: ''
+  type:
+  - name: self
+short_description: Registers the commands with the registry.
+yield_params:
+- description: the original command class.
+  name: command
+  type:
+  - name: Class
+yield_returns:
+- description: |-
+    the command class to register. If nil is
+    returned instead, nothing will be registered for the input command.
+  type:
+  - name: Class
+  - name: nil
+version: '0.2'

@@ -1,0 +1,24 @@
+---
+name: Cuprum::Cli::Metadata::ClassMethods#with_description
+parent_path: cuprum/cli/metadata/class-methods
+signature: with_description(value)
+slug: with-description
+constructor: false
+data_path: cuprum/cli/metadata/class-methods/i-with-description
+metadata:
+  see:
+  - label: "#description"
+    path: cuprum/cli/metadata/class-methods#instance-method-description
+    text:
+    type: reference
+params:
+- description: the description to set.
+  name: value
+  type:
+  - name: String
+returns:
+- description: ''
+  type:
+  - name: self
+short_description: Sets the description for the command.
+version: '0.2'

@@ -28,7 +28,9 @@ markdown: kramdown
 project_metadata:
   name:           Cuprum::Cli
   repository_url: https://github.com/sleepingkingstudios/cuprum-cli
-  versions:       []
+  versions:
+    - 0.1
+    - 0.2
 
 # Theme Configuration
 theme: jekyll-theme-dinky
